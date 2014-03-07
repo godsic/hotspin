@@ -1,0 +1,32 @@
+\section{Getting started}
+
+\subsection{Installing and running \mumax}
+
+You need a CUDA-capable nVIDIA GPU (nearly all recent GPUs will do). You also need to install CUDA 5.5 from nVIDIA's website: \url{http://developer.nvidia.com/cuda-downloads}.\\
+
+After unpacking the \mumax binaries, it is mandatory to add the \mumax executables to your PATH by adding this line to the end of your \file{.bashrc} file:\\
+\cmd{export PATH=\$PATH:/home/me/mumax2/bin} where, of course, the correct path to the location of \mumax has to be filled in.  After starting a new shell, the program can be used by running the command \cmd{mumax2 myfile.py}, where \cmd{myfile.py} is a Python input file (See \link{examples})
+
+\subsection{Command-line flags}
+
+The following command-line flags are provided by \mumax:
+\begin{verbatim}
+  -h: Print help and exit
+  -v: Print version info and exit
+  -test: Test CUDA and exit
+  -gpu=number: Which GPUs to use. gpu=0, gpu=0:3, gpu=1,2,3, gpu=all
+  -f: Force start, remove existing output directory
+  -s: Be silent
+  -g: Show debug output
+  -w: Show warnings
+  -o="file": Specify output directory
+  -log="file": Specify log file
+  -command="file": Override interpreter command
+  -cpuprof="file": Write gopprof CPU profile to file
+  -memprof="file": Write gopprof memory profile to file
+  -sched="type": CUDA scheduling: auto|spin|yield|sync (advanced)
+  -fft="number": Override the FFT implementation (advanced)
+  -t: Enable timers for benchmarking (debug)
+\end{verbatim}
+
+

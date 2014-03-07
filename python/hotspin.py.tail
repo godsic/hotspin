@@ -1,0 +1,27 @@
+
+
+## Permeability of vacuum in J/Am2
+mu0    = 1.25663706E-6
+
+## Gyromagnetic ratio in m/As
+gamma0 = 2.211E5 
+
+## Boltzmann's constant in J/K
+kB     = 1.380650424E-23  
+
+## Bohr magneton in Am^2
+muB    = 9.2740091523E-24 
+
+## Electron charge in As
+e      = 1.60217646E-19
+
+# Permittivity of vacuum in C/Vm
+epsilon0 = 8.854187817620E-12
+
+pi       = 3.14159265358979323846264338327950288
+
+## Makes a 4D array suited for mumax.
+# comp: number of components (1:scalar, 3:vector,...). First index ranges over components.
+# nx, ny, nz: number of elements in X,Y,Z.
+def makearray(comp, Nx, Ny, Nz):
+	return [[[[0 for z in range(Nz)] for y in range(Ny)] for x in range(Nx)] for c in range(comp)]

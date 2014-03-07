@@ -1,0 +1,92 @@
+\documentclass[a4paper, twoside]{article}
+
+\usepackage{a4wide}
+\usepackage[final]{graphicx}
+\usepackage[english]{babel}
+\usepackage{url}
+\usepackage[small, bf, centerlast]{caption}
+\usepackage{xspace}
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{xunicode} 
+% \usepackage{xltxtra}
+% \usepackage{libertine}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage[final]{pdfpages}
+\bibliographystyle{unsrt}
+\usepackage{makeidx}
+\makeindex
+\usepackage{color}
+\setcounter{MaxMatrixCols}{20}
+\usepackage{listings}
+\lstset{
+%language=Python,                  % choose the language of the code
+basicstyle=\scriptsize,       % the size of the fonts that are used for the code
+%showtabs=false,                 % show tabs within strings adding particular underscores
+%tabsize=2,                      % sets default tabsize to 2 spaces
+%breaklines=true,                % sets automatic line breaking
+%breakatwhitespace=false         % sets if automatic breaks should only happen at whitespace
+}
+
+
+\newcommand{\mumax}{\textsc{MuMax}$^2$\xspace}	
+\newcommand{\nvidia}{n\textsc{vidia}\xspace}	
+\renewcommand{\ttdefault}{pcr} % typewriter font
+
+\usepackage[plainpages=false, colorlinks=true, citecolor=blue, linkcolor=blue, filecolor=blue, urlcolor=blue, bookmarks=true, pdftitle={MuMax2_manual}, pdfauthor={The MuMax2 Authors}]{hyperref}
+
+% put a word in the text and index
+\newcommand{\idx}[1]{\emph{#1}\index{#1}}
+\newcommand{\link}[1]{\hyperref[#1]{#1}}
+% used for terminal commands 
+\newcommand{\cmd}[1]{\texttt{#1}}
+\newcommand{\shell}[1]{\bigskip\fbox{\mbox{\parbox{\textwidth}{\cmd{#1}}}}\bigskip}
+\newcommand{\idxcmd}[1]{\texttt{#1}\index{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\idxfile}[1]{\texttt{#1}\index{#1}}
+% example code
+\newcommand{\example}[1]{\fbox{\parbox{\textwidth}{\texttt{ #1 }}}}
+
+% scale down dependency graph if needed
+\newlength{\imgwidth}
+\newcommand\ScaleGraphic[1]{%
+\settowidth{\imgwidth}{\includegraphics[scale=0.66]{#1}}%
+\setlength{\imgwidth}{\minof{\imgwidth}{\linewidth}}%
+\begin{center}%
+\includegraphics[width=\imgwidth, keepaspectratio=true]{#1}%
+\end{center}%
+}
+
+
+\begin{document}
+
+\hypersetup{breaklinks=true}
+\setlength{\parindent}{0cm}
+
+\title{\mumax Manual}
+\author{The \mumax Authors}
+\maketitle
+
+
+\tableofcontents
+
+\input{intro}
+\input{multiphys}
+
+\section{Examples} \label{examples}
+\input{examples}
+
+
+\section{API overview}
+\input{mumax2-api}
+
+\section{Module overview}\label{modules}
+\input{modules}
+
+\appendix
+\input{gpl}
+%\bibliography{bibliography}
+\printindex
+
+\end{document}

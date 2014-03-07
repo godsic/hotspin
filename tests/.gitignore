@@ -1,0 +1,5 @@
+*.dot
+*.ovf
+*.out
+*.pyc
+*.gplot

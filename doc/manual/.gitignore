@@ -1,0 +1,10 @@
+*.aux
+*.idx
+*.ilg
+*.ind
+*.toc
+mumax2-api.tex
+flags.tex
+examples.tex
+manual.pdf
+modules.tex

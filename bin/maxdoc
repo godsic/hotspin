@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# This script starts a godoc server to serve mumax's go source documentation
+
+MUMAX2BIN=$(dirname $(readlink -f $0)) # path to this script
+godoc -http=:6060 -path=$MUMAX2BIN/../src/pkg& x-www-browser localhost:6060/pkg/pkg& x-www-browser $MUMAX2BIN/../doc/html/index.html&

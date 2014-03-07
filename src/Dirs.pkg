@@ -1,0 +1,33 @@
+# Makefile for recursively building a number of directories
+#
+# Usage:
+# dirs=dir1 dir2 dir3
+# include Dirs.pkg
+# all:$(dirs)
+
+.PHONY: $(dirs)
+
+$(dirs):
+	$(MAKE) --no-print-directory --directory=$@ $(TARGET)
+
+
+.PHONY: install
+install:
+	$(MAKE) TARGET=install
+
+
+.PHONY: test
+test: install
+	$(MAKE) TARGET=test
+
+
+.PHONY: bench
+bench: install
+	$(MAKE) TARGET=bench
+
+
+.PHONY: clean
+clean:
+	$(MAKE) TARGET=clean
+	rm -rf $(CLEANFILES)
+

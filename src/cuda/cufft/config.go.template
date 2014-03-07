@@ -1,0 +1,11 @@
+// Copyright 2013 Mykola Dvornik (mykola.dvornik@gmail.com).  All rights reserved.
+// Use of this source code is governed by a freeBSD
+// license that can be found in the LICENSE.txt file.
+
+package cufft
+
+import "C"
+
+//#cgo LDFLAGS: {{range .Lib}}-L{{.}} {{end}}-lcuda -lcudart -lcufft
+//#cgo CFLAGS:  {{range .Include}}-I{{.}} {{end}}-Wno-error
+import "C"

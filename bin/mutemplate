@@ -1,0 +1,19 @@
+#! /bin/bash
+
+
+ARGV="$@"
+
+# 1) set up environment
+set `uname`
+if [ "$1" == "Darwin" ]
+then
+	INITIALPATH=$PWD
+	cd `echo $0 | sed 's-/mumax2$--g'`
+	MUMAX2BIN=$PWD
+	cd $INITIALPATH
+	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/cuda/lib:$MUMAX2BIN/../src/libmumax2
+else
+	MUMAX2BIN=$(dirname $(readlink -f $0)) # path to this script
+fi
+
+exec $MUMAX2BIN/../src/template/template $ARGV

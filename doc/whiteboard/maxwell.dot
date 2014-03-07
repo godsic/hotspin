@@ -1,0 +1,44 @@
+digraph Maxwell{
+	rankdir=LR;
+
+# E sources
+	E_ext -> E;
+	ρ->E;
+	P->E;
+	"∂B/∂t"->E;
+	{rank=source; E_ext ; ρ; P };
+
+# B sources
+	B_ext -> B;
+	ρB->B;
+	M->B;
+	"∂E/∂t"->B;
+	j->B;
+	{rank=source; B_ext ; M; j; ρB};
+
+# time derivatives
+	E -> "∂E/∂t";
+	B -> "∂B/∂t";
+#	t -> "∂E/∂t";
+#	t -> "∂B/∂t";
+#	step -> "∂E/∂t";
+#	step -> "∂B/∂t";
+	{rank=same; B ; E };
+	{rank=same; "∂E/∂t" ;  "∂B/∂t"};
+
+# ohms law
+	σ -> j;
+	E -> j;
+	j -> "∂ρ/∂t"; 
+	"∂ρ/∂t" -> ρ;
+	{rank=sink; "∂ρ/∂t"}
+
+# llg
+	M->"∂M/∂t";
+	B->"∂M/∂t";
+	j->"∂M/∂t";
+	"∂M/∂t"->M;
+	{rank=sink; "∂M/∂t"}
+
+}
+

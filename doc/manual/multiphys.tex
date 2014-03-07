@@ -1,0 +1,27 @@
+\section{Using the multi-physics engine}
+
+\mumax is a finite-difference multi-physics engine mainly intended for micromagnetic simulations.
+
+Below we describe step-by-step how the input is built up. These steps can be found in the \link{examples} as well.
+
+\subsection{Setting the FD grid size}
+
+The entire simulation has to fit in a finite difference (\idx{FD}) grid whose size is set once at the beginning of a simulation. The size cannot be changed afterwards.\\
+
+\cmd{setgridsize(Nx, Ny, Nz)} sets the number of FD cells in the $x$, $y$ and $z$ direction.
+\begin{itemize} 
+\item For performance, \cmd{Nx} should be the largest number, \cmd{Nz} the smallest. 
+\item For a \idx{2D simulation}, use \cmd{Nz} = 1.\\
+\item For performance, \cmd{Nx, Ny, Nz} should be numbers of the form (1,3,5 or 7) $\times$ $2^n$. I.e. a power of two, possibly times 3, 5 or 7. Pure powers of two are preferred.
+\item \cmd{Ny} should be evenly divisible by the number of used GPUs. E.g., when using 4 GPUs, \cmd{Ny} should be divisible by 4.
+\end{itemize}
+
+\cmd{setcellsize(sizeX, sizeY, sizeZ)} sets the size of a single finite difference cell, in meters. The total physical size of the simulation grid is $(N_x \times sizeX, N_y \times sizeY, N_z \times sizeZ)$.
+
+
+\subsection{Loading Physics modules}
+Since the \mumax engine is not limited to micromagnetism, you need to tell it which physics you want to solve.\\
+
+\cmd{load("modulename")} loads a multi-physics module\\
+
+Most users will need at least \cmd{load("micromagnetism")}, which loads a standard micromagnetism module. The \link{modules} section gives an overview of the modules.
