@@ -35,7 +35,7 @@ var outBA = map[string]string{
 // Register this module
 func init() {
 	args := Arguments{inBA, depsBA, outBA}
-	RegisterModuleArgs("temperature/brown-anisotropic", "Anisotropic thermal fluctuating field according to Brown.", args, LoadAnizBrown)
+	RegisterModuleArgs("temperature/brown", "Anisotropic thermal fluctuating field according to Brown.", args, LoadAnizBrown)
 }
 
 func LoadAnizBrown(e *Engine, args ...Arguments) {
