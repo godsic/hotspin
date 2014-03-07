@@ -6,6 +6,6 @@ package curand
 
 import "C"
 
-//#cgo LDFLAGS: -L/usr/lib64/nvidia -L/usr/local/cuda/lib64/  -lcuda -lcudart -lcurand
+//#cgo LDFLAGS: -L/usr/lib64/nvidia-bumblebee -L/usr/local/cuda/lib64/  -lcuda -lcudart -lcurand
 //#cgo CFLAGS:  -I/usr/local/cuda/include/  -Wno-error
 import "C"

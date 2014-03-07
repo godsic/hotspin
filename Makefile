@@ -5,7 +5,7 @@ export GOPATH=$(CURDIR)/
 ifndef SystemRoot
 LIBNAME=libhotspin.so
 export CUDAROOT=/usr/local/cuda
-export NVROOT=/usr/lib64/nvidia
+export NVROOT=/usr/lib64/nvidia-bumblebee
 export CUDA_INC_PATH=$(CUDAROOT)/include/
 export CUDA_LIB_PATH=$(NVROOT):$(CUDAROOT)/lib64/
 else
