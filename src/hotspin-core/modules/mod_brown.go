@@ -136,7 +136,7 @@ func (u *AnizBrownUpdater) Update() {
 	tempMask := temp.Array()
 	KB2tempMul := Kb * 2.0 * tempMul
 
-	deltat := math.max(cutoff_dt, dt)
+	deltat := math.Max(cutoff_dt, dt)
 	mu0VgammaDtMsatMul := Mu0 * V * gamma * deltat * mSat0T0Mul
 	KB2tempMul_mu0VgammaDtMsatMul := KB2tempMul / mu0VgammaDtMsatMul
 
