@@ -55,7 +55,7 @@ func (c *Client) Init(inputfile string, outputDir string) {
 	c.inputFile = inputfile
 	c.outputDir = outputDir
 
-	CheckErr(os.Setenv("MUMAX2_ADDR", c.commAddr), ERR_IO)
+	CheckErr(os.Setenv("HOTSPIN_ADDR", c.commAddr), ERR_IO)
 
 	engine.Init()
 	engine.GetEngine().SetOutputDirectory(outputDir)
@@ -152,7 +152,7 @@ func (c *Client) Run() {
 // it will first hang while trying to open the FIFOs
 func (c *Client) startSubcommand() (command string, waiter chan (int)) {
 
-	CheckErr(os.Setenv("MUMAX2_OUTPUTDIR", c.outputDir), ERR_IO)
+	CheckErr(os.Setenv("HOTSPIN_OUTPUTDIR", c.outputDir), ERR_IO)
 
 	var args []string
 	command, args = commandForFile(c.inputFile) // e.g.: "python"
