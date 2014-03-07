@@ -19,8 +19,8 @@ all:
 	cp src/libhotspin/$(LIBNAME) .
 	cp src/libhotspin/$(LIBNAME) bin/
 	go run src/cuda/setup-cuda-paths.go -dir=src/cuda/
-	#go install -race -compiler=gccgo -gccgoflags='-static-libgcc -L /home/mykola/hotspins/pkg/gccgo -L /usr/local/cuda/lib64/ -Ofast -march=native' -v hotspin
-	go install -v hotspin
+	go install -race -compiler=gccgo -gccgoflags='-static-libgcc -L /home/mykola/systools/hotspins/pkg/gccgo -L /usr/local/cuda/lib64/ -Ofast -march=native' -v hotspin
+	#go install -v hotspin
 	go install -v apigen
 	go install -v texgen
 	go install -v template
