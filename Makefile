@@ -2,15 +2,11 @@ include src/Make.inc
 
 export GOPATH=$(CURDIR)/
 
-ifndef SystemRoot
 LIBNAME=libhotspin.so
 export CUDAROOT=/usr/local/cuda
 export NVROOT=/usr/lib64/nvidia-bumblebee
 export CUDA_INC_PATH=$(CUDAROOT)/include/
 export CUDA_LIB_PATH=$(NVROOT):$(CUDAROOT)/lib64/
-else
-LIBNAME=libhotspin.dll
-endif
 
 all:
 	@echo $(GOPATH)
@@ -33,15 +29,9 @@ clean:
 	rm -rf pkg/*
 	rm -rf src/hotspin-core/gpu/$(LIBNAME)
 	rm $(LIBNAME)
-ifndef SystemRoot	
 	rm -rf bin/hotspin
 	rm -rf bin/apigen
 	rm -rf bin/texgen
-else
-	rm -rf bin/hotspin.exe
-	rm -rf bin/apigen.exe
-	rm -rf bin/texgen.exe
-endif	
 	rm -rf bin/$(LIBNAME)
 	make clean -C src/python
 	make clean -C src/libhotspin
