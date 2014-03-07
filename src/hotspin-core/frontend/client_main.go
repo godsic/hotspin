@@ -2,7 +2,7 @@
 //  Copyright 2011  Arne Vansteenkiste and Ben Van de Wiele.
 //  Use of this source code is governed by the GNU General Public License version 3
 //  (as published by the Free Software Foundation) that can be found in the license.txt file.
-//  Note that you are welcome to modify this code under the condition that you do not remove any 
+//  Note that you are welcome to modify this code under the condition that you do not remove any
 //  copyright notices and prominently state that you modified it, giving a relevant date.
 
 package frontend
@@ -13,8 +13,8 @@ package frontend
 import (
 	cu "cuda/driver"
 	"fmt"
-	"io"
 	. "hotspin-core/common"
+	"io"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -150,7 +150,7 @@ func ServeClient(inputfile string, ClientPath string) {
 
 	cmsg_slice := strings.Split(cmsg,":")
 
-	ClientName := cmsg_slice[0]	
+	ClientName := cmsg_slice[0]
 	// This approach is not universal at all
 	ClientPath := strings.TrimSpace(cmsg_slice[1]) + ".out"
 
@@ -166,7 +166,7 @@ func ServeClient(inputfile string, ClientPath string) {
 		masterctl <- TERMINATE
 		return
 	}
-	Debug(ClientName + " is connected")	
+	Debug(ClientName + " is connected")
 	Debug("Client asks to write into: " + ClientPath)
 	initOutputDir(ClientPath)
 
@@ -182,15 +182,15 @@ func ServeClient(inputfile string, ClientPath string) {
 	m_out.WriteString(addr_msg)
 	m_out.Flush()
 
-	Debug("Waiting " + ClientName + " to respond to slave server...")	
+	Debug("Waiting " + ClientName + " to respond to slave server...")
 	s_wire, err := s_ln.Accept()
 	if err != nil {
 		Debug("[WARNING]" + ClientName + " has failed to connect")
 		return
-	}	
+	}
 	Debug("Done.")
 
-	var client Client	
+	var client Client
 	client.wire = s_wire
 	client.Init(ClientPath)
 	client.Run()
@@ -219,7 +219,7 @@ func initLogger(outputDir string) {
 
 	logFile := *flag_logfile
 	if logFile == "" {
-		logFile = outputDir + "/mumax2.log"
+		logFile = outputDir + "/" + LOGFILENAME
 	}
 	InitLogger(logFile, opts)
 	Debug("Logging to", logFile)
@@ -257,8 +257,9 @@ const (
 	SERVERADDR    = "localhost"
 	EOM           = "<<< End of mumax message >>>"
 
-	NOTRUNNING = 0   // CLIENT IS NOT RUNNING
-	RUNNING    = 1   // CLIENT IS RUNNING
-	TERMINATE  = 255 // CLIENT ASKS MUMAX2 TO TERMINATE ALL THE CLIENTS
-	EXIT       = 254 // CLIENT ASKS MUMAX2 TO EXIT, ENSURING THAT ALL OTHER JOBS HAVE BEEN DONE
+	NOTRUNNING  = 0   // CLIENT IS NOT RUNNING
+	RUNNING     = 1   // CLIENT IS RUNNING
+	TERMINATE   = 255 // CLIENT ASKS MUMAX2 TO TERMINATE ALL THE CLIENTS
+	EXIT        = 254 // CLIENT ASKS MUMAX2 TO EXIT, ENSURING THAT ALL OTHER JOBS HAVE BEEN DONE
+	LOGFILENAME = "hotspin.log"
 )
