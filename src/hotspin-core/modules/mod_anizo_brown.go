@@ -15,6 +15,7 @@ import (
 	. "hotspin-core/common"
 	. "hotspin-core/engine"
 	"hotspin-core/gpu"
+	"math"
 )
 
 var inBA = map[string]string{
@@ -112,13 +113,8 @@ func (u *AnizBrownUpdater) Update() {
 
 	// Update only if we went past the dt cutoff
 	t := e.Quant("t").Scalar()
+	dt := e.Quant("dt").Scalar()
 	cutoff_dt := u.cutoff_dt.Scalar()
-	next_update := u.last_time + cutoff_dt
-
-	if t < next_update {
-		u.htherm.Array().Zero()
-		return
-	}
 
 	// Make standard normal noise
 	noise := u.htherm.Array()
@@ -139,7 +135,9 @@ func (u *AnizBrownUpdater) Update() {
 	mSat0T0Mul := msat0T0.Multiplier()[0]
 	tempMask := temp.Array()
 	KB2tempMul := Kb * 2.0 * tempMul
-	mu0VgammaDtMsatMul := Mu0 * V * gamma * cutoff_dt * mSat0T0Mul
+
+	deltat := math.max(cutoff_dt, dt)
+	mu0VgammaDtMsatMul := Mu0 * V * gamma * deltat * mSat0T0Mul
 	KB2tempMul_mu0VgammaDtMsatMul := KB2tempMul / mu0VgammaDtMsatMul
 
 	gpu.ScaleNoiseAniz(noise,
