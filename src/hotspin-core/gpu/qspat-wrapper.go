@@ -22,9 +22,9 @@ func Qspat_async(Q *Array, T *Array, k *Array, kMul []float64, cs []float64, pbc
 
 	// Calling the CUDA functions
 	C.Qspat_async(
-		(*C.float)(unsafe.Pointer((Q.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((T.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((k.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Q.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(k.Comp[X].pointer))),
 
 		(C.float)(float32(kMul[0])),
 
@@ -39,5 +39,5 @@ func Qspat_async(Q *Array, T *Array, k *Array, kMul []float64, cs []float64, pbc
 		(C.int)(pbc[X]),
 		(C.int)(pbc[Y]),
 		(C.int)(pbc[Z]),
-		(C.CUstream)(unsafe.Pointer((Q.Stream))))
+		(C.CUstream)(unsafe.Pointer(uintptr(Q.Stream))))
 }

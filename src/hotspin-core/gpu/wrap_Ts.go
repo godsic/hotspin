@@ -25,11 +25,11 @@ func TsSync(Ts *Array, msat *Array, msat0T0 *Array, Tc *Array, S *Array, msatMul
 
 	// Calling the CUDA functions
 	C.tsAsync(
-		(*C.float)(unsafe.Pointer((Ts.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((msat.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((msat0T0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((Tc.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((S.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Ts.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(S.Comp[X].pointer))),
 
 		(C.float)(msatMul),
 		(C.float)(msat0T0Mul),
@@ -37,6 +37,6 @@ func TsSync(Ts *Array, msat *Array, msat0T0 *Array, Tc *Array, S *Array, msatMul
 		(C.float)(SMul),
 
 		(C.int)(Ts.partLen3D),
-		(C.CUstream)(unsafe.Pointer((Ts.Stream))))
+		(C.CUstream)(unsafe.Pointer(uintptr(Ts.Stream))))
 	Ts.Stream.Sync()
 }

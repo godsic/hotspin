@@ -26,25 +26,25 @@ func LLBarLocal00NC(t *Array, h *Array, msat0T0 *Array, lambda *Array, lambdaMul
 
 	// Calling the CUDA functions
 	C.llbar_local00nc_async(
-		(*C.float)(unsafe.Pointer((t.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((t.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((t.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((h.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((h.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((h.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((msat0T0.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer((lambda.Comp[X].pointer))), //XX
-		(*C.float)(unsafe.Pointer((lambda.Comp[Y].pointer))), //YY
-		(*C.float)(unsafe.Pointer((lambda.Comp[Z].pointer))), //ZZ
+		(*C.float)(unsafe.Pointer(uintptr(lambda.Comp[X].pointer))), //XX
+		(*C.float)(unsafe.Pointer(uintptr(lambda.Comp[Y].pointer))), //YY
+		(*C.float)(unsafe.Pointer(uintptr(lambda.Comp[Z].pointer))), //ZZ
 
 		(C.float)(float32(lambdaMul[X])),
 		(C.float)(float32(lambdaMul[Y])),
 		(C.float)(float32(lambdaMul[Z])),
 
-		(C.CUstream)(unsafe.Pointer((t.Stream))),
+		(C.CUstream)(unsafe.Pointer(uintptr(t.Stream))),
 
 		(C.int)(t.partLen3D))
 }

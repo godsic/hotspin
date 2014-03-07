@@ -25,13 +25,13 @@ func KappaAsync(kappa *Array, msat0 *Array, msat0T0 *Array, T *Array, Tc *Array,
 
 	// Calling the CUDA functions
 	C.kappaAsync(
-		(*C.float)(unsafe.Pointer((kappa.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((msat0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((msat0T0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((T.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((Tc.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((S.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((n.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(kappa.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat0.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(S.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(n.Comp[X].pointer))),
 
 		(C.float)(msat0Mul),
 		(C.float)(msat0T0Mul),
@@ -39,5 +39,5 @@ func KappaAsync(kappa *Array, msat0 *Array, msat0T0 *Array, T *Array, Tc *Array,
 		(C.float)(SMul),
 
 		(C.int)(kappa.partLen3D),
-		(C.CUstream)(unsafe.Pointer((stream))))
+		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
 }

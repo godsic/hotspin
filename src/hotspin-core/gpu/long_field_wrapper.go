@@ -29,20 +29,20 @@ func LongFieldAsync(hlf *Array, m *Array, msat0T0 *Array, J *Array, n *Array, Tc
 
 	// Calling the CUDA functions
 	C.long_field_async(
-		(*C.float)(unsafe.Pointer((hlf.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((hlf.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((hlf.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(hlf.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(hlf.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(hlf.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((m.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((m.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((m.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((msat0T0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((J.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((n.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(J.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(n.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer((Tc.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((Ts.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Ts.Comp[X].pointer))),
 
 		(C.float)(msat0T0Mul),
 		(C.float)(JMul),
@@ -52,5 +52,5 @@ func LongFieldAsync(hlf *Array, m *Array, msat0T0 *Array, J *Array, n *Array, Tc
 		(C.float)(TsMul),
 
 		(C.int)(hlf.partLen3D),
-		(C.CUstream)(unsafe.Pointer((stream))))
+		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
 }

@@ -22,22 +22,22 @@ func EnergyFlowAsync(w *Array, mf *Array, R *Array, Tc *Array, S *Array, n *Arra
 
 	// Calling the CUDA functions
 	C.energyFlowAsync(
-		(*C.float)(unsafe.Pointer((w.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(w.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer((mf.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((mf.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((mf.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(mf.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(mf.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(mf.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((R.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((R.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer((R.Comp[Z].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(R.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(R.Comp[Y].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(R.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer((Tc.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((S.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer((n.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(S.Comp[X].pointer))),
+		(*C.float)(unsafe.Pointer(uintptr(n.Comp[X].pointer))),
 
 		(C.float)(SMul),
 
 		(C.int)(w.partLen3D),
-		(C.CUstream)(unsafe.Pointer((stream))))
+		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
 }
