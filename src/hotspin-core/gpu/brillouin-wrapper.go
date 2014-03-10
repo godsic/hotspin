@@ -25,16 +25,16 @@ func BrillouinAsync(msat0 *Array, msat0T0 *Array, T *Array, Tc *Array, S *Array,
 
 	// Calling the CUDA functions
 	C.brillouinAsync(
-		(*C.float)(unsafe.Pointer(uintptr(msat0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(S.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Tc.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(S.Comp[X].pointer))),
 
-		(C.float)(msat0Mul),
-		(C.float)(msat0T0Mul),
-		(C.float)(TcMul),
-		(C.float)(SMul),
+		(C.double)(msat0Mul),
+		(C.double)(msat0T0Mul),
+		(C.double)(TcMul),
+		(C.double)(SMul),
 
 		(C.int)(msat0.partLen3D),
 		(C.CUstream)(unsafe.Pointer(uintptr(stream))))

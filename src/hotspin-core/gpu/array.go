@@ -15,7 +15,6 @@ import (
 	"fmt"
 	. "hotspin-core/common"
 	"hotspin-core/host"
-	"math"
 	"unsafe"
 )
 
@@ -261,9 +260,9 @@ func (a *Array) checkBounds(comp, x, y, z int) {
 }
 
 // Get a single value
-func (b *Array) Get(comp, x, y, z int) float32 {
+func (b *Array) Get(comp, x, y, z int) float64 {
 	b.checkBounds(comp, x, y, z)
-	var value float32
+	var value float64
 	acomp := b.Comp[comp]
 	index := acomp.indexOf(x, y, z)
 	cu.MemcpyDtoH(cu.HostPtr(unsafe.Pointer(&value)),
@@ -273,7 +272,7 @@ func (b *Array) Get(comp, x, y, z int) float32 {
 }
 
 // Set a single value
-func (b *Array) Set(comp, x, y, z int, value float32) {
+func (b *Array) Set(comp, x, y, z int, value float64) {
 	b.checkBounds(comp, x, y, z)
 	acomp := b.Comp[comp]
 	index := acomp.indexOf(x, y, z)
@@ -351,12 +350,8 @@ func (src *Array) LocalCopy() *host.Array {
 
 // Makes all elements zero.
 func (a *Array) Zero() {
-	a.MemSet(0)
-}
-
-func (a *Array) MemSet(num float32) {
 	slices := a.pointer
-	cu.MemsetD32Async(slices, math.Float32bits(num), int64(a.partLen4D), cu.Stream(a.Stream))
+	cu.MemsetD8Async(slices, uint8(0), int64(a.partLen4D*SIZEOF_FLOAT), cu.Stream(a.Stream))
 	a.Stream.Sync()
 }
 

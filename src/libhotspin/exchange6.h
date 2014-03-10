@@ -17,13 +17,13 @@ extern "C" {
 #endif
 
 
-DLLEXPORT void exchange6Async(float* hx, float* hy, float* hz, 
-                              float* mx, float* my, float* mz, 
-                              float* msat0T0, 
-                              float* lex, 
+DLLEXPORT void exchange6Async(double* hx, double* hy, double* hz, 
+                              double* mx, double* my, double* mz, 
+                              double* msat0T0, 
+                              double* lex, 
                               int N0, int N1Part, int N2, 
                               int periodic0, int periodic1, int periodic2, 
-                              float lex2Mulmsat0T0Mul_cellSizeX2, float lex2Mulmsat0T0Mul_cellSizeY2, float lex2Mulmsat0T0Mul_cellSizeZ2, 
+                              double lex2Mulmsat0T0Mul_cellSizeX2, double lex2Mulmsat0T0Mul_cellSizeY2, double lex2Mulmsat0T0Mul_cellSizeZ2, 
                               CUstream streams);
 
 

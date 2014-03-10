@@ -95,7 +95,7 @@ func TestMadd(test *testing.T) {
 }
 
 // based on math/all_test.go from Go release.r60, copyright the Go authors.
-func tolerance(a, b, e float32) bool {
+func tolerance(a, b, e float64) bool {
 	d := a - b
 	if d < 0 {
 		d = -d
@@ -109,5 +109,5 @@ func tolerance(a, b, e float32) bool {
 	}
 	return d < e
 }
-func close(a, b float32) bool     { return tolerance(a, b, 1e-5) }
-func veryclose(a, b float32) bool { return tolerance(a, b, 4e-7) }
+func close(a, b float64) bool     { return tolerance(a, b, 1e-5) }
+func veryclose(a, b float64) bool { return tolerance(a, b, 4e-7) }

@@ -8,22 +8,22 @@
 extern "C" {
 #endif
 
-__global__ void llbarNonlocal00ncKern(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
+__global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restrict__ ty, double* __restrict__ tz,
 
-                                      float* __restrict__ Hx, float* __restrict__ Hy, float* __restrict__ Hz,
+                                      double* __restrict__ Hx, double* __restrict__ Hy, double* __restrict__ Hz,
 
-                                      float* __restrict__ msat0T0Msk,
+                                      double* __restrict__ msat0T0Msk,
 
-                                      float* __restrict__ lambda_e_xx,
-                                      float* __restrict__ lambda_e_yy,
-                                      float* __restrict__ lambda_e_zz,
+                                      double* __restrict__ lambda_e_xx,
+                                      double* __restrict__ lambda_e_yy,
+                                      double* __restrict__ lambda_e_zz,
 
-                                      const float lambda_eMul_xx,
-                                      const float lambda_eMul_yy,
-                                      const float lambda_eMul_zz,
+                                      const double lambda_eMul_xx,
+                                      const double lambda_eMul_yy,
+                                      const double lambda_eMul_zz,
 
                                       const int3 N,
-                                      const float3 cell_2,
+                                      const double3 cell_2,
                                       const int3 wrap)
 {
 
@@ -36,37 +36,37 @@ __global__ void llbarNonlocal00ncKern(float* __restrict__ tx, float* __restrict_
 
         int I = i * N.y * N.z + j * N.z + k;
 
-        float msat0T0 = getMaskUnity(msat0T0Msk, I);
+        double msat0T0 = getMaskUnity(msat0T0Msk, I);
         // make sure there is no damping in vacuum!
-        if (msat0T0 == 0.0f)
+        if (msat0T0 == 0.0)
         {
-            tx[I] = 0.0f;
-            ty[I] = 0.0f;
-            tz[I] = 0.0f;
+            tx[I] = 0.0;
+            ty[I] = 0.0;
+            tz[I] = 0.0;
             return;
         }
 
         // Second-order derivative 3-points stencil
 //==================================================================================================
 
-        float lexx0 = lambda_eMul_xx * getMaskUnity(lambda_e_xx, I);
-        float leyy0 = lambda_eMul_yy * getMaskUnity(lambda_e_yy, I);
-        float lezz0 = lambda_eMul_zz * getMaskUnity(lambda_e_zz, I);
+        double lexx0 = lambda_eMul_xx * getMaskUnity(lambda_e_xx, I);
+        double leyy0 = lambda_eMul_yy * getMaskUnity(lambda_e_yy, I);
+        double lezz0 = lambda_eMul_zz * getMaskUnity(lambda_e_zz, I);
 
-        float lexx, leyy, lezz;
-        float lexx1, leyy1, lezz1;
-        float lexx2, leyy2, lezz2;
+        double lexx, leyy, lezz;
+        double lexx1, leyy1, lezz1;
+        double lexx2, leyy2, lezz2;
 
-        float Hx0 = Hx[I]; // mag component of central cell
-        float Hx1, Hx2;
+        double Hx0 = Hx[I]; // mag component of central cell
+        double Hx1, Hx2;
 
-        float Hy0 = Hy[I]; // mag component of central cell
-        float Hy1, Hy2;
+        double Hy0 = Hy[I]; // mag component of central cell
+        double Hy1, Hy2;
 
-        float Hz0 = Hz[I]; // mag component of central cell
-        float Hz1, Hz2;
+        double Hz0 = Hz[I]; // mag component of central cell
+        double Hz1, Hz2;
 
-        float Rx, Ry, Rz;
+        double Rx, Ry, Rz;
 
         int linAddr;
 
@@ -196,21 +196,21 @@ __global__ void llbarNonlocal00ncKern(float* __restrict__ tx, float* __restrict_
 
 #define BLOCKSIZE 16
 
-__export__  void llbar_nonlocal00nc_async(float* tx, float*  ty, float*  tz,
-        float*  hx, float*  hy, float*  hz,
+__export__  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
+        double*  hx, double*  hy, double*  hz,
 
-        float* msat0T0,
+        double* msat0T0,
 
-        float* lambda_e_xx,
-        float* lambda_e_yy,
-        float* lambda_e_zz,
+        double* lambda_e_xx,
+        double* lambda_e_yy,
+        double* lambda_e_zz,
 
-        const float lambda_eMul_xx,
-        const float lambda_eMul_yy,
-        const float lambda_eMul_zz,
+        const double lambda_eMul_xx,
+        const double lambda_eMul_yy,
+        const double lambda_eMul_zz,
 
         const int sx, const int sy, const int sz,
-        const float csx, const float csy, const float csz,
+        const double csx, const double csy, const double csz,
         const int pbc_x, const int pbc_y, const int pbc_z,
         CUstream stream)
 {
@@ -218,12 +218,12 @@ __export__  void llbar_nonlocal00nc_async(float* tx, float*  ty, float*  tz,
     dim3 gridSize(divUp(sy, BLOCKSIZE), divUp(sz, BLOCKSIZE));
     dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
 
-    float cellx_2 = (float)(1.0 / ((double)csx * (double)csx));
-    float celly_2 = (float)(1.0 / ((double)csy * (double)csy));
-    float cellz_2 = (float)(1.0 / ((double)csz * (double)csz));
+    double cellx_2 = (double)(1.0 / ((double)csx * (double)csx));
+    double celly_2 = (double)(1.0 / ((double)csy * (double)csy));
+    double cellz_2 = (double)(1.0 / ((double)csz * (double)csz));
 
 
-    float3 cell_2 = make_float3(cellx_2, celly_2, cellz_2);
+    double3 cell_2 = make_double3(cellx_2, celly_2, cellz_2);
     int3 N = make_int3(sx, sy, sz);
     int3 wrap = make_int3(pbc_x, pbc_y, pbc_z);
 

@@ -10,10 +10,10 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void decomposeKern(float* __restrict__ Mx, float* __restrict__ My, float* __restrict__ Mz,
-                              float* __restrict__ mx, float* __restrict__ my, float* __restrict__ mz,
-                              float* __restrict__ msat,
-                              float msatMul,
+__global__ void decomposeKern(double* __restrict__ Mx, double* __restrict__ My, double* __restrict__ Mz,
+                              double* __restrict__ mx, double* __restrict__ my, double* __restrict__ mz,
+                              double* __restrict__ msat,
+                              double msatMul,
                               int Npart)
 {
     int i = threadindex;
@@ -28,26 +28,26 @@ __global__ void decomposeKern(float* __restrict__ Mx, float* __restrict__ My, fl
 
         if (Ms <= zero)
         {
-            mx[i] = 0.0f;
-            my[i] = 0.0f;
-            mz[i] = 0.0f;
-            msat[i] = 0.0f;
+            mx[i] = 0.0;
+            my[i] = 0.0;
+            mz[i] = 0.0;
+            msat[i] = 0.0;
             return;
         }
 
-        mx[i] = (float)(M.x / Ms);
-        my[i] = (float)(M.y / Ms);
-        mz[i] = (float)(M.z / Ms);
+        mx[i] = (double)(M.x / Ms);
+        my[i] = (double)(M.y / Ms);
+        mz[i] = (double)(M.z / Ms);
 
-        msat[i] = (float)Ms;
+        msat[i] = (double)Ms;
     }
 }
 
 
-__export__ void decomposeAsync(float* Mx, float* My, float* Mz,
-                               float* mx, float* my, float* mz,
-                               float* msat,
-                               float msatMul,
+__export__ void decomposeAsync(double* Mx, double* My, double* Mz,
+                               double* mx, double* my, double* mz,
+                               double* msat,
+                               double msatMul,
                                CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;

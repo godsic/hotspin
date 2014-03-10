@@ -16,18 +16,18 @@ extern "C" {
 #endif
 
 
-DLLEXPORT void temperature_scaleAnizNoise(float* hx, float* hy, float* hz,
-        float* mu_xx,
-        float* mu_yy,
-        float* mu_zz,
-        float* tempMask,
-        float* msat0T0Mask,
+DLLEXPORT void temperature_scaleAnizNoise(double* hx, double* hy, double* hz,
+        double* mu_xx,
+        double* mu_yy,
+        double* mu_zz,
+        double* tempMask,
+        double* msat0T0Mask,
 
-        float muMul_xx,
-        float muMul_yy,
-        float muMul_zz,
+        double muMul_xx,
+        double muMul_yy,
+        double muMul_zz,
 
-        float KB2tempMul_mu0VgammaDtMSatMul,
+        double KB2tempMul_mu0VgammaDtMSatMul,
         CUstream stream,
         int Npart);
 #ifdef __cplusplus

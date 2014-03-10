@@ -25,12 +25,12 @@ extern "C" {
 /// @param S2: source Z size , <= D2
 /// @param Ncomp: number of array components
 
-DLLEXPORT void copyPad3DAsync(float* dst, int D0, int D1, int D2, float* src, int S0, int S1, int S2, int Ncomp, CUstream streams);
+DLLEXPORT void copyPad3DAsync(double* dst, int D0, int D1, int D2, double* src, int S0, int S1, int S2, int Ncomp, CUstream streams);
 
-DLLEXPORT void copyUnPad3DAsync(float* dst, int D0, int D1, int D2, float* src, int S0, int S1, int S2, int Ncomp, CUstream streams);
+DLLEXPORT void copyUnPad3DAsync(double* dst, int D0, int D1, int D2, double* src, int S0, int S1, int S2, int Ncomp, CUstream streams);
 
 /// Put an array to zero with (sub)sizes [NO, N1part, N2]
-DLLEXPORT void zeroArrayAsync(float *A, int N, CUstream streams);
+DLLEXPORT void zeroArrayAsync(double *A, int N, CUstream streams);
 
 #ifdef __cplusplus
 }

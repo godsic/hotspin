@@ -137,7 +137,6 @@ func (p *Python) WriteFunc(out io.Writer, name string, comment []string, argName
 var (
 	// maps go types to python types
 	python_convert map[string]string = map[string]string{"int": "int",
-		"float32": "float",
 		"float64": "float",
 		"string":  "str",
 		"bool":    "bool",

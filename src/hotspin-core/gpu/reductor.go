@@ -67,12 +67,12 @@ func (r *Reductor) Free() {
 }
 
 // Takes the sum of all elements of the array.
-func (r *Reductor) Sum(in *Array) float32 {
+func (r *Reductor) Sum(in *Array) float64 {
 	r.checkSize(in)
 	PartialSum(in, (&r.devbuffer), r.blocks, r.threads, r.N)
 	// reduce further on CPU
 	(&r.devbuffer).CopyToHost(&r.hostbuffer)
-	var sum float32
+	var sum float64
 	for _, num := range r.hostbuffer.List {
 		sum += num
 	}
@@ -80,13 +80,13 @@ func (r *Reductor) Sum(in *Array) float32 {
 }
 
 // Takes the dot product of all elements of the arrays.
-func (r *Reductor) Dot(in1, in2 *Array) float32 {
+func (r *Reductor) Dot(in1, in2 *Array) float64 {
 	r.checkSize(in1)
 	r.checkSize(in2)
 	PartialSDot(in1, in2, (&r.devbuffer), r.blocks, r.threads, r.N)
 	// reduce further on CPU
 	(&r.devbuffer).CopyToHost(&r.hostbuffer)
-	var sum float32
+	var sum float64
 	for _, num := range r.hostbuffer.List {
 		sum += num
 	}
@@ -94,7 +94,7 @@ func (r *Reductor) Dot(in1, in2 *Array) float32 {
 }
 
 // Takes the maximum of all elements of the array.
-func (r *Reductor) Max(in *Array) float32 {
+func (r *Reductor) Max(in *Array) float64 {
 	r.checkSize(in)
 	PartialMax(in, (&r.devbuffer), r.blocks, r.threads, r.N)
 	// reduce further on CPU
@@ -109,7 +109,7 @@ func (r *Reductor) Max(in *Array) float32 {
 }
 
 // Takes the minimum of all elements of the array.
-func (r *Reductor) Min(in *Array) float32 {
+func (r *Reductor) Min(in *Array) float64 {
 	r.checkSize(in)
 	PartialMin(in, (&r.devbuffer), r.blocks, r.threads, r.N)
 	// reduce further on CPU
@@ -124,7 +124,7 @@ func (r *Reductor) Min(in *Array) float32 {
 }
 
 // Takes the maximum of absolute values of all elements of the array.
-func (r *Reductor) MaxAbs(in *Array) float32 {
+func (r *Reductor) MaxAbs(in *Array) float64 {
 	r.checkSize(in)
 	PartialMaxAbs(in, (&r.devbuffer), r.blocks, r.threads, r.N)
 	// reduce further on CPU
@@ -139,7 +139,7 @@ func (r *Reductor) MaxAbs(in *Array) float32 {
 }
 
 // Takes the maximum absolute difference between the elements of a and b.
-func (r *Reductor) MaxDiff(a, b *Array) float32 {
+func (r *Reductor) MaxDiff(a, b *Array) float64 {
 	r.checkSize(a)
 	r.checkSize(b)
 	PartialMaxDiff(a, b, (&r.devbuffer), r.blocks, r.threads, r.N)
@@ -155,7 +155,7 @@ func (r *Reductor) MaxDiff(a, b *Array) float32 {
 }
 
 // Takes the maximum absolute sum between the elements of a and b.
-func (r *Reductor) MaxSum(a, b *Array) float32 {
+func (r *Reductor) MaxSum(a, b *Array) float64 {
 	r.checkSize(a)
 	r.checkSize(b)
 	PartialMaxSum(a, b, (&r.devbuffer), r.blocks, r.threads, r.N)
@@ -171,7 +171,7 @@ func (r *Reductor) MaxSum(a, b *Array) float32 {
 }
 
 // Takes the maximum norm of a 3-component (vector) array.
-func (r *Reductor) MaxNorm(a *Array) float32 {
+func (r *Reductor) MaxNorm(a *Array) float64 {
 	r.checkSize(&a.Comp[0])
 	Assert(a.NComp() == 3)
 	PartialMaxNorm3Sq(&a.Comp[X], &a.Comp[Y], &a.Comp[Z], (&r.devbuffer), r.blocks, r.threads, r.N)
@@ -183,11 +183,11 @@ func (r *Reductor) MaxNorm(a *Array) float32 {
 			max = num
 		}
 	}
-	return float32(math.Sqrt(float64(max)))
+	return float64(math.Sqrt(float64(max)))
 }
 
 // Takes the maximum norm of the difference between two 3-component (vector) arrays.
-func (r *Reductor) MaxNormDiff(a, b *Array) float32 {
+func (r *Reductor) MaxNormDiff(a, b *Array) float64 {
 	r.checkSize(a)
 	Assert(a.NComp() == 3)
 	PartialMaxNorm3SqDiff(&a.Comp[X], &a.Comp[Y], &a.Comp[Z], &b.Comp[X], &b.Comp[Y], &b.Comp[Z], (&r.devbuffer), r.blocks, r.threads, r.N)
@@ -199,7 +199,7 @@ func (r *Reductor) MaxNormDiff(a, b *Array) float32 {
 			max = num
 		}
 	}
-	return float32(math.Sqrt(float64(max)))
+	return float64(math.Sqrt(float64(max)))
 }
 
 // INTERNAL: Make sure in has the right size for this reductor

@@ -535,8 +535,8 @@ func (e *Engine) updateDash() {
 	if t-lastdash > UPDATE_DASH {
 		lastdash = t
 		Dashboard(" step", e.step.multiplier[0],
-			"t:", float32(e.time.multiplier[0]), "s",
-			"dt:", float32(e.dt.multiplier[0]), "s",
+			"t:", float64(e.time.multiplier[0]), "s",
+			"dt:", float64(e.dt.multiplier[0]), "s",
 			"out:", e._outputID)
 	}
 }

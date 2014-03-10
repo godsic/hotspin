@@ -28,7 +28,7 @@ func (u *decomposeMUpdater) Update() {
 	gpu.Decompose(mf.Array(),
 		m.Array(),
 		msat.Array(),
-		float32(msat.Multiplier()[0]))
+		float64(msat.Multiplier()[0]))
 	m.Invalidate()
 	msat.Invalidate()
 }

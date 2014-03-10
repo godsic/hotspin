@@ -8,12 +8,12 @@
 extern "C" {
 #endif
 
-__global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
-                                        float *mx, float *my, float *mz,
-                                        float *Ku_map, float* mSat_map, float Ku2_Mu0Msat_mul,
-                                        float *anisU_mapx, float anisU_mulx,
-                                        float *anisU_mapy, float anisU_muly,
-                                        float *anisU_mapz, float anisU_mulz,
+__global__ void uniaxialAnisotropyKern (double *hx, double *hy, double *hz,
+                                        double *mx, double *my, double *mz,
+                                        double *Ku_map, double* mSat_map, double Ku2_Mu0Msat_mul,
+                                        double *anisU_mapx, double anisU_mulx,
+                                        double *anisU_mapy, double anisU_muly,
+                                        double *anisU_mapz, double anisU_mulz,
                                         int Npart)
 {
 
@@ -22,21 +22,21 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
     if (i < Npart)
     {
 
-        float mSat_mask;
+        double mSat_mask;
         if (mSat_map == NULL)
         {
-            mSat_mask = 1.0f;
+            mSat_mask = 1.0;
         }
         else
         {
             mSat_mask = mSat_map[i];
-            if (mSat_mask == 0.0f)
+            if (mSat_mask == 0.0)
             {
-                mSat_mask = 1.0f; // do not divide by zero
+                mSat_mask = 1.0; // do not divide by zero
             }
         }
 
-        float Ku2_Mu0Msat; // 2 * Ku / Mu0 * Msat
+        double Ku2_Mu0Msat; // 2 * Ku / Mu0 * Msat
         if (Ku_map == NULL)
         {
             Ku2_Mu0Msat = Ku2_Mu0Msat_mul / mSat_mask;
@@ -46,7 +46,7 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
             Ku2_Mu0Msat = (Ku2_Mu0Msat_mul / mSat_mask) * Ku_map[i];
         }
 
-        float ux;
+        double ux;
         if (anisU_mapx == NULL)
         {
             ux = anisU_mulx;
@@ -56,7 +56,7 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
             ux = anisU_mulx * anisU_mapx[i];
         }
 
-        float uy;
+        double uy;
         if (anisU_mapy == NULL)
         {
             uy = anisU_muly;
@@ -66,7 +66,7 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
             uy = anisU_muly * anisU_mapy[i];
         }
 
-        float uz;
+        double uz;
         if (anisU_mapz == NULL)
         {
             uz = anisU_mulz;
@@ -76,7 +76,7 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
             uz = anisU_mulz * anisU_mapz[i];
         }
 
-        float mu = mx[i] * ux + my[i] * uy + mz[i] * uz;
+        double mu = mx[i] * ux + my[i] * uy + mz[i] * uz;
         hx[i] = Ku2_Mu0Msat * mu * ux;
         hy[i] = Ku2_Mu0Msat * mu * uy;
         hz[i] = Ku2_Mu0Msat * mu * uz;
@@ -86,12 +86,12 @@ __global__ void uniaxialAnisotropyKern (float *hx, float *hy, float *hz,
 
 
 
-__export__ void uniaxialAnisotropyAsync(float *hx, float *hy, float *hz,
-                                        float *mx, float *my, float *mz,
-                                        float *Ku1_map, float *MSat_map, float Ku2_Mu0Msat_mul,
-                                        float *anisU_mapx, float anisU_mulx,
-                                        float *anisU_mapy, float anisU_muly,
-                                        float *anisU_mapz, float anisU_mulz,
+__export__ void uniaxialAnisotropyAsync(double *hx, double *hy, double *hz,
+                                        double *mx, double *my, double *mz,
+                                        double *Ku1_map, double *MSat_map, double Ku2_Mu0Msat_mul,
+                                        double *anisU_mapx, double anisU_mulx,
+                                        double *anisU_mapy, double anisU_muly,
+                                        double *anisU_mapz, double anisU_mulz,
                                         CUstream stream, int Npart)
 {
 

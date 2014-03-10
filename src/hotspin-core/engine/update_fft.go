@@ -100,7 +100,7 @@ func genWindow(size []int) *host.Array {
 					arg2 := float64(k) / float64(size[2]-1)
 					val2 = gauss(arg2, 0.4)
 				}
-				window.Array[0][i][j][k] = float32(val0 * val1 * val2)
+				window.Array[0][i][j][k] = float64(val0 * val1 * val2)
 			}
 		}
 

@@ -47,7 +47,7 @@ func writeInt(out io.Writer, i int) {
 const block = 256
 
 // writes the array to the writer, in binary format
-func writeData(out io.Writer, data []float32) {
+func writeData(out io.Writer, data []float64) {
 	// first write as much data as possible data in large blocks
 	count := 0
 	for i := 0; i < len(data); i += block {
@@ -66,7 +66,7 @@ func writeData(out io.Writer, data []float32) {
 	}
 }
 
-func writeFloat(out io.Writer, f float32) {
+func writeFloat(out io.Writer, f float64) {
 	_, err := out.Write((*[4]byte)(unsafe.Pointer(&f))[:])
 	if err != nil {
 		panic(IOErr(err.Error()))
@@ -86,7 +86,7 @@ func writeDouble(out io.Writer, f float64) {
 //}
 //
 //// Converts the raw float data to a slice of 4 bytes
-//func FloatToBytes(f float32) []byte {
+//func FloatToBytes(f float64) []byte {
 //	return (*[4]byte)(unsafe.Pointer(&f))[:]
 //}
 

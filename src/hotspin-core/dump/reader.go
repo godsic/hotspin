@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash"
 	"hash/crc64"
+	"hotspin-core/host"
 	"io"
 	"math"
 	"unsafe"
@@ -69,12 +70,31 @@ func (r *Reader) Read() error {
 	return r.Err
 }
 
-func (r *Reader) readInt() int {
-	x := r.readUint64()
-	if uint64(int(x)) != x {
-		r.Err = fmt.Errorf("value overflows int: %v", x)
+// read the data array,
+// enlarging the previous one if needed.
+func (r *Reader) readData() {
+	N := 1
+	for _, s := range r.Size() {
+		N *= s
 	}
-	return int(x)
+	if cap(r.Data) < N {
+		r.Data = make([]float64, N)
+	}
+	if len(r.Data) < N {
+		r.Data = r.Data[:N]
+	}
+	size := r.MeshSize
+	ncomp := r.Components
+	buf := host.Slice4D(r.Frame.Data, []int{ncomp, size[0], size[1], size[2]})
+	for c := 0; c < ncomp; c++ {
+		for ix := 0; ix < size[0]; ix++ {
+			for iy := 0; iy < size[1]; iy++ {
+				for iz := 0; iz < size[2]; iz++ {
+					buf[c][ix][iy][iz] = float64(r.readFloat32())
+				}
+			}
+		}
+	}
 }
 
 // read until the buffer is full
@@ -87,6 +107,14 @@ func (r *Reader) read(buf []byte) {
 	if r.crc != nil {
 		r.crc.Write(buf)
 	}
+}
+
+func (r *Reader) readInt() int {
+	x := r.readUint64()
+	if uint64(int(x)) != x {
+		r.Err = fmt.Errorf("value overflows int: %v", x)
+	}
+	return int(x)
 }
 
 // read a maximum 8-byte string
@@ -113,19 +141,8 @@ func (r *Reader) readUint64() uint64 {
 	return *((*uint64)(unsafe.Pointer(&buf[0])))
 }
 
-// read the data array,
-// enlarging the previous one if needed.
-func (r *Reader) readData() {
-	N := 1
-	for _, s := range r.Size() {
-		N *= s
-	}
-	if cap(r.Data) < N {
-		r.Data = make([]float32, N)
-	}
-	if len(r.Data) < N {
-		r.Data = r.Data[:N]
-	}
-	buf := (*(*[1<<31 - 1]byte)(unsafe.Pointer(&r.Data[0])))[0 : 4*len(r.Data)]
-	r.read(buf)
+func (r *Reader) readFloat32() float32 {
+	var buf [4]byte
+	r.read(buf[:])
+	return *((*float32)(unsafe.Pointer(&buf[0])))
 }

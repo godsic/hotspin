@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void addKern(float* dst, float* a, float* b, int Npart)
+__global__ void addKern(double* dst, double* a, double* b, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
@@ -20,7 +20,7 @@ __global__ void addKern(float* dst, float* a, float* b, int Npart)
 }
 
 
-__export__ void addAsync(float* dst, float* a, float* b, CUstream stream, int Npart)
+__export__ void addAsync(double* dst, double* a, double* b, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);
@@ -28,7 +28,7 @@ __export__ void addAsync(float* dst, float* a, float* b, CUstream stream, int Np
 }
 
 ///@internal
-__global__ void addmaddKern(float* dst, float* a, float* b, float* c, float mul, int Npart)
+__global__ void addmaddKern(double* dst, double* a, double* b, double* c, double mul, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
@@ -38,7 +38,7 @@ __global__ void addmaddKern(float* dst, float* a, float* b, float* c, float mul,
 }
 
 ///@internal
-__global__ void maddKern(float* dst, float* a, float* b, float mulB, int Npart)
+__global__ void maddKern(double* dst, double* a, double* b, double mulB, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
@@ -47,7 +47,7 @@ __global__ void maddKern(float* dst, float* a, float* b, float mulB, int Npart)
     }
 }
 
-__global__ void maddScalarKern(float* dst, float* a, float mulB, int Npart)
+__global__ void maddScalarKern(double* dst, double* a, double mulB, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
@@ -58,10 +58,10 @@ __global__ void maddScalarKern(float* dst, float* a, float mulB, int Npart)
 
 ///@internal
 
-__global__ void vecMaddKern(float*  dstx, float*  dsty, float*  dstz,
-                            float*  ax, float*  ay, float*  az,
-                            float*  bx, float*  by, float*  bz,
-                            float mulBx, float mulBy, float mulBz,
+__global__ void vecMaddKern(double*  dstx, double*  dsty, double*  dstz,
+                            double*  ax, double*  ay, double*  az,
+                            double*  bx, double*  by, double*  bz,
+                            double mulBx, double mulBy, double mulBz,
                             int Npart)
 {
     int i = threadindex;
@@ -74,9 +74,9 @@ __global__ void vecMaddKern(float*  dstx, float*  dsty, float*  dstz,
     }
 }
 
-__global__ void vecMaddScalarKern(float*  dstx, float*  dsty, float*  dstz,
-                                  float*  ax, float*  ay, float*  az,
-                                  float mulBx, float mulBy, float mulBz,
+__global__ void vecMaddScalarKern(double*  dstx, double*  dsty, double*  dstz,
+                                  double*  ax, double*  ay, double*  az,
+                                  double mulBx, double mulBy, double mulBz,
                                   int Npart)
 {
     int i = threadindex;
@@ -89,13 +89,13 @@ __global__ void vecMaddScalarKern(float*  dstx, float*  dsty, float*  dstz,
     }
 }
 
-__export__ void addMaddAsync(float* dst, float* a, float* b, float* c, float mul, CUstream stream, int NPart)
+__export__ void addMaddAsync(double* dst, double* a, double* b, double* c, double mul, CUstream stream, int NPart)
 {
     dim3 gridSize, blockSize;
     make1dconf(NPart, &gridSize, &blockSize);
     addmaddKern <<< gridSize, blockSize, 0, cudaStream_t(stream)>>> (dst, a, b, c, mul, NPart);
 }
-__export__ void maddAsync(float* dst, float* a, float* b, float mulB, CUstream stream, int Npart)
+__export__ void maddAsync(double* dst, double* a, double* b, double mulB, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);
@@ -108,10 +108,10 @@ __export__ void maddAsync(float* dst, float* a, float* b, float mulB, CUstream s
         maddKern <<< gridSize, blockSize, 0, cudaStream_t(stream)>>> (dst, a, b, mulB, Npart);
     }
 }
-__export__ void vecMaddAsync(float* dstx, float* dsty, float* dstz,
-                             float* ax, float* ay, float* az,
-                             float* bx, float* by, float* bz,
-                             float mulBx, float mulBy, float mulBz,
+__export__ void vecMaddAsync(double* dstx, double* dsty, double* dstz,
+                             double* ax, double* ay, double* az,
+                             double* bx, double* by, double* bz,
+                             double mulBx, double mulBy, double mulBz,
                              CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
@@ -134,18 +134,18 @@ __export__ void vecMaddAsync(float* dstx, float* dsty, float* dstz,
 }
 
 ///@internal
-__global__ void madd1Kern(float* a, float* b, float mulB, int Npart)
+__global__ void madd1Kern(double* a, double* b, double mulB, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
     {
-        float B = (b == NULL) ? 1.0f : b[i];
+        double B = (b == NULL) ? 1.0 : b[i];
         a[i] += mulB * B;
     }
 }
 
 
-__export__ void madd1Async(float* a, float* b, float mulB, CUstream stream, int Npart)
+__export__ void madd1Async(double* a, double* b, double mulB, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);
@@ -153,19 +153,19 @@ __export__ void madd1Async(float* a, float* b, float mulB, CUstream stream, int 
 }
 
 ///@internal
-__global__ void madd2Kern(float* a, float* b, float mulB, float* c, float mulC, int Npart)
+__global__ void madd2Kern(double* a, double* b, double mulB, double* c, double mulC, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
     {
-        float B = (b == NULL) ? 1.0f : b[i];
-        float C = (c == NULL) ? 1.0f : c[i];
+        double B = (b == NULL) ? 1.0 : b[i];
+        double C = (c == NULL) ? 1.0 : c[i];
         a[i] += mulB * B + mulC * C;
     }
 }
 
 
-__export__ void madd2Async(float* a, float* b, float mulB, float* c, float mulC, CUstream stream, int Npart)
+__export__ void madd2Async(double* a, double* b, double mulB, double* c, double mulC, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);
@@ -173,7 +173,7 @@ __export__ void madd2Async(float* a, float* b, float mulB, float* c, float mulC,
 }
 
 
-__global__ void cmaddKern(float* dst, float a, float b, float* kern, float* src, int NComplexPart)
+__global__ void cmaddKern(double* dst, double a, double b, double* kern, double* src, int NComplexPart)
 {
 
     int i = threadindex; // complex index
@@ -182,10 +182,10 @@ __global__ void cmaddKern(float* dst, float a, float b, float* kern, float* src,
     if(i < NComplexPart)
     {
 
-        float Sa = src[e  ];
-        float Sb = src[e + 1];
+        double Sa = src[e  ];
+        double Sb = src[e + 1];
 
-        float k = kern[i];
+        double k = kern[i];
 
         dst[e  ] += k * (a * Sa - b * Sb);
         dst[e + 1] += k * (b * Sa + a * Sb);
@@ -194,7 +194,7 @@ __global__ void cmaddKern(float* dst, float a, float b, float* kern, float* src,
     return;
 }
 
-__export__ void cmaddAsync(float* dst, float a, float b, float* kern, float* src, CUstream stream, int NComplexPart)
+__export__ void cmaddAsync(double* dst, double a, double b, double* kern, double* src, CUstream stream, int NComplexPart)
 {
     dim3 gridSize, blockSize;
     make1dconf(NComplexPart, &gridSize, &blockSize);
@@ -202,7 +202,7 @@ __export__ void cmaddAsync(float* dst, float a, float b, float* kern, float* src
 }
 
 ///@internal
-__global__ void linearCombination2Kern(float* dst, float* a, float mulA, float* b, float mulB, int NPart)
+__global__ void linearCombination2Kern(double* dst, double* a, double mulA, double* b, double mulB, int NPart)
 {
     int i = threadindex;
     if (i < NPart)
@@ -211,7 +211,7 @@ __global__ void linearCombination2Kern(float* dst, float* a, float mulA, float* 
     }
 }
 
-__export__ void linearCombination2Async(float* dst, float* a, float mulA, float* b, float mulB, CUstream stream, int NPart)
+__export__ void linearCombination2Async(double* dst, double* a, double mulA, double* b, double mulB, CUstream stream, int NPart)
 {
     dim3 gridSize, blockSize;
     make1dconf(NPart, &gridSize, &blockSize);
@@ -221,7 +221,7 @@ __export__ void linearCombination2Async(float* dst, float* a, float mulA, float*
 
 
 ///@internal
-__global__ void linearCombination3Kern(float* dst, float* a, float mulA, float* b, float mulB, float* c, float mulC, int NPart)
+__global__ void linearCombination3Kern(double* dst, double* a, double mulA, double* b, double mulB, double* c, double mulC, int NPart)
 {
     int i = threadindex;
     if (i < NPart)
@@ -230,7 +230,7 @@ __global__ void linearCombination3Kern(float* dst, float* a, float mulA, float* 
     }
 }
 
-__export__ void linearCombination3Async(float* dst, float* a, float mulA, float* b, float mulB, float* c, float mulC, CUstream stream, int NPart)
+__export__ void linearCombination3Async(double* dst, double* a, double mulA, double* b, double mulB, double* c, double mulC, CUstream stream, int NPart)
 {
     dim3 gridSize, blockSize;
     make1dconf(NPart, &gridSize, &blockSize);

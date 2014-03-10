@@ -219,7 +219,7 @@ func (q *Quant) SetValue(val []float64) {
 			for i := 0; i < q.array.Size3D()[X]; i++ {
 				for j := 0; j < q.array.Size3D()[Y]; j++ {
 					for k := 0; k < q.array.Size3D()[Z]; k++ {
-						tempField.Array[c][i][j][k] = float32(val[c])
+						tempField.Array[c][i][j][k] = float64(val[c])
 					}
 				}
 			}
@@ -372,9 +372,9 @@ func (q *Quant) Buffer(kind QuantKind) *host.Array {
 			for i := range comp {
 				switch kind {
 				case FIELD:
-					comp[i] = float32(q.multiplier[c])
+					comp[i] = float64(q.multiplier[c])
 				case MASK:
-					comp[i] = float32(1.0)
+					comp[i] = float64(1.0)
 				}
 			}
 		}
@@ -387,7 +387,7 @@ func (q *Quant) Buffer(kind QuantKind) *host.Array {
 				if q.multiplier[c] != 1 {
 					comp := buffer.Comp[c]
 					for i := range comp {
-						comp[i] *= float32(q.multiplier[c]) // multiply by multiplier if not 1
+						comp[i] *= float64(q.multiplier[c]) // multiply by multiplier if not 1
 					}
 				}
 			}

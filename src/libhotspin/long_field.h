@@ -17,18 +17,18 @@
 extern "C" {
 #endif
 
-DLLEXPORT void long_field_async(float* hx, float* hy, float* hz,
-                                 float* mx, float* my, float* mz,
-                                 float* msat0T0,
-                                 float* S,
-                                 float* n,
-                                 float* Tc,
-                                 float* Ts,
-                                 float msat0T0Mul,
-                                 float SMul,
-                                 float nMul,
-                                 float TcMul,
-                                 float TsMul,
+DLLEXPORT void long_field_async(double* hx, double* hy, double* hz,
+                                 double* mx, double* my, double* mz,
+                                 double* msat0T0,
+                                 double* S,
+                                 double* n,
+                                 double* Tc,
+                                 double* Ts,
+                                 double msat0T0Mul,
+                                 double SMul,
+                                 double nMul,
+                                 double TcMul,
+                                 double TsMul,
                                  int NPart,
                                  CUstream stream);
 

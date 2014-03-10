@@ -15,15 +15,15 @@
 extern "C" {
 #endif
 
-DLLEXPORT void tsAsync(float* Ts,
-                              float* msat,
-                              float* msat0T0,
-                              float* Tc,
-                              float* S,
-                              const float msatMul,
-                              const float msat0T0Mul,
-                              const float TcMul,
-                              const float SMul,
+DLLEXPORT void tsAsync(double* Ts,
+                              double* msat,
+                              double* msat0T0,
+                              double* Tc,
+                              double* S,
+                              const double msatMul,
+                              const double msat0T0Mul,
+                              const double TcMul,
+                              const double SMul,
                               int Npart,
                               CUstream stream);
 

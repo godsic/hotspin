@@ -15,7 +15,7 @@ const (
 // Header+data frame.
 type Frame struct {
 	Header
-	Data  []float32
+	Data  []float64
 	CRC   uint64
 	Bytes int64 // Total number of bytes read.
 	Err   error // Stores the latest I/O error, if any.
@@ -53,4 +53,3 @@ Components: %v
 Precission: %v
 `, h.Magic, h.Components, h.MeshSize, h.MeshStep, h.MeshUnit, h.Time, h.TimeUnit, h.DataLabel, h.DataUnit, h.Precission)
 }
-

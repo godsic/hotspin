@@ -19,10 +19,10 @@ extern "C" {
 
 /// calculates heat flux densities for various subsystems
 
-DLLEXPORT void QinterAsync(float* Qi,
-                           float* Ti, float* Tj,
-                           float* Gij,
-                           float GijMul,
+DLLEXPORT void QinterAsync(double* Qi,
+                           double* Ti, double* Tj,
+                           double* Gij,
+                           double GijMul,
                            int Npart,
                            CUstream stream);
 

@@ -12,13 +12,13 @@ extern "C" {
 ///@internal
 
 
-__global__ void energyFlowKern(float* __restrict__ w,
-                          float* __restrict__ mx, float* __restrict__ my, float* __restrict__ mz, 
-                          float* __restrict__ Rx, float* __restrict__ Ry, float* __restrict__ Rz,
-                          float* __restrict__ TcMsk,
-                          float* __restrict__ SMsk,
-                          float* __restrict__ nMsk,
-                          float SMul,
+__global__ void energyFlowKern(double* __restrict__ w,
+                          double* __restrict__ mx, double* __restrict__ my, double* __restrict__ mz, 
+                          double* __restrict__ Rx, double* __restrict__ Ry, double* __restrict__ Rz,
+                          double* __restrict__ TcMsk,
+                          double* __restrict__ SMsk,
+                          double* __restrict__ nMsk,
+                          double SMul,
                           int Npart)
 {
 
@@ -26,34 +26,34 @@ __global__ void energyFlowKern(float* __restrict__ w,
 
     if (i < Npart)
     {
-        float S = SMul * getMaskUnity(SMsk, i);
-        float Tc = getMaskUnity(TcMsk, i);
-        float n = getMaskUnity(nMsk, i);
+        double S = SMul * getMaskUnity(SMsk, i);
+        double Tc = getMaskUnity(TcMsk, i);
+        double n = getMaskUnity(nMsk, i);
 
-        if (n == 0.0f || S == 0.0f  || Tc == 0.0f)
+        if (n == 0.0 || S == 0.0  || Tc == 0.0)
         {
-            w[i] = 0.0f;
+            w[i] = 0.0;
             return;
         }
 
-        float3 m = make_float3(mx[i], my[i], mz[i]);
-        float3 R = make_float3(Rx[i], Ry[i], Rz[i]);
+        double3 m = make_double3(mx[i], my[i], mz[i]);
+        double3 R = make_double3(Rx[i], Ry[i], Rz[i]);
         
-        float rW = dotf(m, R);
+        double rW = dot(m, R);
 
-        float mult = Tc * S * S * n / (S * (S + 1.0f));
+        double mult = Tc * S * S * n / (S * (S + 1.0));
 
         w[i] = mult * rW;
     }
 }
 
-__export__ void energyFlowAsync(float* w,
-                          float* mx, float* my, float* mz,
-                          float* Rx, float* Ry, float* Rz,
-                          float* Tc,
-                          float* S,
-                          float* n,
-                          float SMul,
+__export__ void energyFlowAsync(double* w,
+                          double* mx, double* my, double* mz,
+                          double* Rx, double* Ry, double* Rz,
+                          double* Tc,
+                          double* S,
+                          double* n,
+                          double SMul,
                           int Npart,
                           CUstream stream)
 {

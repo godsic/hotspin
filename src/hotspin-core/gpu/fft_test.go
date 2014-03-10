@@ -50,8 +50,8 @@ func TestFFT(test *testing.T) {
 		for j := 0; j < N1; j++ {
 			for k := 0; k < N2; k++ {
 				// 				       if i == 0 {
-				a[i][j][k] = float32(1)
-				// 				a[i][j][k] = float32(i + j + k)
+				a[i][j][k] = float64(1)
+				// 				a[i][j][k] = float64(i + j + k)
 				// 								       }
 				n++
 			}

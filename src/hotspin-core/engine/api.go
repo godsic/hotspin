@@ -381,7 +381,7 @@ func (a API) SetCell(quant string, x, y, z int, value []float64) {
 	}
 	//q.assureAlloc()
 	for c := range value {
-		q.Array().Set(c, z, y, x, float32(value[c]))
+		q.Array().Set(c, z, y, x, float64(value[c]))
 	}
 	q.Invalidate() //!
 }
@@ -711,9 +711,9 @@ func (a API) GetDispersion(fmin, fmax float64, steps, format int) {
 					x := float64(i)*cellSize[2] - 0.5*worldSize[2]
 					sincX = sinc(bw[2] * x)
 				}
-				bMask.Array[Z][k][j][i] = float32(1.0)
-				bMask.Array[Y][k][j][i] = float32(1.0)
-				bMask.Array[X][k][j][i] = float32(sincX * sincY * sincZ)
+				bMask.Array[Z][k][j][i] = float64(1.0)
+				bMask.Array[Y][k][j][i] = float64(1.0)
+				bMask.Array[X][k][j][i] = float64(sincX * sincY * sincZ)
 			}
 		}
 	}
@@ -840,8 +840,8 @@ func extractCmplxComponents(src, comp1, comp2 *host.Array, norm float64, format 
 				case 1:
 					// pass through
 				}
-				comp1.Array[0][k][j][i] = float32(R)
-				comp2.Array[0][k][j][i] = float32(I)
+				comp1.Array[0][k][j][i] = float64(R)
+				comp2.Array[0][k][j][i] = float64(I)
 
 			}
 		}

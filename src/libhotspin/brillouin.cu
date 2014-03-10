@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 ///@internal
-__device__ double findroot_Ridders(funcD* f, double J, double mult, double xa, double xb)
+__device__ double findroot_Ridders(func* f, double J, double mult, double xa, double xb)
 {
 
     double ya = f[0](xa, J, mult);
@@ -79,21 +79,20 @@ __device__ double Model(double n, double J, double pre)
 {
     double x = pre * n;
     double val = Bj(J, x) - n;
-    //printf("B(%g) - %g = %g\n", x, n, val);
     return val;
 }
 
-__device__ funcD pModel = Model;
+__device__ func pModel = Model;
 
-__global__ void brillouinKern(float* __restrict__ msat0Msk,
-                              float* __restrict__ msat0T0Msk,
-                              float* __restrict__ T,
-                              float* __restrict__ TcMsk,
-                              float* __restrict__ SMsk,
-                              const float msat0Mul,
-                              const float msat0T0Mul,
-                              const float TcMul,
-                              const float SMul,
+__global__ void brillouinKern(double* __restrict__ msat0Msk,
+                              double* __restrict__ msat0T0Msk,
+                              double* __restrict__ T,
+                              double* __restrict__ TcMsk,
+                              double* __restrict__ SMsk,
+                              const double msat0Mul,
+                              const double msat0T0Mul,
+                              const double TcMul,
+                              const double SMul,
                               int Npart)
 {
     int i = threadindex;
@@ -105,7 +104,7 @@ __global__ void brillouinKern(float* __restrict__ msat0Msk,
 
         if (msat0T0 == 0.0)
         {
-            msat0Msk[i] = 0.0f;
+            msat0Msk[i] = 0.0;
             return;
         }
 
@@ -119,7 +118,7 @@ __global__ void brillouinKern(float* __restrict__ msat0Msk,
 
         if (Temp > Tc)
         {
-            msat0Msk[i] = 0.0f;
+            msat0Msk[i] = 0.0;
             return;
         }
 
@@ -133,19 +132,19 @@ __global__ void brillouinKern(float* __restrict__ msat0Msk,
         double hiLimit  = (dT < 0.0004) ?  0.5 : 1.1;
         double msat0 = findroot_Ridders(&pModel, S, pre, lowLimit, hiLimit);
 
-        msat0Msk[i] = (float)(msat0T0 * fabs(msat0) / (msat0Mul));
+        msat0Msk[i] = (double)(msat0T0 * fabs(msat0) / (msat0Mul));
     }
 }
 
-__export__ void brillouinAsync(float* msat0,
-                               float* msat0T0,
-                               float* T,
-                               float* Tc,
-                               float* S,
-                               const float msat0Mul,
-                               const float msat0T0Mul,
-                               const float TcMul,
-                               const float SMul,
+__export__ void brillouinAsync(double* msat0,
+                               double* msat0T0,
+                               double* T,
+                               double* Tc,
+                               double* S,
+                               const double msat0Mul,
+                               const double msat0T0Mul,
+                               const double TcMul,
+                               const double SMul,
                                int Npart,
                                CUstream stream)
 {

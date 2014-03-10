@@ -25,12 +25,12 @@ func CpAsync(cp *Array, T *Array, Td *Array, n *Array, TdMul float64, stream Str
 
 	// Calling the CUDA functions
 	C.cpAsync(
-		(*C.float)(unsafe.Pointer(uintptr(cp.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(Td.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(n.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(cp.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(T.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Td.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(n.Comp[X].pointer))),
 
-		(C.float)(TdMul),
+		(C.double)(TdMul),
 
 		(C.int)(cp.partLen3D),
 		(C.CUstream)(unsafe.Pointer(uintptr(stream))))

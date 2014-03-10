@@ -39,7 +39,7 @@ func (s *EulerSolver) Step() {
 		dy := equation[i].input[0]
 		dyMul := dy.multiplier
 		checkUniform(dyMul)
-		gpu.MAdd1Async(y.Array(), dy.Array(), float32(dt*dyMul[0]), y.Array().Stream) // TODO: faster MAdd
+		gpu.MAdd1Async(y.Array(), dy.Array(), float64(dt*dyMul[0]), y.Array().Stream) // TODO: faster MAdd
 		y.Array().Sync()
 		y.Invalidate()
 	}

@@ -15,12 +15,12 @@ import (
 )
 
 // Safe strconv.Atof32
-func Atof32(s string) float32 {
+func Atof32(s string) float64 {
 	f, err := strconv.ParseFloat(s, 32)
 	if err != nil {
 		panic(InputErr(err.Error()))
 	}
-	return float32(f)
+	return float64(f)
 }
 
 // Safe strconv.Atoi

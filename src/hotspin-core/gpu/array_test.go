@@ -61,7 +61,7 @@ func TestArrayInit(test *testing.T) {
 
 	l1 := host1.List
 	for i := range l1 {
-		l1[i] = float32(i)
+		l1[i] = float64(i)
 	}
 
 	dev1.CopyToHost(host1)
@@ -93,7 +93,7 @@ func TestArrayCopy(test *testing.T) {
 
 	l1 := host1.List
 	for i := range l1 {
-		l1[i] = float32(i)
+		l1[i] = float64(i)
 	}
 
 	dev1.CopyFromHost(host1)
@@ -102,7 +102,7 @@ func TestArrayCopy(test *testing.T) {
 
 	l2 := host2.List
 	for i := range l1 {
-		if l2[i] != float32(i) {
+		if l2[i] != float64(i) {
 			if !test.Failed() {
 				test.Error("expected", i, "got:", l2[i])
 			}
@@ -117,7 +117,7 @@ func TestArrayCopyHost(test *testing.T) {
 
 	ah := a.LocalCopy()
 	for i := range ah.List {
-		ah.List[i] = float32(i)
+		ah.List[i] = float64(i)
 	}
 
 	a.CopyFromHost(ah)

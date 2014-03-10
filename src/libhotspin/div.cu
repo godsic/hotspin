@@ -10,19 +10,19 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void divKern(float* dst, float* a, float* b, int Npart)
+__global__ void divKern(double* dst, double* a, double* b, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
     {
 
-        float bb = (b == NULL) ? 1.0f : b[i];
-        dst[i] = (bb == 0.0f) ? 0.0f : a[i] / bb;
+        double bb = (b == NULL) ? 1.0 : b[i];
+        dst[i] = (bb == 0.0) ? 0.0 : a[i] / bb;
     }
 }
 
 
-__export__ void divAsync(float* dst, float* a, float* b, CUstream stream, int Npart)
+__export__ void divAsync(double* dst, double* a, double* b, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);

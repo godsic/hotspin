@@ -22,22 +22,22 @@ func ScaleNoiseAniz(h, mu, T, msat0T0 *Array,
 	KB2tempMul_mu0VgammaDtMsatMul float64) {
 	CheckSize(h.Size3D(), mu.Size3D())
 	C.temperature_scaleAnizNoise(
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[X].pointer))), //XX
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[Y].pointer))), //YY
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[Z].pointer))), //ZZ
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[X].pointer))), //XX
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[Y].pointer))), //YY
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[Z].pointer))), //ZZ
 
-		(*C.float)(unsafe.Pointer(uintptr(T.pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(msat0T0.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(T.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0T0.pointer))),
 
-		(C.float)(float32(muMul[X])),
-		(C.float)(float32(muMul[Y])),
-		(C.float)(float32(muMul[Z])),
+		(C.double)(float64(muMul[X])),
+		(C.double)(float64(muMul[Y])),
+		(C.double)(float64(muMul[Z])),
 
-		(C.float)(float32(KB2tempMul_mu0VgammaDtMsatMul)),
+		(C.double)(float64(KB2tempMul_mu0VgammaDtMsatMul)),
 		(C.CUstream)(unsafe.Pointer(uintptr(h.Stream))),
 		(C.int)(h.PartLen3D()))
 }

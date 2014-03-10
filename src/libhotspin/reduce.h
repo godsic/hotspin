@@ -31,7 +31,7 @@ extern "C" {
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialSumAsync(float* input, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialSumAsync(double* input, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU Dot product
@@ -41,7 +41,7 @@ DLLEXPORT void partialSumAsync(float* input, float* output, int blocksPerGPU, in
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialSDotAsync(float* input1, float* input2, float* output, int blocks, int threadsPerBlock, int N, CUstream stream);
+DLLEXPORT void partialSDotAsync(double* input1, double* input2, double* output, int blocks, int threadsPerBlock, int N, CUstream stream);
 
 /// Multi-GPU partial maximum.
 /// @param input input data parts for each GPU. each array size is NPerGPU
@@ -50,7 +50,7 @@ DLLEXPORT void partialSDotAsync(float* input1, float* input2, float* output, int
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxAsync(float* input, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxAsync(double* input, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU partial minimum.
@@ -60,7 +60,7 @@ DLLEXPORT void partialMaxAsync(float* input, float* output, int blocksPerGPU, in
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMinAsync(float* input, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMinAsync(double* input, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU partial maximum of absolute values.
@@ -70,7 +70,7 @@ DLLEXPORT void partialMinAsync(float* input, float* output, int blocksPerGPU, in
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxAbsAsync(float* input, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxAbsAsync(double* input, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU partial maximum difference between arrays (max(abs(a[i]-b[i]))).
@@ -80,7 +80,7 @@ DLLEXPORT void partialMaxAbsAsync(float* input, float* output, int blocksPerGPU,
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxDiffAsync(float* a, float* b, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxDiffAsync(double* a, double* b, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 /// Multi-GPU partial maximum sum between arrays (max(abs(a[i]+b[i]))).
 /// @param input input data parts for each GPU. each array size is NPerGPU
@@ -89,7 +89,7 @@ DLLEXPORT void partialMaxDiffAsync(float* a, float* b, float* output, int blocks
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxSumAsync(float* a, float* b, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxSumAsync(double* a, double* b, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU partial maximum Euclidian norm squared of 3-vector(max(x[i]*2+y[i]*2+z[i]*2)).
@@ -101,7 +101,7 @@ DLLEXPORT void partialMaxSumAsync(float* a, float* b, float* output, int blocksP
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxNorm3SqAsync(float* x, float* y, float* z, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxNorm3SqAsync(double* x, double* y, double* z, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 /// Multi-GPU partial maximum Euclidian norm squared of 3-vector(max( (x1[i]-x2[i])*2 + (y1[i]-y2[i])*2 + (z1[i]-z2[i])*2) ).
@@ -116,7 +116,7 @@ DLLEXPORT void partialMaxNorm3SqAsync(float* x, float* y, float* z, float* outpu
 /// @param threadsPerBlockPerGPU use this many threads per GPU thread block. @warning must be < NPerGPU
 /// @param NPerGPU size of input data per GPU, must be > threadsPerBlockPerGPU
 /// @param streams array of cuda streams on each device for async execution
-DLLEXPORT void partialMaxNorm3SqDiffAsync(float* x1, float* y1, float* z1, float* x2, float* y2, float* z2, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
+DLLEXPORT void partialMaxNorm3SqDiffAsync(double* x1, double* y1, double* z1, double* x2, double* y2, double* z2, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams);
 
 
 #ifdef __cplusplus

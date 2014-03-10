@@ -9,18 +9,18 @@ extern "C" {
 #endif
 
 
-__global__ void zeroArrayKern(float *A, int N)
+__global__ void zeroArrayKern(double *A, int N)
 {
 
     int i = threadindex;
 
     if (i < N)
     {
-        A[i] = 0.0f;
+        A[i] = 0.0;
     }
 }
 
-__export__ void zeroArrayAsync(float *A, int length, CUstream streams)
+__export__ void zeroArrayAsync(double *A, int length, CUstream streams)
 {
 
     dim3 gridSize, blockSize;
@@ -31,7 +31,7 @@ __export__ void zeroArrayAsync(float *A, int length, CUstream streams)
 
 /// @internal Does padding and unpadding of a 3D matrix.  Padding in the y-direction is only correct when 1 GPU is used!!
 /// Fills padding space with zeros.
-__global__ void copyPad3DKern(float* __restrict__ dst, int D0, int D1, int D2, int D1D2, float* __restrict__ src, int S0, int S1, int S2, int S1S2)
+__global__ void copyPad3DKern(double* __restrict__ dst, int D0, int D1, int D2, int D1D2, double* __restrict__ src, int S0, int S1, int S2, int S1S2)
 {
 
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -47,7 +47,7 @@ __global__ void copyPad3DKern(float* __restrict__ dst, int D0, int D1, int D2, i
     }
 }
 
-__export__ void copyPad3DAsync(float* dst, int D0, int D1, int D2, float* src, int S0, int S1, int S2, int Ncomp, CUstream streams)
+__export__ void copyPad3DAsync(double* dst, int D0, int D1, int D2, double* src, int S0, int S1, int S2, int Ncomp, CUstream streams)
 {
 
     dim3 gridSize, blockSize;
@@ -57,14 +57,14 @@ __export__ void copyPad3DAsync(float* dst, int D0, int D1, int D2, float* src, i
     int S1S2 = S1 * S2;
     for (int i = 0; i < Ncomp; i++)
     {
-        float* src3D = &(src[i * S0 * S1S2]);
-        float* dst3D = &(dst[i * D0 * D1D2]); //D1==S1
+        double* src3D = &(src[i * S0 * S1S2]);
+        double* dst3D = &(dst[i * D0 * D1D2]); //D1==S1
         copyPad3DKern <<< gridSize, blockSize, 0, cudaStream_t(streams)>>> (dst3D, D0, D1, D2, D1D2, src3D, S0, S1, S2, S1S2);
     }
 }
 
 
-__global__ void copyUnPad3DKern(float* __restrict__ dst, int D0, int D1, int D2, int D1D2, float* __restrict__ src, int S0, int S1, int S2, int S1S2)
+__global__ void copyUnPad3DKern(double* __restrict__ dst, int D0, int D1, int D2, int D1D2, double* __restrict__ src, int S0, int S1, int S2, int S1S2)
 {
 
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -80,7 +80,7 @@ __global__ void copyUnPad3DKern(float* __restrict__ dst, int D0, int D1, int D2,
     }
 }
 
-__export__ void copyUnPad3DAsync(float* dst, int D0, int D1, int D2, float* src, int S0, int S1, int S2, int Ncomp, CUstream streams)
+__export__ void copyUnPad3DAsync(double* dst, int D0, int D1, int D2, double* src, int S0, int S1, int S2, int Ncomp, CUstream streams)
 {
 
     dim3 gridSize, blockSize;
@@ -90,8 +90,8 @@ __export__ void copyUnPad3DAsync(float* dst, int D0, int D1, int D2, float* src,
     int S1S2 = S1 * S2;
     for (int i = 0; i < Ncomp; i++)
     {
-        float* src3D = &(src[i * S0 * S1S2]);
-        float* dst3D = &(dst[i * D0 * D1D2]); //D1==S1
+        double* src3D = &(src[i * S0 * S1S2]);
+        double* dst3D = &(dst[i * D0 * D1D2]); //D1==S1
         copyUnPad3DKern <<< gridSize, blockSize, 0, cudaStream_t(streams)>>> (dst3D, D0, D1, D2, D1D2, src3D, S0, S1, S2, S1S2);
     }
 }

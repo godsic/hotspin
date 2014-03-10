@@ -17,15 +17,15 @@ package engine
 // 	cellsize
 //	data rank: always 4
 //	4 sizes for each direction, like: 3  128 256 1024
-// 	Precission of data: 4 for float32, 8 for float64
+// 	Precission of data: 4 for float64, 8 for float64
 // 	DATA
 // 	crc64 of DATA and header.
 // Author: Arne Vansteenkiste
 
 import (
-	"io"
 	. "hotspin-core/common"
 	"hotspin-core/dump"
+	"io"
 )
 
 func init() {

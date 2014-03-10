@@ -198,7 +198,7 @@ func (s *BDFAM12) Step() {
 				COMP := dy.NComp()
 				srCOMP := 1.0 / math.Sqrt(float64(COMP))
 
-				h := float32(dt * dy.multiplier[0])
+				h := float64(dt * dy.multiplier[0])
 				gpu.AddMadd(s.ybuffer[i], s.y0buffer[i], dy.Array(), s.dy0buffer[i], 0.5*h)
 
 				tErr := 0.0

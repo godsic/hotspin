@@ -8,19 +8,19 @@
 extern "C" {
 #endif
 
-    __global__ void llbarLocal02ncKern(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
-                                       float* __restrict__ mx, float* __restrict__ my, float* __restrict__ mz,
-                                       float* __restrict__ hx, float* __restrict__ hy, float* __restrict__ hz,
+    __global__ void llbarLocal02ncKern(double* __restrict__ tx, double* __restrict__ ty, double* __restrict__ tz,
+                                       double* __restrict__ mx, double* __restrict__ my, double* __restrict__ mz,
+                                       double* __restrict__ hx, double* __restrict__ hy, double* __restrict__ hz,
 
-                                       float* __restrict__ msat0T0Msk,
+                                       double* __restrict__ msat0T0Msk,
 
-                                       float* __restrict__ mu_xx,
-                                       float* __restrict__ mu_yy,
-                                       float* __restrict__ mu_zz,
+                                       double* __restrict__ mu_xx,
+                                       double* __restrict__ mu_yy,
+                                       double* __restrict__ mu_zz,
 
-                                       const float muMul_xx,
-                                       const float muMul_yy,
-                                       const float muMul_zz,
+                                       const double muMul_xx,
+                                       const double muMul_yy,
+                                       const double muMul_zz,
 
                                        int Npart)
     {
@@ -30,39 +30,39 @@ extern "C" {
         if (x0 < Npart)
         {
 
-            float msat0T0 = (msat0T0Msk == NULL) ? 1.0 : msat0T0Msk[x0];
-            float3 m = make_float3(mx[x0], my[x0], mz[x0]);
+            double msat0T0 = (msat0T0Msk == NULL) ? 1.0 : msat0T0Msk[x0];
+            double3 m = make_double3(mx[x0], my[x0], mz[x0]);
 
             // make sure there is no torque for non-magnetic points
-            if (msat0T0 == 0.0f)
+            if (msat0T0 == 0.0)
             {
-                tx[x0] = 0.0f;
-                ty[x0] = 0.0f;
-                tz[x0] = 0.0f;
+                tx[x0] = 0.0;
+                ty[x0] = 0.0;
+                tz[x0] = 0.0;
                 return;
             }
 
-            float3 H = make_float3(hx[x0], hy[x0], hz[x0]);
+            double3 H = make_double3(hx[x0], hy[x0], hz[x0]);
 
-            float _mH = dotf(m, H);
+            double _mH = dot(m, H);
 
-            float3 _mHm;
+            double3 _mHm;
 
             _mHm.x = _mH * m.x;
             _mHm.y = _mH * m.y;
             _mHm.z = _mH * m.z;
 
-            float3 _mu_mHm;
+            double3 _mu_mHm;
 
-            float m_xx = (mu_xx != NULL) ? mu_xx[x0] * muMul_xx : muMul_xx;
+            double m_xx = (mu_xx != NULL) ? mu_xx[x0] * muMul_xx : muMul_xx;
 
             _mu_mHm.x = m_xx * _mHm.x;
 
-            float m_yy = (mu_yy != NULL) ? mu_yy[x0] * muMul_yy : muMul_yy;
+            double m_yy = (mu_yy != NULL) ? mu_yy[x0] * muMul_yy : muMul_yy;
 
             _mu_mHm.y = m_yy * _mHm.y;
 
-            float m_zz = (mu_zz != NULL) ? mu_zz[x0] * muMul_zz : muMul_zz;
+            double m_zz = (mu_zz != NULL) ? mu_zz[x0] * muMul_zz : muMul_zz;
 
             _mu_mHm.z = m_zz * _mHm.z;
 
@@ -72,19 +72,19 @@ extern "C" {
         }
     }
 
-    __export__  void llbar_local02nc_async(float* tx, float*  ty, float*  tz,
-                                           float*  mx, float*  my, float*  mz,
-                                           float*  hx, float*  hy, float*  hz,
+    __export__  void llbar_local02nc_async(double* tx, double*  ty, double*  tz,
+                                           double*  mx, double*  my, double*  mz,
+                                           double*  hx, double*  hy, double*  hz,
 
-                                           float* msat0T0,
+                                           double* msat0T0,
 
-                                           float* mu_xx,
-                                           float* mu_yy,
-                                           float* mu_zz,
+                                           double* mu_xx,
+                                           double* mu_yy,
+                                           double* mu_zz,
 
-                                           const float muMul_xx,
-                                           const float muMul_yy,
-                                           const float muMul_zz,
+                                           const double muMul_xx,
+                                           const double muMul_yy,
+                                           const double muMul_zz,
 
                                            CUstream stream,
                                            int Npart)

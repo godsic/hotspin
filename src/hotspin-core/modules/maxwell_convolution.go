@@ -193,7 +193,7 @@ func (plan *MaxwellPlan) update(in *[7]*gpu.Array, inMul *[7]float64, out *gpu.A
 				continue
 			}
 			// Point-wise kernel multiplication
-			mul := complex64(complex(inMul[i], 0) * plan.fftMul[i][j])
+			mul := complex128(complex(inMul[i], 0) * plan.fftMul[i][j])
 			//Debug(i, j, "mul", mul)
 			gpu.CMaddAsync(&fftOut.Comp[j], mul, plan.fftKern[i][j], fftBuf, fftOut.Stream)
 			needInverseFFT = true
@@ -321,12 +321,12 @@ const zero_tolerance = 1e-5
 
 // list is considered zero if all elements are
 // at least a factorzero_tolerance smaller than max.
-func IsZero(array []float32, max float32) bool {
+func IsZero(array []float64, max float64) bool {
 	return (maxAbs(array) / max) < zero_tolerance
 }
 
 // maximum absolute value of all elements
-func maxAbs(array []float32) (max float32) {
+func maxAbs(array []float64) (max float64) {
 	for _, x := range array {
 		if Abs32(x) > max {
 			max = Abs32(x)
@@ -339,7 +339,7 @@ func maxAbs(array []float32) (max float32) {
 func rescale(arr *host.Array, scale float64) {
 	list := arr.List
 	for i := range list {
-		list[i] = float32(float64(list[i]) * scale)
+		list[i] = float64(float64(list[i]) * scale)
 	}
 }
 
@@ -462,8 +462,8 @@ func (plan *MaxwellPlan) InverseFFT(out *gpu.Array) {
 //	conv.InverseFFT(out)
 //
 //	b := out.LocalCopy().List
-//	norm := float32(1 / float64(FFTNormLogic(conv.logicSize[:])))
-//	var maxerr float32
+//	norm := float64(1 / float64(FFTNormLogic(conv.logicSize[:])))
+//	var maxerr float64
 //	for i := range a {
 //		if Abs32(a[i]-b[i]*norm) > maxerr {
 //			maxerr = Abs32(a[i] - b[i]*norm)
@@ -496,8 +496,8 @@ func extract(src *host.Array, realness int) *host.Array {
 
 	// Normally, the FFT'ed kernel is purely real because of symmetry,
 	// so we only store the real parts...
-	maxbad := float32(0.)
-	maxgood := float32(0.)
+	maxbad := float64(0.)
+	maxgood := float64(0.)
 	other := 1 - realness
 	for i := range dstList {
 		dstList[i] = srcList[2*i+realness]

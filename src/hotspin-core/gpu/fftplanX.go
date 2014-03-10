@@ -28,8 +28,8 @@ type FFTPlanX struct {
 	buffer     Array  // An array for zero-padding the data
 
 	// fft plans
-	plan3dR2C cufft.Handle
-	plan3dC2R cufft.Handle
+	plan3dD2Z cufft.Handle
+	plan3dZ2D cufft.Handle
 	Stream
 }
 
@@ -52,12 +52,12 @@ func (fft *FFTPlanX) init(dataSize, logicSize []int) {
 
 	fft.Stream = NewStream()
 
-	fft.plan3dR2C = cufft.Plan3d(fft.logicSize[0], fft.logicSize[1], fft.logicSize[2], cufft.R2C)
-	fft.plan3dR2C.SetStream(uintptr(fft.Stream))
-	fft.plan3dR2C.SetCompatibilityMode(cufft.COMPATIBILITY_NATIVE)
-	fft.plan3dC2R = cufft.Plan3d(fft.logicSize[0], fft.logicSize[1], fft.logicSize[2], cufft.C2R)
-	fft.plan3dC2R.SetStream(uintptr(fft.Stream))
-	fft.plan3dC2R.SetCompatibilityMode(cufft.COMPATIBILITY_NATIVE)
+	fft.plan3dD2Z = cufft.Plan3d(fft.logicSize[0], fft.logicSize[1], fft.logicSize[2], cufft.D2Z)
+	fft.plan3dD2Z.SetStream(uintptr(fft.Stream))
+	fft.plan3dD2Z.SetCompatibilityMode(cufft.COMPATIBILITY_NATIVE)
+	fft.plan3dZ2D = cufft.Plan3d(fft.logicSize[0], fft.logicSize[1], fft.logicSize[2], cufft.Z2D)
+	fft.plan3dZ2D.SetStream(uintptr(fft.Stream))
+	fft.plan3dZ2D.SetCompatibilityMode(cufft.COMPATIBILITY_NATIVE)
 }
 
 func NewFFTPlanX(dataSize, logicSize []int) FFTInterface {
@@ -87,14 +87,14 @@ func (fft *FFTPlanX) Forward(in, out *Array) {
 
 	ptr := uintptr(out.pointer)
 
-	fft.plan3dR2C.ExecR2C(ptr, ptr)
+	fft.plan3dD2Z.ExecD2Z(ptr, ptr)
 	fft.Sync()
 }
 
 func (fft *FFTPlanX) Inverse(in, out *Array) {
 
 	ptr := uintptr(in.pointer)
-	fft.plan3dC2R.ExecC2R(ptr, ptr)
+	fft.plan3dZ2D.ExecZ2D(ptr, ptr)
 	fft.Sync()
 
 	buf := &fft.buffer

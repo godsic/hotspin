@@ -19,12 +19,12 @@ extern "C" {
 
 /// calculates heat flux density caused by spatial temperature gradient
 
-DLLEXPORT void Qspat_async(float* Q,
-                           float* T,
-                           float* k,
-                           const float kMul,
+DLLEXPORT void Qspat_async(double* Q,
+                           double* T,
+                           double* k,
+                           const double kMul,
                            const int sx, const int sy, const int sz,
-                           const float csx, const float csy, const float csz,
+                           const double csx, const double csy, const double csz,
                            const int pbc_x, const int pbc_y, const int pbc_z,
                            CUstream stream);
 

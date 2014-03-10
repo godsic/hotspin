@@ -29,7 +29,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 // This code has been significantly modified from its original version by Arne Vansteenkiste, 2011.
-//  - restricted to use only floats
+//  - restricted to use only doubles
 //  - more reduction operations than the original "sum" have been added (min, max, maxabs, ...)
 //  - added streams for asynchronous execution
 // Note that you have to comply with both the above BSD and GPL licences.
@@ -76,9 +76,9 @@ struct SharedMemory
 
 /// This kernel takes a partial sum
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_sum_kernel(float* g_idata, float* g_odata, unsigned int n)
+__global__ void _gpu_sum_kernel(double* g_idata, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -86,7 +86,7 @@ __global__ void _gpu_sum_kernel(float* g_idata, float* g_odata, unsigned int n)
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float mySum = 0;
+    double mySum = 0;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -148,7 +148,7 @@ __global__ void _gpu_sum_kernel(float* g_idata, float* g_odata, unsigned int n)
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             mySum = mySum + smem[tid + 32];
@@ -187,9 +187,9 @@ __global__ void _gpu_sum_kernel(float* g_idata, float* g_odata, unsigned int n)
 
 /// Single-precision dot product
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_sdot_kernel(float* g_idata, float* g_idata2, float* g_odata, unsigned int n)
+__global__ void _gpu_sdot_kernel(double* g_idata, double* g_idata2, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -197,7 +197,7 @@ __global__ void _gpu_sdot_kernel(float* g_idata, float* g_idata2, float* g_odata
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float mySum = 0;
+    double mySum = 0;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -259,7 +259,7 @@ __global__ void _gpu_sdot_kernel(float* g_idata, float* g_idata2, float* g_odata
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             mySum = mySum + smem[tid + 32];
@@ -299,9 +299,9 @@ __global__ void _gpu_sdot_kernel(float* g_idata, float* g_idata2, float* g_odata
 
 /// This kernel takes a partial maximum
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_max_kernel(float* g_idata, float* g_odata, unsigned int n)
+__global__ void _gpu_max_kernel(double* g_idata, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -309,7 +309,7 @@ __global__ void _gpu_max_kernel(float* g_idata, float* g_odata, unsigned int n)
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMax = -6E38;
+    double myMax = -6E38;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -371,7 +371,7 @@ __global__ void _gpu_max_kernel(float* g_idata, float* g_odata, unsigned int n)
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMax = fmax(myMax, smem[tid + 32]);
@@ -411,9 +411,9 @@ __global__ void _gpu_max_kernel(float* g_idata, float* g_odata, unsigned int n)
 
 /// This kernel takes a partial minimum
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_min_kernel(float* g_idata, float* g_odata, unsigned int n)
+__global__ void _gpu_min_kernel(double* g_idata, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -421,7 +421,7 @@ __global__ void _gpu_min_kernel(float* g_idata, float* g_odata, unsigned int n)
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMin = 6E38;
+    double myMin = 6E38;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -483,7 +483,7 @@ __global__ void _gpu_min_kernel(float* g_idata, float* g_odata, unsigned int n)
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMin = fmin(myMin, smem[tid + 32]);
@@ -523,9 +523,9 @@ __global__ void _gpu_min_kernel(float* g_idata, float* g_odata, unsigned int n)
 
 /// This kernel takes a partial maximum of absolute values
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_maxabs_kernel(float* g_idata, float* g_odata, unsigned int n)
+__global__ void _gpu_maxabs_kernel(double* g_idata, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -533,7 +533,7 @@ __global__ void _gpu_maxabs_kernel(float* g_idata, float* g_odata, unsigned int 
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMaxabs = 0.;
+    double myMaxabs = 0.;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -595,7 +595,7 @@ __global__ void _gpu_maxabs_kernel(float* g_idata, float* g_odata, unsigned int 
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMaxabs = fmax(myMaxabs, smem[tid + 32]);
@@ -636,9 +636,9 @@ __global__ void _gpu_maxabs_kernel(float* g_idata, float* g_odata, unsigned int 
 
 /// This kernel takes a partial maximum difference between two arrays
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_maxdiff_kernel(float* a, float* b, float* g_odata, unsigned int n)
+__global__ void _gpu_maxdiff_kernel(double* a, double* b, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -646,7 +646,7 @@ __global__ void _gpu_maxdiff_kernel(float* a, float* b, float* g_odata, unsigned
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMaxabs = 0.;
+    double myMaxabs = 0.;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -708,7 +708,7 @@ __global__ void _gpu_maxdiff_kernel(float* a, float* b, float* g_odata, unsigned
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMaxabs = fmax(myMaxabs, smem[tid + 32]);
@@ -748,9 +748,9 @@ __global__ void _gpu_maxdiff_kernel(float* a, float* b, float* g_odata, unsigned
 
 /// This kernel calculates a partial maximum sum between two arrays
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_maxsum_kernel(float* a, float* b, float* g_odata, unsigned int n)
+__global__ void _gpu_maxsum_kernel(double* a, double* b, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -758,7 +758,7 @@ __global__ void _gpu_maxsum_kernel(float* a, float* b, float* g_odata, unsigned 
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMaxabs = 0.;
+    double myMaxabs = 0.;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
@@ -820,7 +820,7 @@ __global__ void _gpu_maxsum_kernel(float* a, float* b, float* g_odata, unsigned 
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMaxabs = fmax(myMaxabs, smem[tid + 32]);
@@ -861,9 +861,9 @@ __global__ void _gpu_maxsum_kernel(float* a, float* b, float* g_odata, unsigned 
 
 /// This kernel takes a partial maximum euclidian norm squared of x,y,z component arrays
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_maxnorm3sq_kernel(float* x, float* y, float* z, float* g_odata, unsigned int n)
+__global__ void _gpu_maxnorm3sq_kernel(double* x, double* y, double* z, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -871,16 +871,16 @@ __global__ void _gpu_maxnorm3sq_kernel(float* x, float* y, float* z, float* g_od
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMaxabs = 0.;
+    double myMaxabs = 0.;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
     // in a larger gridSize and therefore fewer elements per thread
     while (i < n)
     {
-        float X = x[i];
-        float Y = y[i];
-        float Z = z[i];
+        double X = x[i];
+        double Y = y[i];
+        double Z = z[i];
         myMaxabs = fmax(myMaxabs, (X * X + Y * Y + Z * Z));
         // ensure we don't read out of bounds -- this is optimized away for powerOf2 sized arrays
         if (nIsPow2 || i + blockSize < n)
@@ -941,7 +941,7 @@ __global__ void _gpu_maxnorm3sq_kernel(float* x, float* y, float* z, float* g_od
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMaxabs = fmax(myMaxabs, smem[tid + 32]);
@@ -981,9 +981,9 @@ __global__ void _gpu_maxnorm3sq_kernel(float* x, float* y, float* z, float* g_od
 
 /// This kernel takes a partial maximum euclidian norm squared of the difference between 3-vectors
 template <unsigned int blockSize, bool nIsPow2>
-__global__ void _gpu_maxnorm3sqdiff_kernel(float* x1, float* y1, float* z1, float* x2, float* y2, float* z2, float* g_odata, unsigned int n)
+__global__ void _gpu_maxnorm3sqdiff_kernel(double* x1, double* y1, double* z1, double* x2, double* y2, double* z2, double* g_odata, unsigned int n)
 {
-    float* sdata = SharedMemory<float>();
+    double* sdata = SharedMemory<double>();
 
     // perform first level of reduction,
     // reading from global memory, writing to shared memory
@@ -991,16 +991,16 @@ __global__ void _gpu_maxnorm3sqdiff_kernel(float* x1, float* y1, float* z1, floa
     unsigned int i = blockIdx.x * blockSize * 2 + threadIdx.x;
     unsigned int gridSize = blockSize * 2 * gridDim.x;
 
-    float myMaxabs = 0.;
+    double myMaxabs = 0.;
 
     // we reduce multiple elements per thread.  The number is determined by the
     // number of active thread blocks (via gridDim).  More blocks will result
     // in a larger gridSize and therefore fewer elements per thread
     while (i < n)
     {
-        float X = x1[i] - x2[i];
-        float Y = y1[i] - y2[i];
-        float Z = z1[i] - z2[i];
+        double X = x1[i] - x2[i];
+        double Y = y1[i] - y2[i];
+        double Z = z1[i] - z2[i];
         myMaxabs = fmax(myMaxabs, (X * X + Y * Y + Z * Z));
         // ensure we don't read out of bounds -- this is optimized away for powerOf2 sized arrays
         if (nIsPow2 || i + blockSize < n)
@@ -1061,7 +1061,7 @@ __global__ void _gpu_maxnorm3sqdiff_kernel(float* x1, float* y1, float* z1, floa
         // now that we are using warp-synchronous programming (below)
         // we need to declare our shared memory volatile so that the compiler
         // doesn't reorder stores to it and induce incorrect behavior.
-        volatile float* smem = sdata;
+        volatile double* smem = sdata;
         if (blockSize >=  64)
         {
             myMaxabs = fmax(myMaxabs, smem[tid + 32]);
@@ -1106,14 +1106,14 @@ extern "C" {
 #endif
 
 // single-GPU
-__export__ void partialSumAsync1(float* d_idata, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialSumAsync1(double* d_idata, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1195,21 +1195,21 @@ __export__ void partialSumAsync1(float* d_idata, float* d_odata, int blocks, int
     }
 }
 
-__export__ void partialSumAsync(float* input, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialSumAsync(double* input, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialSumAsync1(input, output, blocks, threadsPerBlock, N, stream);
 }
 
 
 // single-GPU
-void partialSDotAsync1(float* d_idata, float* d_idata2, float* d_odata, int blocks, int threads, int size, CUstream stream)
+void partialSDotAsync1(double* d_idata, double* d_idata2, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1291,21 +1291,21 @@ void partialSDotAsync1(float* d_idata, float* d_idata2, float* d_odata, int bloc
     }
 }
 
-void partialSDotAsync(float* input1, float* input2, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+void partialSDotAsync(double* input1, double* input2, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialSDotAsync1(input1, input2, output, blocks, threadsPerBlock, N, stream);
 }
 
 
 // single-GPU
-__export__ void partialMaxAsync1(float* d_idata, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxAsync1(double* d_idata, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1388,7 +1388,7 @@ __export__ void partialMaxAsync1(float* d_idata, float* d_odata, int blocks, int
 }
 
 
-__export__ void partialMaxAsync(float* input, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialMaxAsync(double* input, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialMaxAsync1(input, output, blocks, threadsPerBlock, N, stream);
 }
@@ -1397,14 +1397,14 @@ __export__ void partialMaxAsync(float* input, float* output, int blocks, int thr
 
 
 
-__export__ void partialMinAsync1(float* d_idata, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMinAsync1(double* d_idata, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1487,7 +1487,7 @@ __export__ void partialMinAsync1(float* d_idata, float* d_odata, int blocks, int
 }
 
 
-__export__ void partialMinAsync(float* input, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialMinAsync(double* input, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialMinAsync1(input, output, blocks, threadsPerBlock, N, stream);
 }
@@ -1496,14 +1496,14 @@ __export__ void partialMinAsync(float* input, float* output, int blocks, int thr
 
 
 // Single-GPU
-__export__ void partialMaxAbsAsync1(float* d_idata, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxAbsAsync1(double* d_idata, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1586,7 +1586,7 @@ __export__ void partialMaxAbsAsync1(float* d_idata, float* d_odata, int blocks, 
 }
 
 
-__export__ void partialMaxAbsAsync(float* input, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialMaxAbsAsync(double* input, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialMaxAbsAsync1(input, output, blocks, threadsPerBlock, N, stream);
 }
@@ -1594,14 +1594,14 @@ __export__ void partialMaxAbsAsync(float* input, float* output, int blocks, int 
 
 
 // Single-GPU
-__export__ void partialMaxDiffAsync1(float* a, float* b, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxDiffAsync1(double* a, double* b, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1684,20 +1684,20 @@ __export__ void partialMaxDiffAsync1(float* a, float* b, float* d_odata, int blo
 }
 
 
-__export__ void partialMaxDiffAsync(float* a, float* b, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialMaxDiffAsync(double* a, double* b, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialMaxDiffAsync1(a, b, output, blocks, threadsPerBlock, N, stream);
 }
 
 // Single-GPU
-__export__ void partialMaxSumAsync1(float* a, float* b, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxSumAsync1(double* a, double* b, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1780,21 +1780,21 @@ __export__ void partialMaxSumAsync1(float* a, float* b, float* d_odata, int bloc
 }
 
 
-__export__ void partialMaxSumAsync(float* a, float* b, float* output, int blocks, int threadsPerBlock, int N, CUstream stream)
+__export__ void partialMaxSumAsync(double* a, double* b, double* output, int blocks, int threadsPerBlock, int N, CUstream stream)
 {
     partialMaxSumAsync1(a, b, output, blocks, threadsPerBlock, N, stream);
 }
 
 
 // Single-GPU
-__export__ void partialMaxNorm3SqAsync1(float* x, float* y, float* z, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxNorm3SqAsync1(double* x, double* y, double* z, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1877,21 +1877,21 @@ __export__ void partialMaxNorm3SqAsync1(float* x, float* y, float* z, float* d_o
 }
 
 
-__export__ void partialMaxNorm3SqAsync(float* x, float* y, float* z, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams)
+__export__ void partialMaxNorm3SqAsync(double* x, double* y, double* z, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams)
 {
     partialMaxNorm3SqAsync1(x, y, z, output, blocksPerGPU, threadsPerBlockPerGPU, NPerGPU, streams);
 }
 
 
 // Single-GPU
-__export__ void partialMaxNorm3SqDiffAsync1(float* x1, float* y1, float* z1, float* x2, float* y2, float* z2, float* d_odata, int blocks, int threads, int size, CUstream stream)
+__export__ void partialMaxNorm3SqDiffAsync1(double* x1, double* y1, double* z1, double* x2, double* y2, double* z2, double* d_odata, int blocks, int threads, int size, CUstream stream)
 {
     dim3 dimBlock(threads, 1, 1);
     dim3 dimGrid(blocks, 1, 1);
 
     // when there is only one warp per block, we need to allocate two warps
     // worth of shared memory so that we don't index shared memory out of bounds
-    int smemSize = (threads <= 32) ? 2 * threads * sizeof(float) : threads * sizeof(float);
+    int smemSize = (threads <= 32) ? 2 * threads * sizeof(double) : threads * sizeof(double);
 
     if (isPow2(size))
     {
@@ -1973,7 +1973,7 @@ __export__ void partialMaxNorm3SqDiffAsync1(float* x1, float* y1, float* z1, flo
     }
 }
 
-__export__ void partialMaxNorm3SqDiffAsync(float* x1, float* y1, float* z1, float* x2, float* y2, float* z2, float* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams)
+__export__ void partialMaxNorm3SqDiffAsync(double* x1, double* y1, double* z1, double* x2, double* y2, double* z2, double* output, int blocksPerGPU, int threadsPerBlockPerGPU, int NPerGPU, CUstream streams)
 {	
     partialMaxNorm3SqDiffAsync1(x1, y1, z1, x2, y2, z2, output, blocksPerGPU, threadsPerBlockPerGPU, NPerGPU, streams);
 }

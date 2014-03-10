@@ -15,13 +15,13 @@
 extern "C" {
 #endif
 
-DLLEXPORT void energyFlowAsync(float* w,
-                          float* mx, float* my, float* mz,
-                          float* Rx, float* Ry, float* Rz,
-                          float* Tc,
-                          float* S,
-                          float* n,
-                          float SMul,
+DLLEXPORT void energyFlowAsync(double* w,
+                          double* mx, double* my, double* mz,
+                          double* Rx, double* Ry, double* Rz,
+                          double* Tc,
+                          double* S,
+                          double* n,
+                          double SMul,
                           int Npart,
                           CUstream stream);
 

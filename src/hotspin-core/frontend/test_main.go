@@ -35,5 +35,5 @@ func testMain() {
 	t := float64(time.Now().Sub(start)) / 1e9
 	bw := float64(int64(Prod(size))*int64(N)*SIZEOF_FLOAT) / t
 	bw /= 1e9
-	Log("Multi-GPU bandwidth:", float32(bw), "GB/s")
+	Log("Multi-GPU bandwidth:", float64(bw), "GB/s")
 }

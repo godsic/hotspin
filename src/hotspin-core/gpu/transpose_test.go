@@ -33,7 +33,7 @@ import (
 //	defer b.Free()
 //
 //	for i := range ah.List {
-//		ah.List[i] = float32(i)
+//		ah.List[i] = float64(i)
 //	}
 //
 //	a.CopyFromHost(ah)
@@ -78,7 +78,7 @@ import (
 //	defer b.Free()
 //
 //	for i := range ah.List {
-//		ah.List[i] = float32(i)
+//		ah.List[i] = float64(i)
 //	}
 //
 //	a.CopyFromHost(ah)

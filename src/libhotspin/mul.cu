@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void mulKern(float* dst, float* a, float* b, int Npart)
+__global__ void mulKern(double* dst, double* a, double* b, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
@@ -20,7 +20,7 @@ __global__ void mulKern(float* dst, float* a, float* b, int Npart)
 }
 
 
-__export__ void mulAsync(float* dst, float* a, float* b, CUstream stream, int Npart)
+__export__ void mulAsync(double* dst, double* a, double* b, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);

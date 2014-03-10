@@ -15,9 +15,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	. "hotspin-core/common"
 	"hotspin-core/host"
+	"io"
 	"reflect"
 	"runtime"
 )
@@ -127,18 +127,16 @@ func convertArg(v interface{}, typ reflect.Type) reflect.Value {
 	case reflect.Int:
 		if float64(int(v.(float64))) != v.(float64) {
 			// make sure it actually fits in an int
-			panic(InputErrF("need 32-bit integer: ", v.(float64)))
+			panic(InputErrF("need 64-bit integer: ", v.(float64)))
 		}
 		return reflect.ValueOf(int(v.(float64)))
-	case reflect.Float32:
-		return reflect.ValueOf(float32(v.(float64)))
+	case reflect.Float64:
+		return reflect.ValueOf(float64(v.(float64)))
 	}
 
 	switch typ.String() {
 	case "*host.Array":
 		return reflect.ValueOf(jsonToHostArray(v))
-	case "[]float32":
-		return reflect.ValueOf(jsonToFloat32Array(v))
 	case "[]float64":
 		return reflect.ValueOf(jsonToFloat64Array(v))
 	case "[]string":
@@ -169,31 +167,6 @@ func jsonToStringArray(v interface{}) []string {
 		return array
 	}
 	panic(IOErr("Expected string or string array, got: " + ShortPrint(v) + " of type: " + reflect.TypeOf(v).String()))
-	return nil //silence 6g
-}
-
-// Converts []interface{} array to []float32.
-// Also, converts a single float32 to a 1-element array.
-func jsonToFloat32Array(v interface{}) []float32 {
-	defer func() {
-		err := recover()
-		if err != nil {
-			panic(IOErr(fmt.Sprint("Error parsing json array: ", ShortPrint(v), "\ncause: ", err)))
-		}
-	}()
-
-	switch v.(type) {
-	case float64:
-		return []float32{float32(v.(float64))}
-	case []interface{}:
-		varray := v.([]interface{})
-		array := make([]float32, len(varray))
-		for i := range array {
-			array[i] = float32(varray[i].(float64))
-		}
-		return array
-	}
-	panic(IOErr("Expected float32 or float32 array, got: " + ShortPrint(v) + " of type: " + reflect.TypeOf(v).String()))
 	return nil //silence 6g
 }
 
@@ -266,7 +239,7 @@ func jsonToHostArray(v interface{}) *host.Array {
 			for j := range a[c][i] {
 				va_cij := va_ci[j].([]interface{})
 				for k := range a[c][i][j] {
-					a[c][i][j][k] = float32(va_cij[k].(float64)) // convert XYZ-ZYX, works only for 3D
+					a[c][i][j][k] = float64(va_cij[k].(float64)) // convert XYZ-ZYX, works only for 3D
 				}
 			}
 		}
@@ -277,7 +250,7 @@ func jsonToHostArray(v interface{}) *host.Array {
 
 // convert mumax return values to types suited for json encoding
 // most values remain the same, but host.Array gets converted
-// to [][][][][]float32 and transposed into ZYX userspace
+// to [][][][][]float64 and transposed into ZYX userspace
 func convertOutput(vals []interface{}) {
 	for i, v := range vals {
 		switch v.(type) {

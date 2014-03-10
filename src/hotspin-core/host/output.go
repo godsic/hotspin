@@ -69,6 +69,6 @@ func intToBytes(i int) []byte {
 }
 
 // Converts the raw float data to a slice of 4 bytes
-func floatToBytes(f float32) []byte {
+func floatToBytes(f float64) []byte {
 	return (*[4]byte)(unsafe.Pointer(&f))[:]
 }

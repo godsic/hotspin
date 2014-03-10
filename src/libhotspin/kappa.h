@@ -15,17 +15,17 @@
 extern "C" {
 #endif
 
-DLLEXPORT void kappaAsync(float* kappa,
-                          float* msat0,
-                          float* msat0T0,
-                          float* T,
-                          float* Tc,
-                          float* S,
-                          float* n,
-                          const float msat0Mul,
-                          const float msat0T0Mul,
-                          const float TcMul,
-                          const float SMul,
+DLLEXPORT void kappaAsync(double* kappa,
+                          double* msat0,
+                          double* msat0T0,
+                          double* T,
+                          double* Tc,
+                          double* S,
+                          double* n,
+                          const double msat0Mul,
+                          const double msat0T0Mul,
+                          const double TcMul,
+                          const double SMul,
                           int Npart,
                           CUstream stream);
 

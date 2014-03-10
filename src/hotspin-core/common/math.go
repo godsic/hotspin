@@ -20,7 +20,7 @@ func DivUp(x, y int) int {
 }
 
 // True if not infinite and not NaN
-func IsReal(f float32) bool {
+func IsReal(f float64) bool {
 	if math.IsInf(float64(f), 0) {
 		return false
 	}
@@ -28,7 +28,7 @@ func IsReal(f float32) bool {
 }
 
 // True if not infinite, not NaN and not zero
-func IsFinite(f float32) bool {
+func IsFinite(f float64) bool {
 	if math.IsInf(float64(f), 0) {
 		return false
 	}
@@ -39,12 +39,12 @@ func IsFinite(f float32) bool {
 }
 
 // True if f is (positive or negative) infinity
-func IsInf(f float32) bool {
+func IsInf(f float64) bool {
 	return math.IsInf(float64(f), 0)
 }
 
 // Absolute value.
-func Abs32(x float32) float32 {
+func Abs32(x float64) float64 {
 	if x < 0 {
 		return -x
 	}
@@ -52,8 +52,8 @@ func Abs32(x float32) float32 {
 }
 
 // Square root.
-func Sqrt32(x float32) float32 {
-	return float32(math.Sqrt(float64(x)))
+func Sqrt32(x float64) float64 {
+	return float64(math.Sqrt(float64(x)))
 }
 
 // Product of ints.

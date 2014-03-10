@@ -17,22 +17,22 @@
 extern "C" {
 #endif
 
-DLLEXPORT  void llbar_nonlocal00nc_async(float* tx, float*  ty, float*  tz,
+DLLEXPORT  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
 
-        float*  hx, float*  hy, float*  hz,
+        double*  hx, double*  hy, double*  hz,
 
-        float* msat0T0,
+        double* msat0T0,
 
-        float* lambda_e_xx,
-        float* lambda_e_yy,
-        float* lambda_e_zz,
+        double* lambda_e_xx,
+        double* lambda_e_yy,
+        double* lambda_e_zz,
 
-        const float lambda_eMul_xx,
-        const float lambda_eMul_yy,
-        const float lambda_eMul_zz,
+        const double lambda_eMul_xx,
+        const double lambda_eMul_yy,
+        const double lambda_eMul_zz,
 
         const int sx, const int sy, const int sz,
-        const float csx, const float csy, const float csz,
+        const double csx, const double csy, const double csz,
         const int pbc_x, const int pbc_y, const int pbc_z,
         CUstream stream);
 

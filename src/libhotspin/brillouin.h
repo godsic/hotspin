@@ -15,15 +15,15 @@
 extern "C" {
 #endif
 
-DLLEXPORT void brillouinAsync(float* msat0,
-                              float* msat0T0,
-                              float* T,
-                              float* Tc,
-                              float* S,
-                              const float msat0Mul,
-                              const float msat0T0Mul,
-                              const float TcMul,
-                              const float SMul,
+DLLEXPORT void brillouinAsync(double* msat0,
+                              double* msat0T0,
+                              double* T,
+                              double* Tc,
+                              double* S,
+                              const double msat0Mul,
+                              const double msat0T0Mul,
+                              const double TcMul,
+                              const double SMul,
                               int Npart,
                               CUstream stream);
 

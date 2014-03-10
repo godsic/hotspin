@@ -10,33 +10,33 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void wavgKern(float* dst, 
-                         float* a, float* b, 
-                         float* w0Msk, float* w1Msk, 
-                         float* RMsk,
-                         float w0Mul,
-                         float w1Mul,
-                         float RMul,
+__global__ void wavgKern(double* dst, 
+                         double* a, double* b, 
+                         double* w0Msk, double* w1Msk, 
+                         double* RMsk,
+                         double w0Mul,
+                         double w1Mul,
+                         double RMul,
                          int Npart)
 {
     int i = threadindex;
     if (i < Npart)
     {
-        float w0 = w0Mul * getMaskUnity(w0Msk, i);
-        float w1 = w1Mul * getMaskUnity(w1Msk, i);
-        float R = RMul * getMaskUnity(RMsk, i);
+        double w0 = w0Mul * getMaskUnity(w0Msk, i);
+        double w1 = w1Mul * getMaskUnity(w1Msk, i);
+        double R = RMul * getMaskUnity(RMsk, i);
         dst[i] = weightedAvgZero(a[i], b[i], w0, w1, R);
     }
 }
 
 
-__export__ void wavgAsync(float* dst, 
-                         float* a, float* b, 
-                         float* w0, float* w1, 
-                         float* R,
-                         float w0Mul,
-                         float w1Mul,
-                         float RMul,
+__export__ void wavgAsync(double* dst, 
+                         double* a, double* b, 
+                         double* w0, double* w1, 
+                         double* R,
+                         double w0Mul,
+                         double w1Mul,
+                         double RMul,
                          CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;

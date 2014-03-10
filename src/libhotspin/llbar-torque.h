@@ -17,11 +17,11 @@
 extern "C" {
 #endif
 
-DLLEXPORT  void llbar_torque_async(float* tx, float*  ty, float*  tz,
-                                   float*  Mx, float*  My, float*  Mz,
-                                   float*  hx, float*  hy, float*  hz,
+DLLEXPORT  void llbar_torque_async(double* tx, double*  ty, double*  tz,
+                                   double*  Mx, double*  My, double*  Mz,
+                                   double*  hx, double*  hy, double*  hz,
 
-                                   float* msat0T0,
+                                   double* msat0T0,
 
                                    CUstream stream,
                                    int Npart);

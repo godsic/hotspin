@@ -23,9 +23,9 @@ func TestDump(t *testing.T) {
 	w.Precission = FLOAT32
 
 	w.WriteHeader()
-	list := make([]float32, size[0]*size[1]*size[2]*1)
+	list := make([]float64, size[0]*size[1]*size[2]*1)
 	for i := range list {
-		list[i] = float32(i)
+		list[i] = float64(i)
 	}
 	w.WriteData(list)
 	w.WriteHash()

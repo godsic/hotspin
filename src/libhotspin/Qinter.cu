@@ -10,27 +10,27 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void QinterKern(float* __restrict__ Qi,
-                           const float* __restrict__ Ti, const float* __restrict__ Tj,
-                           const float* __restrict__ GijMsk,
-                           const float GijMul,
+__global__ void QinterKern(double* __restrict__ Qi,
+                           const double* __restrict__ Ti, const double* __restrict__ Tj,
+                           const double* __restrict__ GijMsk,
+                           const double GijMul,
                            int Npart)
 {
 
     int i = threadindex;
     if (i < Npart)
     {
-        float Tii = Ti[i];
-        float Tjj = Tj[i];
-        float Gij = (GijMsk == NULL) ? GijMul : GijMul * GijMsk[i];
+        double Tii = Ti[i];
+        double Tjj = Tj[i];
+        double Gij = (GijMsk == NULL) ? GijMul : GijMul * GijMsk[i];
         Qi[i] = Gij * (Tjj - Tii);
     }
 }
 
-__export__ void QinterAsync(float* Qi,
-                            float* Ti, float* Tj,
-                            float* Gij,
-                            float GijMul,
+__export__ void QinterAsync(double* Qi,
+                            double* Ti, double* Tj,
+                            double* Gij,
+                            double GijMul,
                             int Npart,
                             CUstream stream)
 {

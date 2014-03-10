@@ -16,13 +16,13 @@
 extern "C" {
 #endif
 
-/// @param Npart number of floats per GPU, so total number of floats / nDevice()
-DLLEXPORT void uniaxialAnisotropyAsync(float *hx, float *hy, float *hz,
-                                       float *mx, float *my, float *mz,
-                                       float *Ku1_map, float *MSat_map, float Ku2_Mu0Msat_mul,
-                                       float *anisU_mapx, float anisU_mulx,
-                                       float *anisU_mapy, float anisU_muly,
-                                       float *anisU_mapz, float anisU_mulz,
+/// @param Npart number of doubles per GPU, so total number of doubles / nDevice()
+DLLEXPORT void uniaxialAnisotropyAsync(double *hx, double *hy, double *hz,
+                                       double *mx, double *my, double *mz,
+                                       double *Ku1_map, double *MSat_map, double Ku2_Mu0Msat_mul,
+                                       double *anisU_mapx, double anisU_mulx,
+                                       double *anisU_mapy, double anisU_muly,
+                                       double *anisU_mapz, double anisU_mulz,
                                        CUstream stream, int Npart);
 
 #ifdef __cplusplus

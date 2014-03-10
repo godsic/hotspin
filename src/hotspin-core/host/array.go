@@ -19,9 +19,9 @@ import (
 
 // A MuMax Array represents a 3-dimensional array of N-vectors.
 type Array struct {
-	List           []float32       // Underlying contiguous storage
-	Array          [][][][]float32 // Array in the usual way
-	Comp           [][]float32     // Components as contiguous lists
+	List           []float64       // Underlying contiguous storage
+	Array          [][][][]float64 // Array in the usual way
+	Comp           [][]float64     // Components as contiguous lists
 	Size           [4]int          // INTERNAL {components, size0, size1, size2}
 	Size4D         []int           // {components, size0, size1, size2}
 	Size3D         []int           // {size0, size1, size2}
@@ -49,7 +49,7 @@ func (t *Array) Init(components int, size3D []int) {
 }
 
 // Initializes a pre-allocated Array struct
-func (t *Array) InitFromList(components int, size3D []int, l []float32) {
+func (t *Array) InitFromList(components int, size3D []int, l []float64) {
 	Assert(len(size3D) == 3)
 	t.List = l
 	t.Array = Slice4D(l, []int{components, size3D[0], size3D[1], size3D[2]})
@@ -75,7 +75,7 @@ func NewArray(components int, size3D []int) *Array {
 }
 
 // Allocates an returns a new Array
-func NewArrayFromList(components int, size3D []int, l []float32) *Array {
+func NewArrayFromList(components int, size3D []int, l []float64) *Array {
 	t := new(Array)
 	t.InitFromList(components, size3D, l)
 	t.isPinned = 0

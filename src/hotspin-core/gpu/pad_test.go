@@ -34,7 +34,7 @@ func TestCombineZ(test *testing.T) {
 	ah := a.LocalCopy()
 
 	for i := range ah.List {
-		ah.List[i] = float32(i)
+		ah.List[i] = float64(i)
 	}
 	a.CopyFromHost(ah)
 
@@ -42,7 +42,7 @@ func TestCombineZ(test *testing.T) {
 	defer b.Free()
 	bh := a.LocalCopy()
 	for i := range bh.List {
-		bh.List[i] = -float32(i)
+		bh.List[i] = -float64(i)
 	}
 	b.CopyFromHost(bh)
 
@@ -100,7 +100,7 @@ func TestCopyPadZ(test *testing.T) {
 	defer b.Free()
 
 	for i := range ah.List {
-		ah.List[i] = float32(i)
+		ah.List[i] = float64(i)
 	}
 
 	a.CopyFromHost(ah)

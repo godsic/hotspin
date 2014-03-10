@@ -18,17 +18,17 @@ extern "C" {
 
 
 /// calculates the dot product
-DLLEXPORT void dotMaskAsync(float* dst, 
-                             float* ax, float* ay, float* az, 
-                             float* bx, float* by, float* bz, 
-                             float axMul, float ayMul, float azMul,
-                             float bxMul, float byMul, float bzMul,
+DLLEXPORT void dotMaskAsync(double* dst, 
+                             double* ax, double* ay, double* az, 
+                             double* bx, double* by, double* bz, 
+                             double axMul, double ayMul, double azMul,
+                             double bxMul, double byMul, double bzMul,
                              CUstream stream, int Npart);
 
-DLLEXPORT void dotAsync(float* dst, float* ax, float* ay, float* az, float* bx, float* by, float* bz, CUstream stream, int Npart);
+DLLEXPORT void dotAsync(double* dst, double* ax, double* ay, double* az, double* bx, double* by, double* bz, CUstream stream, int Npart);
 
 /// calculates the dot product and takes the sign according to that of arguments, e.g. -1*-1= -1, 1*1=1
-DLLEXPORT void dotSignAsync(float* dst, float* ax, float* ay, float* az, float* bx, float* by, float* bz, float* cx, float* cy, float* cz, CUstream stream, int Npart);
+DLLEXPORT void dotSignAsync(double* dst, double* ax, double* ay, double* az, double* bx, double* by, double* bz, double* cx, double* cy, double* cz, CUstream stream, int Npart);
 
 #ifdef __cplusplus
 }

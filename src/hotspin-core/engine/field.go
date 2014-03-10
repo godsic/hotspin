@@ -29,8 +29,8 @@ package engine
 //
 //type Field struct {
 //	array       Array // contains the size
-//	_multiplier [FIELD_MAX_COMP]float32
-//	multiplier  []float32
+//	_multiplier [FIELD_MAX_COMP]float64
+//	multiplier  []float64
 //	name        string
 //}
 //

@@ -1,4 +1,5 @@
 libmumax2.h
+*.so
 *.obj
 *.*~
 *.cu~

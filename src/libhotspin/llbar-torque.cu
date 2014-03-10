@@ -8,11 +8,11 @@
 extern "C" {
 #endif
 
-__global__ void llbarTorqueKern(float* __restrict__ tx, float* __restrict__ ty, float* __restrict__ tz,
-                                float* __restrict__ Mx, float* __restrict__ My, float* __restrict__ Mz,
-                                float* __restrict__ hx, float* __restrict__ hy, float* __restrict__ hz,
+__global__ void llbarTorqueKern(double* __restrict__ tx, double* __restrict__ ty, double* __restrict__ tz,
+                                double* __restrict__ Mx, double* __restrict__ My, double* __restrict__ Mz,
+                                double* __restrict__ hx, double* __restrict__ hy, double* __restrict__ hz,
 
-                                float* __restrict__ msat0T0Msk,
+                                double* __restrict__ msat0T0Msk,
 
                                 int Npart)
 {
@@ -22,21 +22,21 @@ __global__ void llbarTorqueKern(float* __restrict__ tx, float* __restrict__ ty, 
     if (x0 < Npart)
     {
 
-        float msat0T0 = (msat0T0Msk == NULL) ? 1.0 : msat0T0Msk[x0];
+        double msat0T0 = (msat0T0Msk == NULL) ? 1.0 : msat0T0Msk[x0];
 
         // make sure there is no torque in vacuum!
-        if (msat0T0 == 0.0f)
+        if (msat0T0 == 0.0)
         {
-            tx[x0] = 0.0f;
-            ty[x0] = 0.0f;
-            tz[x0] = 0.0f;
+            tx[x0] = 0.0;
+            ty[x0] = 0.0;
+            tz[x0] = 0.0;
             return;
         }
 
-        float3 H = make_float3(hx[x0], hy[x0], hz[x0]);
-        float3 M = make_float3(Mx[x0], My[x0], Mz[x0]);
+        double3 H = make_double3(hx[x0], hy[x0], hz[x0]);
+        double3 M = make_double3(Mx[x0], My[x0], Mz[x0]);
 
-        float3 _MxH = crossf(H, M);
+        double3 _MxH = cross(H, M);
 
         tx[x0] = _MxH.x;
         ty[x0] = _MxH.y;
@@ -46,11 +46,11 @@ __global__ void llbarTorqueKern(float* __restrict__ tx, float* __restrict__ ty, 
 
 #define BLOCKSIZE 16
 
-__export__  void llbar_torque_async(float* tx, float*  ty, float*  tz,
-                                    float*  Mx, float*  My, float*  Mz,
-                                    float*  hx, float*  hy, float*  hz,
+__export__  void llbar_torque_async(double* tx, double*  ty, double*  tz,
+                                    double*  Mx, double*  My, double*  Mz,
+                                    double*  hx, double*  hy, double*  hz,
 
-                                    float* msat0T0,
+                                    double* msat0T0,
 
                                     CUstream stream,
                                     int Npart)

@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void normalizeKern(float* mx, float* my, float* mz,
+__global__ void normalizeKern(double* mx, double* my, double* mz,
                               int Npart)
 {
     int i = threadindex;
@@ -19,11 +19,11 @@ __global__ void normalizeKern(float* mx, float* my, float* mz,
     {
         // reconstruct norm from map
 
-        float Mx = mx[i];
-        float My = my[i];
-        float Mz = mz[i];
+        double Mx = mx[i];
+        double My = my[i];
+        double Mz = mz[i];
 
-        float Mnorm = 1.0f / sqrtf(Mx * Mx + My * My + Mz * Mz);
+        double Mnorm = 1.0 / sqrt(Mx * Mx + My * My + Mz * Mz);
 
         mx[i] = Mx * Mnorm;
         my[i] = My * Mnorm;
@@ -32,7 +32,7 @@ __global__ void normalizeKern(float* mx, float* my, float* mz,
 }
 
 
-__export__ void normalizeAsync(float* mx, float* my, float* mz, CUstream stream, int Npart)
+__export__ void normalizeAsync(double* mx, double* my, double* mz, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);

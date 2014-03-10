@@ -66,9 +66,9 @@ func (u *LLBarNonlocal00NCUpdater) Update() {
 		msat0T0.Array(),
 		lambda_e.Array(),
 		lambda_e.Multiplier(),
-		float32(cellSize[X]),
-		float32(cellSize[Y]),
-		float32(cellSize[Z]),
+		float64(cellSize[X]),
+		float64(cellSize[Y]),
+		float64(cellSize[Z]),
 		pbc)
 
 	llbar_nonlocal00nc.Array().Sync()

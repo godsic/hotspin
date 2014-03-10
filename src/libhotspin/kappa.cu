@@ -12,17 +12,17 @@ extern "C" {
 ///@internal
 
 
-__global__ void kappaKern(float* __restrict__ kappa,
-                          float* __restrict__ msat0Msk,
-                          float* __restrict__ msat0T0Msk,
-                          float* __restrict__ T,
-                          float* __restrict__ TcMsk,
-                          float* __restrict__ SMsk,
-                          float* __restrict__ nMsk,
-                          const float msat0Mul,
-                          const float msat0T0Mul,
-                          const float TcMul,
-                          const float SMul,
+__global__ void kappaKern(double* __restrict__ kappa,
+                          double* __restrict__ msat0Msk,
+                          double* __restrict__ msat0T0Msk,
+                          double* __restrict__ T,
+                          double* __restrict__ TcMsk,
+                          double* __restrict__ SMsk,
+                          double* __restrict__ nMsk,
+                          const double msat0Mul,
+                          const double msat0T0Mul,
+                          const double TcMul,
+                          const double SMul,
                           int Npart)
 {
 
@@ -37,7 +37,7 @@ __global__ void kappaKern(float* __restrict__ kappa,
 
         if (msat0T0 == 0.0 || Temp == 0.0)
         {
-            kappa[i] = 0.0f;
+            kappa[i] = 0.0;
             return;
         }
 
@@ -54,21 +54,21 @@ __global__ void kappaKern(float* __restrict__ kappa,
         double meb = me * b;
         double f = b * dBjdx(S, meb);
         double k = mul * (f / (1.0 - f));
-        kappa[i] = (float)k;
+        kappa[i] = (double)k;
     }
 }
 
-__export__ void kappaAsync(float* kappa,
-                           float* msat0,
-                           float* msat0T0,
-                           float* T,
-                           float* Tc,
-                           float* S,
-                           float* n,
-                           const float msat0Mul,
-                           const float msat0T0Mul,
-                           const float TcMul,
-                           const float SMul,
+__export__ void kappaAsync(double* kappa,
+                           double* msat0,
+                           double* msat0T0,
+                           double* T,
+                           double* Tc,
+                           double* S,
+                           double* n,
+                           const double msat0Mul,
+                           const double msat0T0Mul,
+                           const double TcMul,
+                           const double SMul,
                            int Npart,
                            CUstream stream)
 {

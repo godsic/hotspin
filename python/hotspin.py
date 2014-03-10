@@ -23,8 +23,8 @@ def init():
 	global M_PORT
 	
 	# get the output directory from environment
-	outputdir=os.environ["MUMAX2_OUTPUTDIR"] + "/"	
-	M_ADDR = os.environ["MUMAX2_ADDR"]
+	outputdir=os.environ["HOTSPIN_OUTPUTDIR"] + "/"	
+	M_ADDR = os.environ["HOTSPIN_ADDR"]
 	
 	print 'MuMax grants connection on: ' + M_ADDR
 	

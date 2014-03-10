@@ -122,7 +122,7 @@ func (u *AnizBrownUpdater) Update() {
 	N := int64(noise.PartLen4D())
 	// Fills H_therm with gaussian noise.
 	// CURAND does not provide an out-of-the-box way to do this in parallel over the GPUs
-	u.rng.GenerateNormal(uintptr(devPointer), N, 0, 1)
+	u.rng.GenerateNormalDouble(uintptr(devPointer), N, 0.0, 1.0)
 
 	// Scale the noise according to local parameters
 	temp := u.T

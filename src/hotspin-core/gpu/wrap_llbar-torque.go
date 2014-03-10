@@ -26,19 +26,19 @@ func LLBarTorqueAsync(t *Array, M *Array, h *Array, msat0T0 *Array) {
 	Assert(h.NComp() == 3)
 
 	C.llbar_torque_async(
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(M.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(M.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(M.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(M.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(M.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(M.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
 
 		(C.CUstream)(unsafe.Pointer(uintptr(t.Stream))),
 		(C.int)(t.partLen3D))

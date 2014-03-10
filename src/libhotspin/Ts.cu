@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 ///@internal
-__device__ double findroot_Ridders_Ts(funcDTs* f, double J, double mult, double C, double xa, double xb)
+__device__ double findroot_Ridders_Ts(funcTs* f, double J, double mult, double C, double xa, double xb)
 {
 
     double ya = f[0](xa, J, mult, C);
@@ -37,11 +37,11 @@ __device__ double findroot_Ridders_Ts(funcDTs* f, double J, double mult, double 
     while (teps > eps && iter < 1000)
     {
 
-        x3 = 0.5f * (x2 + x1);
+        x3 = 0.5 * (x2 + x1);
         y3 = f[0](x3, J, mult, C);
 
         dy = (y3 * y3 - y1 * y2);
-        if (dy == 0.0f)
+        if (dy == 0.0)
         {
             x = x3;
             break;
@@ -81,17 +81,17 @@ __device__ double ModelTs(double n, double J, double pre, double C)
     return val;
 }
 
-__device__ funcDTs pModelTs = ModelTs;
+__device__ funcTs pModelTs = ModelTs;
 
-__global__ void tsKern(float* __restrict__ Ts,
-                      float* __restrict__ msatMsk,
-                      float* __restrict__ msat0T0Msk,
-                      float* __restrict__ TcMsk,
-                      float* __restrict__ SMsk,
-                      const float msatMul,
-                      const float msat0T0Mul,
-                      const float TcMul,
-                      const float SMul,
+__global__ void tsKern(double* __restrict__ Ts,
+                      double* __restrict__ msatMsk,
+                      double* __restrict__ msat0T0Msk,
+                      double* __restrict__ TcMsk,
+                      double* __restrict__ SMsk,
+                      const double msatMul,
+                      const double msat0T0Mul,
+                      const double TcMul,
+                      const double SMul,
                       int Npart)
 {
     int i = threadindex;
@@ -101,13 +101,13 @@ __global__ void tsKern(float* __restrict__ Ts,
         double msat0T0 = msat0T0Mul * getMaskUnity(msat0T0Msk, i);
         if (msat0T0 == 0.0)
         {
-            Ts[i] = 0.0f;
+            Ts[i] = 0.0;
             return;
         }
 
         double msat = msatMul * getMaskUnity(msatMsk, i);
         if (msat == msat0T0) {
-        	Ts[i] = 0.0f;
+        	Ts[i] = 0.0;
         	return;
         }
 
@@ -125,19 +125,19 @@ __global__ void tsKern(float* __restrict__ Ts,
         double pre = S * S * J0 * m;
         double T = findroot_Ridders_Ts(&pModelTs, S, pre, m, 0.0, Tc);
 
-        Ts[i] = (float)T;
+        Ts[i] = (double)T;
     }
 }
 
-__export__ void tsAsync(float* Ts,
-                              float* msat,
-                              float* msat0T0,
-                              float* Tc,
-                              float* S,
-                              const float msatMul,
-                              const float msat0T0Mul,
-                              const float TcMul,
-                              const float SMul,
+__export__ void tsAsync(double* Ts,
+                              double* msat,
+                              double* msat0T0,
+                              double* Tc,
+                              double* S,
+                              const double msatMul,
+                              const double msat0T0Mul,
+                              const double TcMul,
+                              const double SMul,
                               int Npart,
                               CUstream stream)
 {

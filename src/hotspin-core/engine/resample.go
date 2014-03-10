@@ -75,7 +75,7 @@ func Resample(in *host.Array, size2 []int) *host.Array {
 //							}
 //						}
 //					}
-//					a[c][i][j][k] /= float32(n)
+//					a[c][i][j][k] /= float64(n)
 //				}
 //			}
 //		}

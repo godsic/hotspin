@@ -12,13 +12,13 @@ extern "C" {
 #define BLOCKSIZE 16
 
 ///@internal
-__global__ void QspatKern(float* __restrict__ Q,
-                          const float* __restrict__ Ti,
-                          const float* __restrict__ lTi, const float* __restrict__ rTi,
-                          const float* __restrict__ kMask,
-                          const float kMul,
+__global__ void QspatKern(double* __restrict__ Q,
+                          const double* __restrict__ Ti,
+                          const double* __restrict__ lTi, const double* __restrict__ rTi,
+                          const double* __restrict__ kMask,
+                          const double kMul,
                           const int4 size,
-                          const float3 mstep,
+                          const double3 mstep,
                           const int3 pbc,
                           int i)
 {
@@ -88,48 +88,48 @@ __global__ void QspatKern(float* __restrict__ Q,
 
 
         // Let's use 3-point stencil in the bulk and 3-point forward/backward at the boundary
-        float T_b1, T, T_f1;
-        float ddT_x, ddT_y, ddT_z;
+        double T_b1, T, T_f1;
+        double ddT_x, ddT_y, ddT_z;
 
-        float ddT;
-        float sum;
+        double ddT;
+        double sum;
 
         T_b1   = Ti[xn.x];
         T      = Ti[xn.y];
         T_f1   = Ti[xn.z];
 
         sum    = __fadd_rn(T_b1, T_f1);
-        ddT_x = (size.x > 3) ? __fmaf_rn(-2.0f, T, sum) : 0.0f;
+        ddT_x = (size.x > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
 
         T_b1 = (j > 0 || lTi == NULL) ? Ti[yn.x] : lTi[yn.x];
         T    = Ti[yn.y];
         T_f1 = (j < size.y - 1 || rTi == NULL) ? Ti[yn.z] : rTi[yn.z];
 
         sum    = __fadd_rn(T_b1, T_f1);
-        ddT_y = (size.y > 3) ? __fmaf_rn(-2.0f, T, sum) : 0.0f;
+        ddT_y = (size.y > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
 
         T_b1 = Ti[zn.x];
         T    = Ti[zn.y];
         T_f1 = Ti[zn.z];
 
         sum    = __fadd_rn(T_b1, T_f1);
-        ddT_z = (size.z > 3) ? __fmaf_rn(-2.0f, T, sum) : 0.0f;
+        ddT_z = (size.z > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
 
         ddT   = mstep.x * ddT_x + mstep.y * ddT_y + mstep.z * ddT_z;
         // ddT is the laplacian(T)
 
-        float k = (kMask != NULL) ? kMask[x0] * kMul : kMul;
+        double k = (kMask != NULL) ? kMask[x0] * kMul : kMul;
 
         Q[x0] = k * ddT;
     }
 }
 
-__export__ void Qspat_async(float* Q,
-                            float* T,
-                            float* k,
-                            const float kMul,
+__export__ void Qspat_async(double* Q,
+                            double* T,
+                            double* k,
+                            const double kMul,
                             const int sx, const int sy, const int sz,
-                            const float csx, const float csy, const float csz,
+                            const double csx, const double csy, const double csz,
                             const int pbc_x, const int pbc_y, const int pbc_z,
                             CUstream stream)
 {
@@ -138,18 +138,18 @@ __export__ void Qspat_async(float* Q,
     dim3 gridSize(divUp(sy, BLOCKSIZE), divUp(sz, BLOCKSIZE));
     dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
 
-    float icsx2 = 1.0f / (csx * csx);
-    float icsy2 = 1.0f / (csy * csy);
-    float icsz2 = 1.0f / (csz * csz);
+    double icsx2 = 1.0 / (csx * csx);
+    double icsy2 = 1.0 / (csy * csy);
+    double icsz2 = 1.0 / (csz * csz);
 
     int syz = sy * sz;
 
-    float3 mstep = make_float3(icsx2, icsy2, icsz2);
+    double3 mstep = make_double3(icsx2, icsy2, icsz2);
     int4 size = make_int4(sx, sy, sz, syz);
     int3 pbc = make_int3(pbc_x, pbc_y, pbc_z);
 
-    float* lT = NULL;
-    float* rT = NULL;
+    double* lT = NULL;
+    double* rT = NULL;
 
     for (int i = 0; i < sx; i++)
     {

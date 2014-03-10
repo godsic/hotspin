@@ -16,14 +16,14 @@ extern "C" {
 #endif
 
 /// dst[i] = w0 * a[i]  + w1 * b[i] + R * sqrt(w0 * a[i] * w1 * b[i]) / (w0 + w1 + R * sqrt(w0*w1))
-/// @param Npart number of floats per GPU, so total number of floats / nDevice()
-DLLEXPORT void wavgAsync(float* dst, 
-						 float* a, float* b, 
-						 float* w0, float* w1, 
-						 float* R,
-						 float w0Mul,
-						 float w1Mul,
-						 float RMul,
+/// @param Npart number of doubles per GPU, so total number of doubles / nDevice()
+DLLEXPORT void wavgAsync(double* dst, 
+						 double* a, double* b, 
+						 double* w0, double* w1, 
+						 double* R,
+						 double w0Mul,
+						 double w1Mul,
+						 double RMul,
 						 CUstream stream, int Npart);
 
 #ifdef __cplusplus

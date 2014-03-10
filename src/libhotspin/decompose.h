@@ -19,10 +19,10 @@ extern "C" {
 /// Normalizes a vector array.
 /// @param mx, my, mz: Components of vector array to normalize
 /// @param norm_map: desired norm, may contain NULL pointers
-DLLEXPORT void decomposeAsync(float* Mx, float* My, float* Mz,
-                              float* mx, float* my, float* mz,
-                              float* msat,
-                              float msatMul,
+DLLEXPORT void decomposeAsync(double* Mx, double* My, double* Mz,
+                              double* mx, double* my, double* mz,
+                              double* msat,
+                              double msatMul,
                               CUstream stream, int Npart);
 
 

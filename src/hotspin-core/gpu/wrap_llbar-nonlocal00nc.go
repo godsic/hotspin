@@ -18,7 +18,7 @@ import (
 	"unsafe"
 )
 
-func LLBarNonlocal00NC(t *Array, h *Array, msat0T0 *Array, lambda_e *Array, lambda_eMul []float64, cellsizeX float32, cellsizeY float32, cellsizeZ float32, pbc []int) {
+func LLBarNonlocal00NC(t *Array, h *Array, msat0T0 *Array, lambda_e *Array, lambda_eMul []float64, cellsizeX float64, cellsizeY float64, cellsizeZ float64, pbc []int) {
 
 	// Bookkeeping
 	CheckSize(t.Size3D(), h.Size3D())
@@ -26,31 +26,31 @@ func LLBarNonlocal00NC(t *Array, h *Array, msat0T0 *Array, lambda_e *Array, lamb
 
 	// Calling the CUDA functions
 	C.llbar_nonlocal00nc_async(
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(lambda_e.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(lambda_e.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(lambda_e.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(lambda_e.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(lambda_e.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(lambda_e.Comp[Z].pointer))),
 
-		(C.float)(float32(lambda_eMul[X])),
-		(C.float)(float32(lambda_eMul[Y])),
-		(C.float)(float32(lambda_eMul[Z])),
+		(C.double)(float64(lambda_eMul[X])),
+		(C.double)(float64(lambda_eMul[Y])),
+		(C.double)(float64(lambda_eMul[Z])),
 
 		(C.int)(t.PartSize()[X]),
 		(C.int)(t.PartSize()[Y]),
 		(C.int)(t.PartSize()[Z]),
 
-		(C.float)(cellsizeX),
-		(C.float)(cellsizeY),
-		(C.float)(cellsizeZ),
+		(C.double)(cellsizeX),
+		(C.double)(cellsizeY),
+		(C.double)(cellsizeZ),
 
 		(C.int)(pbc[X]),
 		(C.int)(pbc[Y]),

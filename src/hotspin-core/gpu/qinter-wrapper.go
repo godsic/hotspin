@@ -22,14 +22,14 @@ func Qinter_async(Qi *Array, Ti *Array, Tj *Array, Gij *Array, GijMul []float64,
 
 	// Calling the CUDA functions
 	C.QinterAsync(
-		(*C.float)(unsafe.Pointer(uintptr(Qi.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Qi.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(Ti.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(Tj.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Ti.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Tj.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(Gij.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(Gij.Comp[X].pointer))),
 
-		(C.float)(float32(GijMul[0])),
+		(C.double)(float64(GijMul[0])),
 		(C.int)(Qi.partLen3D),
 		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
 }

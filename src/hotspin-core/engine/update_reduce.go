@@ -45,7 +45,7 @@ func NewAverageUpdater(in, out *Quant) Updater {
 }
 
 func (this *AverageUpdater) Update() {
-	var sum float32 = 666
+	var sum float64 = 666
 	if this.in.IsSpaceDependent() {
 		if this.in.nComp == 1 {
 			sum = this.reduce.Sum(this.in.Array())
@@ -79,7 +79,7 @@ func NewSumReduceUpdater(in, out *Quant) Updater {
 }
 
 func (this *SumReduceUpdater) Update() {
-	var sum float32 = 666
+	var sum float64 = 666
 	if this.in.IsSpaceDependent() {
 		if this.in.nComp == 1 {
 			sum = this.reduce.Sum(this.in.Array())

@@ -18,39 +18,39 @@ extern "C" {
 
 /// dst[i] = dst[i] + hani(m[i]) in units [mSat]      uniaxial case
 /// anisotropy constants devided by [mSat]
-/// @param Npart number of floats per GPU, so total number of floats / nDevice()
-DLLEXPORT void addHaniUniaxialAsync(float **hx, float **hy, float **hz,
-                                    float **mx, float **my, float **mz,
+/// @param Npart number of doubles per GPU, so total number of doubles / nDevice()
+DLLEXPORT void addHaniUniaxialAsync(double **hx, double **hy, double **hz,
+                                    double **mx, double **my, double **mz,
                                     <<< <<< < HEAD
-                                    float **Ku_map, float Ku_mul,
-                                    float **anisU_mapx, float anisU_mulx,
-                                    float **anisU_mapy, float anisU_muly,
-                                    float **anisU_mapz, float anisU_mulz,
+                                    double **Ku_map, double Ku_mul,
+                                    double **anisU_mapx, double anisU_mulx,
+                                    double **anisU_mapy, double anisU_muly,
+                                    double **anisU_mapz, double anisU_mulz,
                                     == == == =
-                                        float *anisK_map, float anisK_mul,
-                                    float **anisAxes_map, float *anisAxes_mul,
+                                        double *anisK_map, double anisK_mul,
+                                    double **anisAxes_map, double *anisAxes_mul,
                                     >>> >>> > anisotropy files added, not yet compiled
                                     CUstream* stream, int Npart
                                    );
 
 /// dst[i] = dst[i] + hani(m[i])  in units [mSat]     cubic case
 /// anisotropy constants devided by [mSat]
-/// @param Npart number of floats per GPU, so total number of floats / nDevice()
-DLLEXPORT void addHaniCubicAsync(float **hx, float **hy, float **hz,
-                                 float **mx, float **my, float **mz,
+/// @param Npart number of doubles per GPU, so total number of doubles / nDevice()
+DLLEXPORT void addHaniCubicAsync(double **hx, double **hy, double **hz,
+                                 double **mx, double **my, double **mz,
                                  <<< <<< < HEAD
-                                 float **K1_map, float K1_mul,
-                                 float **K2_map, float K2_mul,
-                                 float **anisU1_mapx, float anisU1_mulx,
-                                 float **anisU1_mapy, float anisU1_muly,
-                                 float **anisU1_mapz, float anisU1_mulz,
-                                 float **anisU2_mapx, float anisU2_mulx,
-                                 float **anisU2_mapy, float anisU2_muly,
-                                 float **anisU2_mapz, float anisU2_mulz,
+                                 double **K1_map, double K1_mul,
+                                 double **K2_map, double K2_mul,
+                                 double **anisU1_mapx, double anisU1_mulx,
+                                 double **anisU1_mapy, double anisU1_muly,
+                                 double **anisU1_mapz, double anisU1_mulz,
+                                 double **anisU2_mapx, double anisU2_mulx,
+                                 double **anisU2_mapy, double anisU2_muly,
+                                 double **anisU2_mapz, double anisU2_mulz,
                                  == == == =
-                                     float *anisK1_map, float anisK1_mul,
-                                 float *anisK2_map, float anisK2_mul,
-                                 float **anisAxes_map, float *anisAxes_mul,
+                                     double *anisK1_map, double anisK1_mul,
+                                 double *anisK2_map, double anisK2_mul,
+                                 double **anisAxes_map, double *anisAxes_mul,
                                  >>> >>> > anisotropy files added, not yet compiled
                                  CUstream* stream, int Npart
                                 );

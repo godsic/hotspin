@@ -45,7 +45,7 @@ func TestReduceSum(test *testing.T) {
 	defer red.Free()
 	gpusum := red.Sum(a)
 
-	if !close(gpusum, float32(cpusum)) {
+	if !close(gpusum, float64(cpusum)) {
 		test.Error("Reduce sum cpu=", cpusum, "gpu=", gpusum)
 	}
 }
@@ -175,7 +175,7 @@ func TestReduceMaxDiff(test *testing.T) {
 	a.CopyFromHost(ah)
 	b.CopyFromHost(bh)
 
-	cpumax := float32(0)
+	cpumax := float64(0)
 	for i, _ := range ah.List {
 		if Abs32(ah.List[i]-bh.List[i]) > cpumax {
 			cpumax = Abs32(ah.List[i] - bh.List[i])

@@ -17,11 +17,11 @@
 extern "C" {
 #endif
 
-DLLEXPORT void cpAsync(float* Cp,
-                          float* T,
-                          float* Td,
-                          float* n,
-                          const float TdMul,
+DLLEXPORT void cpAsync(double* Cp,
+                          double* T,
+                          double* Td,
+                          double* n,
+                          const double TdMul,
                           int Npart,
                           CUstream stream);
 

@@ -10,20 +10,20 @@ extern "C" {
 #endif
 
 ///@internal
-__global__ void divMulPowKern(float* __restrict__ dst,
-                              float* __restrict__ a,
-                              float* __restrict__ b,
-                              float* __restrict__ c,
-                              float p, int Npart)
+__global__ void divMulPowKern(double* __restrict__ dst,
+                              double* __restrict__ a,
+                              double* __restrict__ b,
+                              double* __restrict__ c,
+                              double p, int Npart)
 {
     int i = threadindex;
     if (i < Npart)
     {
 
-        float bb = (b == NULL) ? 1.0f : b[i];
-        float val = (bb == 0.0f) ? 0.0f : a[i] / bb;
+        double bb = (b == NULL) ? 1.0 : b[i];
+        double val = (bb == 0.0) ? 0.0 : a[i] / bb;
 
-        float cc = (c == NULL) ? 1.0f : c[i];
+        double cc = (c == NULL) ? 1.0 : c[i];
         cc = (cc == 0.0) ? 0.0 : powf(cc, p);
 
         dst[i] = val * cc;
@@ -31,7 +31,7 @@ __global__ void divMulPowKern(float* __restrict__ dst,
 }
 
 
-__export__ void divMulPowAsync(float* dst, float* a, float* b, float* c, float p, CUstream stream, int Npart)
+__export__ void divMulPowAsync(double* dst, double* a, double* b, double* c, double p, CUstream stream, int Npart)
 {
     dim3 gridSize, blockSize;
     make1dconf(Npart, &gridSize, &blockSize);

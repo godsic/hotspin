@@ -1,4 +1,4 @@
-    // Copyright 2011 Arne Vansteenkiste (barnex@gmail.com).  All rights reserved.
+// Copyright 2011 Arne Vansteenkiste (barnex@gmail.com).  All rights reserved.
 // Use of this source code is governed by a freeBSD
 // license that can be found in the LICENSE.txt file.
 
@@ -43,6 +43,18 @@ func (g Generator) GenerateNormal(output uintptr, n int64, mean, stddev float32)
 		C.size_t(n),
 		C.float(mean),
 		C.float(stddev)))
+	if err != SUCCESS {
+		panic(err)
+	}
+}
+
+func (g Generator) GenerateNormalDouble(output uintptr, n int64, mean, stddev float64) {
+	err := Status(C.curandGenerateNormalDouble(
+		C.curandGenerator_t(unsafe.Pointer(uintptr(g))),
+		(*C.double)(unsafe.Pointer(uintptr(output))),
+		C.size_t(n),
+		C.double(mean),
+		C.double(stddev)))
 	if err != SUCCESS {
 		panic(err)
 	}

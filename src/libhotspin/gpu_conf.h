@@ -91,7 +91,7 @@ void check1dconf(int gridsize, ///< 1D size of the thread grid
 
 
 /**
- * Makes a 1D thread configuration suited for a float array of size N
+ * Makes a 1D thread configuration suited for a double array of size N
  * The returned configuration will span at least the entire array but
  * can be larger. Your kernel should use the threadindex macro to
  * get the index "i", and check if it is smaller than the size "N" of
@@ -112,7 +112,7 @@ void check1dconf(int gridsize, ///< 1D size of the thread grid
    }
  * @endcode
  */
-void make1dconf(int N,           ///< size of array to span (number of floats)
+void make1dconf(int N,           ///< size of array to span (number of doubles)
                 dim3* gridSize,  ///< grid size is returned here
                 dim3* blockSize  ///< block size is returned here
                );

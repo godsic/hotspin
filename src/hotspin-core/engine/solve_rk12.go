@@ -150,7 +150,7 @@ func (s *RK12Solver) Step() {
 			dy := equation[i].input[0]
 			dyMul := dy.multiplier
 
-			h := float32(dt * dyMul[0])
+			h := float64(dt * dyMul[0])
 			gpu.MAdd2Async(y.Array(), dy.Array(), 0.5*h, s.dybuffer[i], -0.5*h, y.Array().Stream) // corrected step
 			y.Array().Sync()
 

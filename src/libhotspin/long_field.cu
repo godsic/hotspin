@@ -10,18 +10,18 @@ extern "C" {
 #endif
 // ========================================
 
-__global__ void long_field_Kern(float* __restrict__ hx, float* __restrict__ hy, float* __restrict__ hz,
-                                float* __restrict__ mx, float* __restrict__ my, float* __restrict__ mz,
-                                float* __restrict__ msat0T0Msk,
-                                float* __restrict__ SMsk,
-                                float* __restrict__ nMsk,
-                                float* __restrict__ TcMsk,
-                                float* __restrict__ TsMsk,
-                                float msat0T0Mul,
-                                float SMul,
-                                float nMul,
-                                float TcMul,
-                                float TsMul,
+__global__ void long_field_Kern(double* __restrict__ hx, double* __restrict__ hy, double* __restrict__ hz,
+                                double* __restrict__ mx, double* __restrict__ my, double* __restrict__ mz,
+                                double* __restrict__ msat0T0Msk,
+                                double* __restrict__ SMsk,
+                                double* __restrict__ nMsk,
+                                double* __restrict__ TcMsk,
+                                double* __restrict__ TsMsk,
+                                double msat0T0Mul,
+                                double SMul,
+                                double nMul,
+                                double TcMul,
+                                double TsMul,
                                 int NPart)
 {
 
@@ -40,9 +40,9 @@ __global__ void long_field_Kern(float* __restrict__ hx, float* __restrict__ hy, 
 
         if (Ms0T0 == 0.0 || n == 0.0 || abs_mf <= zero)
         {
-            hx[I] = 0.0f;
-            hy[I] = 0.0f;
-            hz[I] = 0.0f;
+            hx[I] = 0.0;
+            hy[I] = 0.0;
+            hz[I] = 0.0;
             return;
         }
         
@@ -68,18 +68,18 @@ __global__ void long_field_Kern(float* __restrict__ hx, float* __restrict__ hy, 
 }
 
 
-__export__ void long_field_async(float* hx, float* hy, float* hz,
-                                 float* mx, float* my, float* mz,
-                                 float* msat0T0,
-                                 float* S,
-                                 float* n,
-                                 float* Tc,
-                                 float* Ts,
-                                 float msat0T0Mul,
-                                 float SMul,
-                                 float nMul,
-                                 float TcMul,
-                                 float TsMul,
+__export__ void long_field_async(double* hx, double* hy, double* hz,
+                                 double* mx, double* my, double* mz,
+                                 double* msat0T0,
+                                 double* S,
+                                 double* n,
+                                 double* Tc,
+                                 double* Ts,
+                                 double msat0T0Mul,
+                                 double SMul,
+                                 double nMul,
+                                 double TcMul,
+                                 double TsMul,
                                  int NPart,
                                  CUstream stream)
 {

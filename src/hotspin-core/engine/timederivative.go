@@ -74,7 +74,7 @@ func (u *derivativeUpdater) Update() {
 		if DEBUG {
 			Debug("dt!=0")
 		}
-		gpu.LinearCombination2Async(diff, val, float32(1/dt), u.lastVal, -float32(1/dt), diff.Stream)
+		gpu.LinearCombination2Async(diff, val, float64(1/dt), u.lastVal, -float64(1/dt), diff.Stream)
 		diff.Sync()
 	}
 

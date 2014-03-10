@@ -27,27 +27,27 @@ func LLBarLocal02NC(t *Array, m *Array, h *Array, msat0T0 *Array, mu *Array, muM
 
 	// Calling the CUDA functions
 	C.llbar_local02nc_async(
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(t.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
-		(*C.float)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
 
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[X].pointer))), //XX
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[Y].pointer))), //YY
-		(*C.float)(unsafe.Pointer(uintptr(mu.Comp[Z].pointer))), //ZZ
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[X].pointer))), //XX
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[Y].pointer))), //YY
+		(*C.double)(unsafe.Pointer(uintptr(mu.Comp[Z].pointer))), //ZZ
 
-		(C.float)(float32(muMul[X])), //XX
-		(C.float)(float32(muMul[Y])), //YY
-		(C.float)(float32(muMul[Z])), //ZZ
+		(C.double)(float64(muMul[X])), //XX
+		(C.double)(float64(muMul[Y])), //YY
+		(C.double)(float64(muMul[Z])), //ZZ
 
 		(C.CUstream)(unsafe.Pointer(uintptr(t.Stream))),
 		(C.int)(t.partLen3D))
