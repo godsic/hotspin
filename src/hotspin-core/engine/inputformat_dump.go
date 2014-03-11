@@ -29,5 +29,6 @@ func ReadDump(fname string) *host.Array {
 	err = r.Read()
 	CheckIO(err)
 	meshsize := []int{r.Frame.MeshSize[0], r.Frame.MeshSize[1], r.Frame.MeshSize[2]}
-	return host.NewArrayFromList(r.Frame.Components, meshsize, r.Frame.Data)
+
+	return host.NewArrayFromList(r.Frame.Components, meshsize, host.ListFloat32ToFloat64(r.Frame.Data))
 }

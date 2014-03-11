@@ -25,6 +25,7 @@ package engine
 import (
 	. "hotspin-core/common"
 	"hotspin-core/dump"
+	"hotspin-core/host"
 	"io"
 )
 
@@ -57,6 +58,6 @@ func (f *FormatDump) Write(out io.Writer, q *Quant, options []string) {
 	sz := GetEngine().CellSize()
 	w.MeshStep = [3]float64{sz[X], sz[Y], sz[Z]} // We dont swap
 	w.WriteHeader()
-	w.WriteData(list)
+	w.WriteData(host.ListFloat64ToFloat32(list))
 	w.WriteHash()
 }
