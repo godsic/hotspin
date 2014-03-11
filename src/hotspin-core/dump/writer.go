@@ -3,7 +3,6 @@ package dump
 import (
 	"hash"
 	"hash/crc64"
-	"hotspin-core/host"
 	"io"
 	"math"
 	"unsafe"
@@ -62,19 +61,8 @@ func (w *Writer) WriteHeader() {
 }
 
 // Writes the data.
-func (w *Writer) WriteData(list []float64) {
-	size := w.MeshSize
-	ncomp := w.Components
-	data := host.Slice4D(list, []int{ncomp, size[0], size[1], size[2]})
-	for c := 0; c < ncomp; c++ {
-		for ix := 0; ix < size[0]; ix++ {
-			for iy := 0; iy < size[1]; iy++ {
-				for iz := 0; iz < size[2]; iz++ {
-					w.writeFloat32(float32(data[c][ix][iy][iz]))
-				}
-			}
-		}
-	}
+func (w *Writer) WriteData(list []float32) {
+	w.count(w.out.Write((*(*[1<<31 - 1]byte)(unsafe.Pointer(&list[0])))[0 : 4*len(list)]))
 }
 
 // Writes the accumulated hash of this frame, closing the frame.
@@ -106,10 +94,4 @@ func (w *Writer) writeString(x string) {
 
 func (w *Writer) writeUInt64(x uint64) {
 	w.count(w.out.Write((*(*[8]byte)(unsafe.Pointer(&x)))[:8]))
-}
-
-func (w *Writer) writeFloat32(x float32) {
-	var bytes []byte
-	bytes = (*[4]byte)(unsafe.Pointer(&x))[:]
-	w.count(w.out.Write(bytes))
 }
