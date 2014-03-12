@@ -26,7 +26,7 @@
 #define zero        1.0e-32                            // the zero threshold
 #define eps         1.0e-8                             // the target numerical accuracy of iterative methods
 #define linRange    1.0e-1                             // Defines the region of linearity
-#define INTMAXSTEPS 10000                              // Defines maximum amount of steps for numerical integration    
+#define INTMAXSTEPS 1000                               // Defines maximum amount of steps for numerical integration    
 
 typedef double (*func)(double x, double prefix, double mult);
 typedef double (*funcTs)(double x, double prefix, double mult, double C);
@@ -152,7 +152,7 @@ inline __device__ double Debye(double x)
 { 
     double nom = x * x * x * x * exp(x);
     double denom = (exp(x) - 1.0) * (exp(x) - 1.0);
-    return nom / denom; 
+    return (x <= zero) ? 0.0 : nom / denom; 
 }
 
 #endif
