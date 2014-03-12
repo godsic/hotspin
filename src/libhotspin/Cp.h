@@ -22,7 +22,7 @@ DLLEXPORT void cpAsync(double* Cp,
                           double* Td,
                           double* n,
                           const double TdMul,
-                          int Npart,
+                          const int Npart,
                           CUstream stream);
 
 #ifdef __cplusplus

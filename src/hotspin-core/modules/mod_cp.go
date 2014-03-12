@@ -77,7 +77,7 @@ func (u *CpDebyeUpdater) Update() {
 	n := u.n
 
 	stream := Cp.Array().Stream
-	Cp.Multiplier()[0] = n.Multiplier()[0] * Kb
+	Cp.Multiplier()[0] = 9.0 * n.Multiplier()[0] * Kb
 
 	gpu.CpAsync(Cp.Array(), T.Array(), Td.Array(), n.Array(), Td.Multiplier()[0], stream)
 	stream.Sync()

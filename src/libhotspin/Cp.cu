@@ -16,16 +16,16 @@ __global__ void cpKern(double* __restrict__ Cp,
                           double* __restrict__ TdMsk,
                           double* __restrict__ nMsk,
                           const double TdMul,
-                          int Npart)
+                          const int Npart)
 {
 
     int i = threadindex;
 
     if (i < Npart)
     {
-        double n = getMaskUnity(nMsk, i);
-        double Td = TdMul * getMaskUnity(TdMsk, i);
-        double T = Tp[i];
+        const double n = getMaskUnity(nMsk, i);
+        const double Td = TdMul * getMaskUnity(TdMsk, i);
+        const double T = Tp[i];
 
         if (T == 0.0 || Td == 0.0 || n == 0.0)
         {
@@ -35,26 +35,27 @@ __global__ void cpKern(double* __restrict__ Cp,
 
         double xx = Td / T;
 
-        double h = xx / (double)INTMAXSTEPS;
-        double h_2 = 0.5 * h;
+        const double h = xx / (double)INTMAXSTEPS;
+        const double h_2 = 0.5 * h;
 
         double x = 0.0;  
-        double val = 0.0;
+        double val = Debye(x);
+        double valm = 0.0;
 
-        while (x < xx) {
-            val += (h_2 * (Debye(x) + Debye(x+h)));
+        int j = 0;
+
+        for (j=0; j < INTMAXSTEPS-1; j++) {
             x += h;
+            valm += (Debye(x));
+            
         }
 
-//         int i = 0;
+        x += h;
+        val += Debye(x);
+        val += (2.0 * valm);
+        val *= h_2;
 
-// #pragma unroll 2
-//         for (i = 0; i < INTMAXSTEPS; i++) {
-//             val += (Debye(x) * h);
-//             x += h;
-//         }
-
-        Cp[i] = 9.0 * n * val / (xx * xx * xx); // kb, nMul should be accounted in the upstream multiplier
+        Cp[i] = n * val / (xx * xx * xx); // kb, nMul should be accounted in the upstream multiplier
 
     }
 }
@@ -64,7 +65,7 @@ __export__ void cpAsync(double* Cp,
                           double* Td,
                           double* n,
                           const double TdMul,
-                          int Npart,
+                          const int Npart,
                           CUstream stream)
 {
     dim3 gridSize, blockSize;
