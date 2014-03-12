@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from mumax2 import *
+from hotspin import *
 from math import *
 
-Nx = 1
-Ny = 1
-Nz = 1
+Nx = 2
+Ny = 2
+Nz = 2
 
 sX = 320e-9
 sY = 320e-9
@@ -36,12 +36,12 @@ print g_LL
 ro = Ms0 / (g * muB * J)
 Tc= 633
 
-setv('Td', 400.0)
+setv('Td', 390.0)
 setv('n', ro)
 
-Ta=10.0
-Tb=700.0
-steps=1000
+Ta=5.0
+Tb=1800.0
+steps=10000
 dT = (Tb-Ta)/steps
 
 savegraph("graph.png")
