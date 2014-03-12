@@ -22,11 +22,11 @@
 
 #define kB          1.380650424E-23                    // Boltzmann's constant in J/K
 #define muB         9.2740091523E-24                   // Bohr magneton in Am^2
-#define mu0         4.0 * 1e-7 * 3.14159265358979    // vacuum permeability
+#define mu0         4.0 * 1e-7 * 3.14159265358979      // vacuum permeability
 #define zero        1.0e-32                            // the zero threshold
 #define eps         1.0e-8                             // the target numerical accuracy of iterative methods
 #define linRange    1.0e-1                             // Defines the region of linearity
-#define INTMAXSTEPS 10000                               // Defines maximum amount of steps for numerical integration    
+#define INTMAXSTEPS 10000                              // Defines maximum amount of steps for numerical integration    
 
 typedef double (*func)(double x, double prefix, double mult);
 typedef double (*funcTs)(double x, double prefix, double mult, double C);
@@ -149,10 +149,10 @@ inline __device__ double weightedAvgZero(double x0, double x1, double w0, double
 }
 
 inline __device__ double Debye(double x) 
-{
+{ 
     double nom = x * x * x * x * exp(x);
     double denom = (exp(x) - 1.0) * (exp(x) - 1.0);
-    return (x <= zero) ? 0.0 : nom / denom; 
+    return nom / denom; 
 }
 
 #endif
