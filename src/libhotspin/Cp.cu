@@ -39,19 +39,19 @@ __global__ void cpKern(double* __restrict__ Cp,
         const double h_2 = 0.5 * h;
 
         double x = 0.0;  
-        double val = Debye(x);
+        double val = Debyef(x);
         double valm = 0.0;
 
         int j = 0;
 
         for (j=0; j < INTMAXSTEPS-1; j++) {
             x += h;
-            valm += (Debye(x));
+            valm += (Debyef(x));
             
         }
 
         x += h;
-        val += Debye(x);
+        val += Debyef(x);
         val += (2.0 * valm);
         val *= h_2;
 

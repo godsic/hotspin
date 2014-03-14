@@ -152,7 +152,14 @@ inline __device__ double Debye(double x)
 { 
     double nom = x * x * x * x * exp(x);
     double denom = (exp(x) - 1.0) * (exp(x) - 1.0);
-    return (x <= zero) ? 0.0 : nom / denom; 
+    return (x <= zero) ? 0.0 : nom / denom;
+}
+
+inline __device__ float Debyef(float x) 
+{ 
+    float nom = x * x * x * x * __expf(x);
+    float denom = (__expf(x) - 1.0f) * (__expf(x) - 1.0f);
+    return (x <= zero) ? 0.0f : nom / denom;
 }
 
 #endif
