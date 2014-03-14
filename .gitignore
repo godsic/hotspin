@@ -7,6 +7,7 @@
 _testmain.go
 _cgo_export.h
 _obj
+*.ptx
 *.prof
 *.mprofi
 *.project
@@ -16,5 +17,5 @@ graph.dot
 *.pro.user
 *.pyc
 *.*~
-mumax2-manual.pdf
-mumax2.tar.gz
+*.so
+hotspin-manual.pdf
