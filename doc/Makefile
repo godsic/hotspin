@@ -1,9 +1,9 @@
 .SILENT:
 
 godirs=\
-	mumax\
-	mumax/common\
-	mumax/gpu\
+	hotspin-core\
+	hotspin-core/common\
+	hotspin-core/gpu\
 	cuda\
 	cuda/driver\
 

@@ -1,9 +1,6 @@
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../libhotspin
 
 APIGEN=./apigen.sh
-ifdef SystemRoot
-APIGEN=../../bin/apigen.exe
-endif
 
 all: hotspin.py
 
