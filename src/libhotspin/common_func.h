@@ -27,7 +27,8 @@
 #define eps         1.0e-8                             // the target numerical accuracy of iterative methods
 #define linRange    1.0e-1                             // Defines the region of linearity
 #define INTMAXSTEPS 1000                               // Defines maximum amount of steps for numerical integration    
-
+#define INFINITESPINLIMIT 1.0e5                        // Above this value the spin is treated as infinite (classical)
+  
 typedef double (*func)(double x, double prefix, double mult);
 typedef double (*funcTs)(double x, double prefix, double mult, double C);
 
@@ -111,12 +112,20 @@ inline __device__ double dBjdx(double J, double x)
 
 inline __device__ double L(double x)
 {
-    return (x > -linRange && x < linRange) ? (x / 3.0) - ((x * x * x) / 45.0) : coth(x) - (1.0 / x) ;
+    return (fabs(x) < linRange) ? (x / 3.0) -
+                                  (x * x * x / 45.0) +
+                                  (x * x * x * x * x * 2.0 / 945.0) -
+                                  (x * x * x * x * x  * x * x / 4725.0)
+                                : coth(x) - (1.0 / x) ;
 }
 
 inline __device__ double dLdx(double x)
 {
-    return (x > -linRange && x < linRange) ? (1 / 3.0) - ((x * x) / 15.0) : 1.0 - (coth(x) * coth(x)) + (1.0 / (x * x));
+    return (fabs(x) < linRange) ? (1 / 3.0) - 
+                                  (x * x / 15.0) +
+                                  (x * x * x * x * 2.0 / 189.0) -
+                                  (x * x * x * x  * x * x / 675.0)
+                                : 1.0 - (coth(x) * coth(x)) + (1.0 / (x * x));
 }
 
 inline __device__ double sign(double x)
