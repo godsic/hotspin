@@ -78,7 +78,8 @@ __device__ double findroot_Ridders(func* f, double J, double mult, double xa, do
 __device__ double Model(double n, double J, double pre)
 {
     double x = pre * n;
-    double val = Bj(J, x) - n;
+    double val = (J > INFINITESPINLIMIT) ? L(x) : Bj(J, x);
+    val = val - n;
     return val;
 }
 
@@ -100,7 +101,7 @@ __global__ void brillouinKern(double* __restrict__ msat0Msk,
     {
         double Temp = T[i];
 
-        double msat0T0 = (msat0T0Msk == NULL) ? msat0T0Mul : msat0T0Mul * msat0T0Msk[i];
+        double msat0T0 = msat0T0Mul * getMaskUnity(msat0T0Msk, i);
 
         if (msat0T0 == 0.0)
         {
@@ -114,7 +115,7 @@ __global__ void brillouinKern(double* __restrict__ msat0Msk,
             return;
         }
 
-        double Tc = (TcMsk == NULL) ? TcMul : TcMul * TcMsk[i];
+        double Tc = TcMul * getMaskUnity(TcMsk, i);
 
         if (Temp > Tc)
         {
@@ -122,17 +123,17 @@ __global__ void brillouinKern(double* __restrict__ msat0Msk,
             return;
         }
 
-        double S  = (SMsk  == NULL) ? SMul  : SMul  * SMsk[i];
+        double S  = SMul * getMaskUnity(SMsk, i);
 
-        double J0  = 3.0 * Tc / (S * (S + 1.0));
-        double pre = S * S * J0 / (Temp);
+        double preS = (S > INFINITESPINLIMIT) ? 1.0 : S / (S + 1.0);
+        double pre = 3.0 * preS * (Tc / Temp);
 
         double dT = (Tc - Temp) / Tc;
         double lowLimit = (dT < 0.0004) ? -0.1 : 0.01;
         double hiLimit  = (dT < 0.0004) ?  0.5 : 1.1;
         double msat0 = findroot_Ridders(&pModel, S, pre, lowLimit, hiLimit);
 
-        msat0Msk[i] = (double)(msat0T0 * fabs(msat0) / (msat0Mul));
+        msat0Msk[i] = msat0T0 * fabs(msat0) / (msat0Mul);
     }
 }
 
