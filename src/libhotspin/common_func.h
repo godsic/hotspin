@@ -77,10 +77,12 @@ inline __device__ double Bj(double J, double x)
     double gpre6 = gpre4 * gpre2;
     double lpre8 = lpre4 * lpre4;
     double gpre8 = gpre4 * gpre4;
-    double lim = linRange / gpre;
-    return (fabs(x) < lim)  ? ((gpre2 - lpre2) * x / 3.0) + 
-                              ((lpre4 - gpre4) * x * x * x / 45.0) + 
-                              ((gpre6 - lpre6) * x * x * x * x * x * 0.5 / 945.0) + 
+    double limA = linRange / gpre;
+    double limB = linRange / lpre;
+    double lim = fmax(limA, limB);
+    return (fabs(x) < lim)  ? ((gpre2 - lpre2) * x / 3.0) - 
+                              ((gpre4 - lpre4) * x * x * x / 45.0) + 
+                              ((gpre6 - lpre6) * x * x * x * x * x * 2.0 / 945.0) - 
                               ((gpre8 - lpre8) * x * x * x * x * x  * x * x / 4725.0)
                             : gpre * coth(gpre * x) - lpre * coth(lpre * x);
 }
@@ -97,10 +99,12 @@ inline __device__ double dBjdx(double J, double x)
     double gpre6 = gpre4 * gpre2;
     double lpre8 = lpre4 * lpre4;
     double gpre8 = gpre4 * gpre4;
-    double lim = linRange / gpre;
-    return (fabs(x) < lim) ? ((gpre2 - lpre2) / 3.0) + 
-                             ((lpre4 - gpre4) * x * x / 15.0) + 
-                             ((gpre6 - lpre6) * x * x * x * x * 0.5 / 189.0) + 
+    double limA = linRange / gpre;
+    double limB = linRange / lpre;
+    double lim = fmax(limA, limB);
+    return (fabs(x) < lim) ? ((gpre2 - lpre2) / 3.0) - 
+                             ((gpre4 - lpre4) * x * x / 15.0) + 
+                             ((gpre6 - lpre6) * x * x * x * x * 2.0 / 189.0) - 
                              ((gpre8 - lpre8) * x * x * x * x  * x * x / 675.0)
            : (gpre2 - lpre2) + lpre2 * coth(lpre * x) * coth(lpre * x) - gpre2 * coth(gpre * x) * coth(gpre * x);
 }
