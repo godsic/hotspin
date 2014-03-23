@@ -48,17 +48,21 @@ __global__ void long_field_Kern(double* __restrict__ hx, double* __restrict__ hy
         
         double3 s = normalize(mf);
 
-        double J0  = 3.0 * Tc / (S * (S + 1.0));
+        double preS = (S > INFINITESPINLIMIT) ? 1.0 : S / (S + 1.0);
 
-        double b = S * S * J0 / Ts;
+        double b = 3.0 * preS * Tc / Ts;
 
         double meb = abs_mf * b;
 
         double M = Ms0T0 * abs_mf;
 
-        double M0 = Ms0T0 * Bj(S, meb);
+        double W = (S > INFINITESPINLIMIT) ? L(meb) : Bj(S, meb);
 
-        double mult = n * kB * Ts * (M0 - M) / (mu0 * Ms0T0 * Ms0T0 * dBjdx(S, meb));
+        double dWdx = (S > INFINITESPINLIMIT) ? dLdx(meb) : dBjdx(S, meb);
+
+		double M0 = Ms0T0 * W;
+
+        double mult = n * kB * Ts * (M0 - M) / (mu0 * Ms0T0 * Ms0T0 * dWdx);
 
         hx[I] = mult * s.x;
         hy[I] = mult * s.y;
