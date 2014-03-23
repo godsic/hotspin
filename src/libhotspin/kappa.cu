@@ -30,7 +30,7 @@ __global__ void kappaKern(double* __restrict__ kappa,
 
     if (i < Npart)
     {
-        double msat0T0u = (msat0T0Msk == NULL) ? 1.0 : msat0T0Msk[i];
+        double msat0T0u = getMaskUnity(msat0T0Msk, i);
         double msat0T0 = msat0T0Mul * msat0T0u;
 
         double Temp = T[i];
@@ -42,19 +42,21 @@ __global__ void kappaKern(double* __restrict__ kappa,
         }
 
 
-        double S = (SMsk == NULL) ? SMul : SMul * SMsk[i];
-        double Tc = (TcMsk == NULL) ? TcMul : TcMul * TcMsk[i];
-        double msat0 = (msat0Msk == NULL) ? msat0Mul : msat0Mul * msat0Msk[i];
-        double J0  = 3.0 * Tc / (S * (S + 1.0)); // in h^2 units
+        double S = SMul * getMaskUnity(SMsk, i);
+        double Tc = TcMul * getMaskUnity(TcMsk, i);
+        double msat0 = msat0Mul * getMaskUnity(msat0Msk, i);
+        double preS = (S > INFINITESPINLIMIT) ? 1.0 : S / (S + 1.0);
+        double J0  = 3.0 * Tc;
         double n = (nMsk == NULL) ? 1.0 : nMsk[i];
 
-        double mul = msat0T0u * msat0T0u / (S * S * J0 * n); // msat0T0 mul should be in the kappa multiplier
+        double mul = msat0T0u * msat0T0u / (preS * J0 * n); // msat0T0 mul should be in the kappa multiplier
         double me = msat0 / msat0T0;
-        double b = S * S * J0 / Temp;
+        double b = preS * J0 / Temp;
         double meb = me * b;
-        double f = b * dBjdx(S, meb);
+        double f = (S > INFINITESPINLIMIT) ? dLdx(meb) : dBjdx(S, meb);
+        f = b * f;
         double k = mul * (f / (1.0 - f));
-        kappa[i] = (double)k;
+        kappa[i] = k;
     }
 }
 
