@@ -139,6 +139,8 @@ func convertArg(v interface{}, typ reflect.Type) reflect.Value {
 		return reflect.ValueOf(jsonToHostArray(v))
 	case "[]float64":
 		return reflect.ValueOf(jsonToFloat64Array(v))
+	case "[][]float64":
+		return reflect.ValueOf(jsonTo2DFloat64Array(v))
 	case "[]string":
 		return reflect.ValueOf(jsonToStringArray(v))
 	}
@@ -192,6 +194,35 @@ func jsonToFloat64Array(v interface{}) []float64 {
 		return array
 	}
 	panic(IOErr("Expected float64 or float64 array, got: " + ShortPrint(v) + " of type: " + reflect.TypeOf(v).String()))
+	return nil //silence 6g
+}
+
+// Converts []interface{} array to [][]float64.
+// Also, converts a single float64 to a 1-element 2D array.
+func jsonTo2DFloat64Array(v interface{}) [][]float64 {
+	defer func() {
+		err := recover()
+		if err != nil {
+			panic(IOErr(fmt.Sprint("Error parsing json array: ", ShortPrint(v), "\ncause: ", err)))
+		}
+	}()
+	kind := reflect.TypeOf(v).Kind()
+	value := reflect.ValueOf(v)
+	switch kind {
+	case reflect.Float64:
+		return [][]float64{{v.(float64)}}
+	case reflect.Slice:
+		array := make([][]float64, value.Len())
+		for j := 0; j < value.Len(); j++ {
+			subarray := value.Index(j).Interface().([]interface{})
+			array[j] = make([]float64, len(subarray))
+			for i := range array[j] {
+				array[j][i] = subarray[i].(float64)
+			}
+		}
+		return array
+	}
+	panic(IOErr("Expected float64 or slice, got: " + ShortPrint(v) + " of type: " + reflect.TypeOf(v).String()))
 	return nil //silence 6g
 }
 
