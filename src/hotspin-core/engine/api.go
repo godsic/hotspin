@@ -215,6 +215,30 @@ func (a API) SetPointwiseOf(argument string, quantity string, arg float64, value
 
 }
 
+func (a API) SetVMap(yName, xName string, yValue [][]float64, xValue []float64) {
+	e := a.Engine
+
+	x := e.Quant(xName)
+	y := e.Quant(yName)
+
+	if x.NComp() > 1 {
+		panic(InputErrF("Can not map quantity", yName, " to non-scalar quantity", xName))
+	}
+
+	u := y.GetUpdater()
+	if u == nil {
+		u = newPointwiseOfUpdater(x, y)
+		y.SetUpdater(u)
+	}
+
+	pointwise, ok := u.(*PointwiseOfUpdater)
+	if !ok {
+		panic(InputErrF("Can not set quantity", yName, " as a function of", xName, " since it is already determined in an other way:", reflect.TypeOf(u)))
+	}
+
+	pointwise.AppendMap(xValue, yValue)
+}
+
 // Set scalar. Convenience method for SetValue() with only one number.
 // REDUNDANT?
 func (a API) SetS(quantity string, value float64) {
