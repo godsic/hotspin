@@ -237,6 +237,8 @@ func (a API) SetVMap(yName, xName string, yValue [][]float64, xValue []float64) 
 	}
 
 	pointwise.AppendMap(xValue, yValue)
+
+	y.Invalidate()
 }
 
 // Set scalar. Convenience method for SetValue() with only one number.
