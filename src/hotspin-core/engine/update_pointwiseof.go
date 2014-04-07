@@ -72,24 +72,27 @@ func (field *PointwiseOfUpdater) Update() {
 	}
 
 	value := field.quant.multiplier
-	// out of range: value = 0
-	if i-1 < 0 || i < 0 {
-		for i := range value {
-			value[i] = 0
-		}
-		return
-	}
 
-	arg1 := field.points[i-1][0]
-	arg2 := field.points[i][0]
-	v1 := field.points[i-1][1:]
-	v2 := field.points[i][1:]
-	darg := arg2 - arg1          //pt2[0] - pt1[0]
-	argum := (arg - arg1) / darg // 0..1
-	//	Debug("arg:",arg, "arg1:",arg1, "arg2", arg2, "argum", argum)
-	Assert(argum >= 0 && argum <= 1)
-	for i := range value {
-		value[i] = v1[i] + argum*(v2[i]-v1[i])
+	if arg != field.points[i][0] {
+		// out of range: value = 0
+		if i-1 < 0 || i < 0 {
+			for i := range value {
+				value[i] = 0
+			}
+			return
+		}
+		arg1 := field.points[i-1][0]
+		arg2 := field.points[i][0]
+		v1 := field.points[i-1][1:]
+		v2 := field.points[i][1:]
+		darg := arg2 - arg1          //pt2[0] - pt1[0]
+		argum := (arg - arg1) / darg // 0..1
+		Assert(argum >= 0 && argum <= 1)
+		for i := range value {
+			value[i] = v1[i] + argum*(v2[i]-v1[i])
+		}
+	} else {
+		copy(value, field.points[i][1:])
 	}
 	field.quant.Invalidate() //SetValue(value) //?
 }
