@@ -21,11 +21,11 @@ all:
 	go install -v texgen
 	go install -v template
 	make -C src/python
-	cp -r src/python .
+	cp -rf src/python/* ./python/
 
 .PHONY: clean
 clean:	
-	rm -rf python/
+	rm -rf python/*
 	rm -rf pkg/*
 	rm -rf src/hotspin-core/gpu/$(LIBNAME)
 	rm $(LIBNAME)
