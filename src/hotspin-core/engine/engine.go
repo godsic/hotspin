@@ -276,12 +276,12 @@ func (e *Engine) addDerivedQuant(name string) {
 		in := name[len("fft(") : len(name)-1]
 		Debug(in)
 		qin := e.Quant(in)
-	    if qin.kind == VALUE {
-	        panic(InputErrF(qin.Name(), "is not space-dependent, fft is meaningless."))
-	    }
-	    e.AddQuant(NewQuant(name, qin.nComp, gpu.FFTOutputSize(e.GridSize()), qin.kind, qin.unit, false, "fft of " + qin.desc))
-	    Debug(name)
-	    qout := e.Quant(name)
+		if qin.kind == VALUE {
+			panic(InputErrF(qin.Name(), "is not space-dependent, fft is meaningless."))
+		}
+		e.AddQuant(NewQuant(name, qin.nComp, gpu.FFTOutputSize(e.GridSize()), qin.kind, qin.unit, false, "fft of "+qin.desc))
+		Debug(name)
+		qout := e.Quant(name)
 		qout.updater = NewFFTUpdater(qin, qout)
 		return
 	}
@@ -398,7 +398,6 @@ func (e *Engine) LoadModuleArgs(name string, ins, deps, outs []string) {
 	e.modules = append(e.modules, module)
 }
 
-
 // Constructs and adds an arbitrary quantity.
 // (Also returns it, but it's not necessarily used further)
 // Name tag is case-independent.
@@ -421,21 +420,6 @@ func (e *Engine) AddQuant(q *Quant) {
 
 	e.quantity[lname] = q
 }
-
-// AddQuant(name, nComp, VALUE)
-//func (e *Engine) AddValue(name string, nComp int, unit Unit) {
-//	e.AddQuant(name, nComp, VALUE, unit)
-//}
-//
-//// AddQuant(name, nComp, FIELD)
-//func (e *Engine) AddField(name string, nComp int, unit Unit) {
-//	e.AddQuant(name, nComp, FIELD, unit)
-//}
-//
-//// AddQuant(name, nComp, MASK)
-//func (e *Engine) AddMask(name string, nComp int, unit Unit) {
-//	e.AddQuant(name, nComp, MASK, unit)
-//}
 
 // Mark childQuantity to depend on parentQuantity.
 // Multiply adding the same dependency has no effect.
@@ -581,18 +565,6 @@ func (e *Engine) AutoSave(quant string, format string, options []string, period 
 	return handle
 }
 
-// Saves the quantity periodically to single file.
-func (e *Engine) AutoSaveSingleFile(quant string, format string, options []string, period float64) (handle int) {
-	checkKinds(e.Quant(quant), MASK, FIELD)
-	if format != "dump" {
-		panic(InputErr("Single File mode is only meaningfull for 'dump' output format!"))
-	}
-	handle = e.NewHandle()
-	e.crontabs[handle] = &AutoSaveSingleFile{quant, format, options, period, e.time.Scalar(), 0}
-	Log("Auto-save: single file mode", quant, "every", period, "s", "(handle ", handle, ")")
-	return handle
-}
-
 // See api.go
 func (e *Engine) Tabulate(quants []string, filename string) {
 	if _, ok := e.outputTables[filename]; !ok { // table not yet open
@@ -622,18 +594,6 @@ func (e *Engine) AutoTabulate(quants []string, filename string, period float64) 
 func (e *Engine) AutoFilename(quant, format string) string {
 	filenum := fmt.Sprintf(e.filenameFormat, e.OutputID())
 	filename := quant + filenum + "." + GetOutputFormat(format).Name()
-	dir := ""
-	if e.outputDir != "" {
-		dir = e.outputDir + "/"
-	}
-	return dir + filename
-}
-
-// Generates an automatic file name for the quantity, given the output format (singe file mode).
-// E.g., "dir.out/m.dump"
-// see: outputDir, filenameFormat
-func (e *Engine) AutoFilenameSingleFile(quant, format string) string {
-	filename := quant + "." + GetOutputFormat(format).Name()
 	dir := ""
 	if e.outputDir != "" {
 		dir = e.outputDir + "/"
@@ -701,20 +661,19 @@ func (e *Engine) Stats() string {
 	return str
 }
 
-
 func (e *Engine) SaveState(out, in string) {
 	if !e.HasQuant(in) {
 		panic(InputErrF(in, "does not exist."))
 	}
 
 	qin := e.Quant(in)
-	qin.Update()//!!!!!
+	qin.Update() //!!!!!
 
 	if !e.HasQuant(out) {
 		e.AddNewQuant(out, qin.NComp(), qin.Kind(), qin.Unit(), qin.desc)
 	}
 
-	qout :=  e.Quant(out)
+	qout := e.Quant(out)
 	qout.CopyFromQuant(qin)
 }
 

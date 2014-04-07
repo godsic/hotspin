@@ -15,9 +15,7 @@ package engine
 import (
 	"fmt"
 	. "hotspin-core/common"
-	"hotspin-core/gpu"
 	"hotspin-core/host"
-	"math"
 	"os"
 	"path"
 	"reflect"
@@ -153,68 +151,6 @@ func (a API) SetV(quantity string, value []float64) {
 	q.SetValue(value)
 }
 
-func (a API) SetValue(quantity string, value []float64) {
-	Warn("setvalue deprecated: use setv")
-	a.SetV(quantity, value)
-}
-
-// Used to set a quantity as a function of time. Usage:
-//	SetPointwise("Quant", time0, [value0])
-//	SetPointwise("Quant", time1, [value1])
-//	SetPointwise("Quant", time2, [value2])
-//	...
-// Will make the quantity vary as a function of time, using
-// piecewise linear interpolation between the defined time-value pairs.
-// It is a good idea to end with something like:
-//	SetPointwise("Quant", 9999, [0])
-// to define the value as zero for time = infinity (after a pulse, e.g.),
-// because the function has to be defined during the entire simulation.
-func (a API) SetPointwise(quantity string, time float64, value []float64) {
-	e := a.Engine
-	q := e.Quant(quantity)
-	checkKinds(q, VALUE, MASK)
-
-	u := q.GetUpdater()
-	if u == nil {
-		u = newPointwiseUpdater(q)
-		q.SetUpdater(u)
-	}
-
-	pointwise, ok := u.(*PointwiseUpdater)
-	if !ok {
-		panic(InputErrF("Can not set time-dependent", quantity, ", it is already determined in an other way:", reflect.TypeOf(u)))
-	}
-
-	SwapXYZ(value)
-	pointwise.Append(time, value) // swap!
-
-}
-
-func (a API) SetPointwiseOf(argument string, quantity string, arg float64, value []float64) {
-	e := a.Engine
-
-	argum := e.Quant(argument)
-	q := e.Quant(quantity)
-
-	checkKinds(argum, VALUE, SCALAR)
-	checkKinds(q, VALUE, MASK)
-
-	u := q.GetUpdater()
-	if u == nil {
-		u = newPointwiseOfUpdater(argum, q)
-		q.SetUpdater(u)
-	}
-
-	pointwise, ok := u.(*PointwiseOfUpdater)
-	if !ok {
-		panic(InputErrF("Can not set time-dependent", quantity, ", it is already determined in an other way:", reflect.TypeOf(u)))
-	}
-
-	SwapXYZ(value)
-	pointwise.Append(arg, value) // swap!
-
-}
-
 func (a API) SetVMap(yName, xName string, yValue [][]float64, xValue []float64) {
 	e := a.Engine
 
@@ -246,11 +182,6 @@ func (a API) SetVMap(yName, xName string, yValue [][]float64, xValue []float64) 
 func (a API) SetS(quantity string, value float64) {
 	q := a.Engine.Quant(quantity)
 	q.SetValue([]float64{value})
-}
-
-func (a API) SetScalar(quantity string, value float64) {
-	Warn("setscalar deprecated: use sets or setv")
-	a.SetS(quantity, value)
 }
 
 // Sets a space-dependent multiplier mask for the quantity.
@@ -308,11 +239,6 @@ func (a API) GetV(quantity string) []float64 {
 	return value
 }
 
-// DEPRECATED: same as getv()
-func (a API) GetValue(quantity string) []float64 {
-	return a.GetV(quantity)
-}
-
 // DEBUG: Does not update.
 func (a API) DebugV(quantity string) []float64 {
 	q := a.Engine.Quant(quantity)
@@ -334,11 +260,6 @@ func (a API) GetS(quantity string) float64 {
 	q := a.Engine.Quant(quantity)
 	q.Update() //!
 	return q.Scalar()
-}
-
-// DEPRECATED: same as gets()
-func (a API) GetScalar(quantity string) float64 {
-	return a.GetS(quantity)
 }
 
 // Gets a space-dependent quantity. If the quantity uses a mask,
@@ -437,20 +358,6 @@ func (a API) SaveAs(quantity string, format string, options []string, filename s
 // @see filenumberfomat
 func (a API) AutoSave(quantity string, format string, options []string, period float64) (handle int) {
 	return a.Engine.AutoSave(quantity, format, options, period)
-}
-
-// Saves a space-dependent quantity periodically to a single file, every period (expressed in seconds).
-// Output appears in the output directory with automatically generated file name.
-// E.g., for a quantity named "m", and format "txt" the generated files will be:
-// m.dump, b.dump ...
-// See FilenameFormat() for setting the number of zeros.
-// This function outputs to single file by appending new data to the end of the file.
-// Therefore it is meaningfull only for mumax2's 'dump' binary format.
-// Returns an integer handle that can be used to manipulate the auto-save entry.
-// E.g. remove(handle) stops auto-saving it.
-// @see filenumberfomat
-func (a API) AutoSaveSingleFile(quantity string, format string, options []string, period float64) (handle int) {
-	return a.Engine.AutoSaveSingleFile(quantity, format, options, period)
 }
 
 // Saves these space-independent quantities, once.
@@ -673,205 +580,6 @@ func (a API) ReadFile(filename string) *host.Array {
 // to the saved quantity.
 func (a API) OutputID() int {
 	return a.Engine.OutputID()
-}
-
-//~ @ This file implements dispersion calculation API for mumax2 core
-//~ @ It is intendant to replace semargl functionality
-//~ @author: Mykola 'godsic' Dvornik
-//~ @param fmin (float) specifies lower bound of the scan range
-//~ @param fmax (float) specifies upper bound of the scan range
-//~ @param steps (int)  specifies number of points within scan range
-//~ @param format (int) specifies output format: 0 - Amplitude/Phase, 1 - X/Y
-
-func (a API) GetDispersion(fmin, fmax float64, steps, format int) {
-	if fmax < fmin {
-		panic(InputErr("The bandwidth is negative."))
-	}
-
-	//~ calculate frequency increment
-	df := (fmax - fmin) / float64(steps)
-
-	meshSize := a.Engine.GridSize()
-	cellSize := a.Engine.CellSize()
-	worldSize := a.Engine.WorldSize()
-	logicSize := a.Engine.PaddedSize()
-
-	//~ calculate half BZ boundaries
-	bw := make([]float64, len(cellSize))
-	for i := range cellSize {
-		bw[i] = 0.5 * math.Pi / cellSize[i]
-	}
-
-	qM := a.Engine.Quant("m")
-	m := qM.Array()
-	COMP := qM.NComp()
-
-	//~ Save initial state
-	m0 := gpu.NewArray(COMP, meshSize)
-	m0.CopyFromDevice(m)
-	B0 := a.GetV("B_ext")
-	//~ Debug(B0)
-	//~ Debug(meshSize)
-	//~ create spatial mask for excitation field
-	//~ to precisely control spatial bandwidth of the excitation the sinc function is used
-	//~ with the cutoff tuned to the boundary of the Brillouin zone of the discreet mesh
-
-	//~ Debug("Preparing excitation mask...")
-	bMask := host.NewArray(COMP, meshSize)
-
-	for k := 0; k < meshSize[0]; k++ {
-		sincZ := 1.0
-		if meshSize[0] > 16 {
-			z := float64(k)*cellSize[0] - 0.5*worldSize[0]
-			sincZ = sinc(bw[0] * z)
-		}
-		for j := 0; j < meshSize[1]; j++ {
-			sincY := 1.0
-			if meshSize[1] > 16 {
-				y := float64(j)*cellSize[1] - 0.5*worldSize[1]
-				sincY = sinc(bw[1] * y)
-			}
-			for i := 0; i < meshSize[2]; i++ {
-				sincX := 1.0
-				if meshSize[2] > 16 {
-					x := float64(i)*cellSize[2] - 0.5*worldSize[2]
-					sincX = sinc(bw[2] * x)
-				}
-				bMask.Array[Z][k][j][i] = float64(1.0)
-				bMask.Array[Y][k][j][i] = float64(1.0)
-				bMask.Array[X][k][j][i] = float64(sincX * sincY * sincZ)
-			}
-		}
-	}
-
-	a.SetMask("B_ext", bMask)
-	//~ a.SetV("B_ext", []float64{1.0, 1.0, 1.0})
-	//~ a.Save("B_ext", "gplot", []string{})
-	//~ Debug("Done.")
-
-	//~ create FFT plan
-	fftBuffer := new(gpu.Array)
-	fftOutputSize := gpu.FFTOutputSize(logicSize)
-	fftBuffer.Init(1, fftOutputSize, gpu.DO_ALLOC)
-	plan := gpu.NewDefaultFFT(meshSize, logicSize)
-	norm := float64(gpu.FFTNormLogic(logicSize))
-
-	//~ create window
-
-	window := gpu.NewArray(1, meshSize)
-	window.CopyFromHost(genWindow(meshSize))
-
-	//~ get dimensions for per component quantities, lame
-	OutputSize := make([]int, 3)
-	OutputSize[0] = fftOutputSize[0]
-	OutputSize[1] = fftOutputSize[1]
-	OutputSize[2] = fftOutputSize[2] / 2
-
-	//~ create two output quantities for real/img (amp/phase) parts
-
-	mFFTHostX := NewQuant("m-X", COMP, OutputSize, FIELD, Unit("A/m"), true, "FFT of M, real part")
-	mFFTHostXArray := mFFTHostX.Buffer(FIELD)
-
-	mFFTHostY := NewQuant("m-Y", COMP, OutputSize, FIELD, Unit("A/m"), true, "FFT of M, imaginary part")
-	mFFTHostYArray := mFFTHostY.Buffer(FIELD)
-
-	//~ Loop over the range of frequencies
-	for i := 0; i < steps; i++ {
-		//~ Get frequency of excitation
-		f := fmin + float64(i)*df
-		Log(fmt.Sprintf("Calculating response for %g GHz...", f*1e-9))
-
-		//~ Get time constant, tc
-
-		tp := 1.0 / f // period of RF
-
-		tc := float64(N_TC) * tp // length of the excitation
-
-		rt := tc / 4.0 // rise time of the excitation
-		//~ ft := tc / 2.0 // fall time of the excitation
-
-		dt := tp / float64(FINE_T)
-
-		N := (N_TC + 2) * FINE_T
-
-		//~ Generate CW excitation
-		for ii := 0; ii < N; ii++ {
-			t := float64(ii) * dt
-			val := B_EXT * math.Sin(2.0*math.Pi*f*t) * (1.0 - math.Exp(-t/rt)) // * (1.0 - math.Exp((t-tc)/ft))
-			a.SetPointwise("B_ext", t, []float64{B0[X], B0[Y], B0[Z] + val})
-		}
-		a.SetPointwise("B_ext", 9999.9, []float64{B0[X], B0[Y], B0[Z]})
-
-		//~ run simulations and dump some debug information
-		handle := a.AutoTabulate([]string{"t", "<B_ext>", "<m>"}, "t_B_M_"+fmt.Sprintf("%g-GHZ", f*1e-9)+".dat", dt)
-
-		qM.Update()
-		a.Run(tc)
-		qM.Update()
-
-		//~  remove debug output handler
-		a.Remove(handle)
-
-		//~ substrate ground state
-		gpu.Madd(m, m, m0, -1.0)
-
-		//~ apply windowing
-		for ii := 0; ii < COMP; ii++ {
-			gpu.Mul(m.Component(ii), m.Component(ii), window)
-		}
-
-		//~ Do FFT of m to buffer
-		//~ split cmplx buffer to two per-component buffers
-		//~ Do representation conversion if required
-		for ii := 0; ii < COMP; ii++ {
-			plan.Forward(m.Component(ii), fftBuffer)
-			extractCmplxComponents(fftBuffer.LocalCopy(), mFFTHostXArray.Component(ii), mFFTHostYArray.Component(ii), norm, format)
-		}
-
-		//~ Save result to files
-		filename := a.Engine.AutoFilename(mFFTHostX.Name(), OUT_FORMAT)
-		a.Engine.SaveAs(mFFTHostX, OUT_FORMAT, []string{}, filename)
-		filename = a.Engine.AutoFilename(mFFTHostY.Name(), OUT_FORMAT)
-		a.Engine.SaveAs(mFFTHostY, OUT_FORMAT, []string{}, filename)
-
-		//~ recover state
-		a.SetS("t", 0.0)
-		a.SetS("dt", 1e-15)
-		a.SetV("B_ext", []float64{B0[X], B0[Y], B0[Z]})
-		m.CopyFromDevice(m0)
-		qM.Invalidate()
-	}
-}
-
-func sinc(arg float64) float64 {
-	res := 1.0
-	if arg != 0.0 {
-		res = math.Sin(arg) / arg
-	}
-	return res
-}
-
-func extractCmplxComponents(src, comp1, comp2 *host.Array, norm float64, format int) {
-	nrm := 1.0 / norm
-	for k := 0; k < comp1.Size4D[1]; k++ {
-		for j := 0; j < comp1.Size4D[2]; j++ {
-			for i := 0; i < comp1.Size4D[3]; i++ {
-				R := nrm * float64(src.Array[0][k][i][2*j+0])
-				I := nrm * float64(src.Array[0][k][i][2*j+1])
-				switch format {
-				case 0:
-					tR := R
-					R = math.Sqrt(R*R + I*I)
-					I = math.Atan2(I, tR)
-				case 1:
-					// pass through
-				}
-				comp1.Array[0][k][j][i] = float64(R)
-				comp2.Array[0][k][j][i] = float64(I)
-
-			}
-		}
-	}
 }
 
 func (a API) SaveState(dst, src string) {

@@ -97,22 +97,6 @@ func (field *PointwiseOfUpdater) Update() {
 	field.quant.Invalidate() //SetValue(value) //?
 }
 
-func (p *PointwiseOfUpdater) Append(arg float64, value []float64) {
-	nComp := p.quant.NComp()
-	checkComp(p.quant, len(value))
-	if len(p.points) > 0 {
-		if p.points[len(p.points)-1][0] > arg {
-			panic(InputErrF("Pointwise definition should be in acsending order, but", p.points[len(p.points)-1][0], ">", arg))
-		}
-	}
-
-	entry := make([]float64, nComp+1)
-	entry[0] = arg
-	copy(entry[1:], value)
-	p.points = append(p.points, entry)
-
-}
-
 func (p *PointwiseOfUpdater) AppendMap(x []float64, y [][]float64) {
 	nComp := p.quant.NComp()
 	for i, _ := range x {
