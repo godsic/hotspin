@@ -11,9 +11,9 @@ package modules
 // Author: Arne Vansteenkiste
 
 import (
-	"math"
 	. "hotspin-core/common"
 	"hotspin-core/host"
+	"math"
 	"time"
 )
 
@@ -134,9 +134,10 @@ func Kernel_Arne(size []int, cellsize []float64, pbc []int, accuracy_ int, kern 
 
 					Assert(nv > 0 && nw > 0 && nx > 0 && ny > 0 && nz > 0)
 
-					scale := 1 / float64(nv*nw*nx*ny*nz)
+					scale := 1.0 / float64(nv*nw*nx*ny*nz)
 					surface := cellsize[v] * cellsize[w] // the two directions perpendicular to direction s
 					charge := surface * scale
+					charge_4PI := charge / (4.0 * math.Pi)
 					pu1 := cellsize[u] / 2. // positive pole center
 					pu2 := -pu1             // negative pole center
 
@@ -151,27 +152,29 @@ func Kernel_Arne(size []int, cellsize []float64, pbc []int, accuracy_ int, kern 
 
 							// Do volume integral over destination cell
 							for α := 0; α < nx; α++ {
-								rx := R[X] - cellsize[X]/2 + cellsize[X]/float64(2*nx) + (cellsize[X]/float64(nx))*float64(α)
+								rx := R[X] - cellsize[X]/2.0 + cellsize[X]/float64(2*nx) + (cellsize[X]/float64(nx))*float64(α)
 
 								for β := 0; β < ny; β++ {
-									ry := R[Y] - cellsize[Y]/2 + cellsize[Y]/float64(2*ny) + (cellsize[Y]/float64(ny))*float64(β)
+									ry := R[Y] - cellsize[Y]/2.0 + cellsize[Y]/float64(2*ny) + (cellsize[Y]/float64(ny))*float64(β)
 
 									for γ := 0; γ < nz; γ++ {
-										rz := R[Z] - cellsize[Z]/2 + cellsize[Z]/float64(2*nz) + (cellsize[Z]/float64(nz))*float64(γ)
+										rz := R[Z] - cellsize[Z]/2.0 + cellsize[Z]/float64(2*nz) + (cellsize[Z]/float64(nz))*float64(γ)
 										points++
 
 										pole[u] = pu1
 										R2[X], R2[Y], R2[Z] = rx-pole[X], ry-pole[Y], rz-pole[Z]
-										r := math.Sqrt(R2[X]*R2[X] + R2[Y]*R2[Y] + R2[Z]*R2[Z])
-										qr := charge / (4 * math.Pi * r * r * r)
+										r2 := R2[X]*R2[X] + R2[Y]*R2[Y] + R2[Z]*R2[Z]
+										r := math.Sqrt(r2)
+										qr := charge_4PI / (r2 * r)
 										bx := R2[X] * qr
 										by := R2[Y] * qr
 										bz := R2[Z] * qr
 
 										pole[u] = pu2
 										R2[X], R2[Y], R2[Z] = rx-pole[X], ry-pole[Y], rz-pole[Z]
-										r = math.Sqrt(R2[X]*R2[X] + R2[Y]*R2[Y] + R2[Z]*R2[Z])
-										qr = -charge / (4 * math.Pi * r * r * r)
+										r2 = R2[X]*R2[X] + R2[Y]*R2[Y] + R2[Z]*R2[Z]
+										r = math.Sqrt(r2)
+										qr = -charge_4PI / (r2 * r)
 										B[X] += (bx + R2[X]*qr) // addition ordered for accuracy
 										B[Y] += (by + R2[Y]*qr)
 										B[Z] += (bz + R2[Z]*qr)
@@ -183,7 +186,7 @@ func Kernel_Arne(size []int, cellsize []float64, pbc []int, accuracy_ int, kern 
 					}
 					for d := 0; d < 3; d++ { // destination index Ksdxyz
 						I := FullTensorIdx[s][d]
-						array[I][xw][yw][zw] += float64(B[d]) // We have to ADD because there are multiple contributions in case of periodicity
+						array[I][xw][yw][zw] += B[d] // We have to ADD because there are multiple contributions in case of periodicity
 					}
 				}
 			}
