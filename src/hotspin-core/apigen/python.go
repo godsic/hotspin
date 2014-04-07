@@ -38,60 +38,67 @@ outputdir = ""
 M_ADDR = ""
 M_HOST, M_PORT = "", 0
 
-## Initializes the communication with mumax2.
+# Initializes the communication with mumax2.
 # @note Internal use only
+
+
 def init():
-	global outputdir
-	global m_sock
-	global initialized
-	global M_HOST
-	global M_PORT
-	
-	# get the output directory from environment
-	outputdir=os.environ["HOTSPIN_OUTPUTDIR"] + "/"	
-	M_ADDR = os.environ["HOTSPIN_ADDR"]
-	
-	print 'MuMax grants connection on: ' + M_ADDR
-	
-	m_name = M_ADDR.split(':')
-	M_HOST = m_name[0]
-	M_PORT = int(m_name[1])
-	
-	m_sock.connect((M_HOST,M_PORT))
-	initialized = 1
-		
+    global outputdir
+    global m_sock
+    global initialized
+    global M_HOST
+    global M_PORT
+
+    # get the output directory from environment
+    outputdir = os.environ["HOTSPIN_OUTPUTDIR"] + "/"
+    M_ADDR = os.environ["HOTSPIN_ADDR"]
+
+    print 'MuMax grants connection on: ' + M_ADDR
+
+    m_name = M_ADDR.split(':')
+    M_HOST = m_name[0]
+    M_PORT = int(m_name[1])
+
+    m_sock.connect((M_HOST, M_PORT))
+    initialized = 1
+
 #	print 'python frontend is initialized'
 
-## Calls a mumax2 command and returns the result as string.
+# Calls a mumax2 command and returns the result as string.
 # @note Internal use only.
+
+
 def call(command, args):
-	if (initialized == 0):
-		init()
-	m_sock.sendall(json.dumps([command, args])+'\n')
-	resp = recvall(m_sock)	     
-	return json.loads(resp)
+    if (initialized == 0):
+        init()
+    m_sock.sendall(json.dumps([command, args]) + '\n')
+    resp = recvall(m_sock)
+    return json.loads(resp)
 
-End='<<< End of mumax message >>>'
+End = '<<< End of mumax message >>>'
 
-## Retrieving message until the EOM statement
+# Retrieving message until the EOM statement
 # @note Internal use only.
+
+
 def recvall(the_socket):
-    total_data=[];data=''
+    total_data = []
+    data = ''
     while True:
-            data=the_socket.recv(8192)
-            if data == '':
-                sys.exit(1)
-            if End in data:
-                total_data.append(data[:data.find(End)])
+        data = the_socket.recv(8192)
+        if data == '':
+            sys.exit(1)
+        if End in data:
+            total_data.append(data[:data.find(End)])
+            break
+        total_data.append(data)
+        if len(total_data) > 1:
+            # check if end_of_data was split
+            last_pair = total_data[-2] + total_data[-1]
+            if End in last_pair:
+                total_data[-2] = last_pair[:last_pair.find(End)]
+                total_data.pop()
                 break
-            total_data.append(data)
-            if len(total_data)>1:
-                #check if end_of_data was split
-                last_pair=total_data[-2]+total_data[-1]
-                if End in last_pair:
-                    total_data[-2]=last_pair[:last_pair.find(End)]
-                    total_data.pop()
-                    break
     return ''.join(total_data)
 		
 `)
@@ -120,10 +127,11 @@ func (p *Python) WriteFunc(out io.Writer, name string, comment []string, argName
 		}
 		args += argNames[i]
 	}
-	fmt.Fprintln(out, args, "):")
 
-	fmt.Fprintf(out, `	ret = call("%s", [%s])`, name, args)
-	fmt.Fprint(out, "\n	return ")
+	fmt.Fprint(out, args, "):\n")
+
+	fmt.Fprintf(out, `    ret = call("%s", [%s])`, name, args)
+	fmt.Fprint(out, "\n    return ")
 	for i := range returnTypes {
 		if i != 0 {
 			fmt.Fprint(out, ", ")
@@ -131,7 +139,6 @@ func (p *Python) WriteFunc(out io.Writer, name string, comment []string, argName
 		fmt.Fprintf(out, `%v(ret[%v])`, python_convert[returnTypes[i].String()], i)
 	}
 	fmt.Fprintln(out)
-	//fmt.Fprintln(out, fmt.Sprintf(`	return %s(call("%s", [%s])[0])`, python_convert[retType], name, args)) // single return value only
 }
 
 var (
