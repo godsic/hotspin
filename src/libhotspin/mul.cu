@@ -45,17 +45,17 @@ __global__ void tensSYMMVecMulKern(double* dstX, double* dstY, double* dstZ,
     	int I = i * N.y * N.z + j * N.z + k;
     	int e = 2 * I; 
 
-        double KXX = kernXX[I];
-        double KYY = kernYY[I];
-        double KZZ = kernZZ[I];
+        double KXX = getMaskZero(kernXX, I);
+        double KYY = getMaskZero(kernYY, I);
+        double KZZ = getMaskZero(kernZZ, I);
 
-        double KYZ = kernYZ[I];
+        double KYZ = getMaskZero(kernYZ, I);
         double KZY = KYZ;
 
-        double KXZ = kernXZ[I];
+        double KXZ = getMaskZero(kernXZ, I);
         double KZX = KXZ;
 
-        double KXY = kernXY[I];
+        double KXY = getMaskZero(kernXY, I);
         double KYX = KXY;
 
         double RMX = srcX[e + 0];
