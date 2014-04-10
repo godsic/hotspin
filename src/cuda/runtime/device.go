@@ -176,3 +176,11 @@ func DeviceSetCacheConfig(cconfig CacheConfig) {
 	}
 	return
 }
+
+func DeviceReset() {
+	err := Error(C.cudaDeviceReset())
+	if err != Success {
+		panic(err)
+	}
+	return
+}
