@@ -9,6 +9,7 @@ package frontend
 
 import (
 	cu "cuda/driver"
+	cuda "cuda/runtime"
 	"flag"
 	"fmt"
 	. "hotspin-core/common"
@@ -162,6 +163,7 @@ func cleanup() {
 		PrintTimers()
 	}
 
+	cuda.DeviceReset()
 	// kill subprocess?
 }
 
