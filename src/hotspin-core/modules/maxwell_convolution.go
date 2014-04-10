@@ -187,6 +187,8 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 		// ignore zeros
 		if k < kernel.NComp() && IsZero(kernel.Comp[k], max) {
 			Debug("kernel", TensorIndexStr[k], " == 0")
+			Debug("nil array size:", plan.fftKernSize)
+			plan.fftKern[i][j] = gpu.NilArray(1, []int{plan.fftKernSize[X], plan.fftKernSize[Y], plan.fftKernSize[Z]})
 			continue
 		}
 
@@ -204,7 +206,7 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 			}
 		}
 
-		// calculate FFT of kernel element
+		// calculate FFT of kernel elementx
 		Debug("use", TensorIndexStr[k])
 		devIn.CopyFromHost(kernel.Component(k))
 		fullFFTPlan.Forward(devIn, devOut)
@@ -212,6 +214,7 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 
 		// extract real or imag parts
 		hostFFTKern := extract(hostOut, realness)
+		Debug("array size:", hostFFTKern.Size3D)
 		rescale(hostFFTKern, 1/float64(gpu.FFTNormLogic(logic)))
 		plan.fftKern[i][j] = gpu.NewArray(1, hostFFTKern.Size3D)
 		plan.fftKern[i][j].CopyFromHost(hostFFTKern)
