@@ -11,7 +11,13 @@ package modules
 // Author: Arne Vansteenkiste
 
 import (
+	. "hotspin-core/common"
 	. "hotspin-core/engine"
+)
+
+var (
+	maxwellv MaxwellPlan
+	maxwell  *MaxwellPlan = &maxwellv
 )
 
 // Register this module
@@ -24,4 +30,33 @@ func LoadDemag(e *Engine) {
 	LoadBField(e)
 	maxwell.EnableDemag(e.Quant("mf"), e.Quant("Msat0T0"))
 	e.Depends("B", "mf", "Msat0T0")
+}
+
+// Loads B if not yet present
+func LoadBField(e *Engine) {
+	if e.HasQuant("B") {
+		return
+	}
+	BField := e.AddNewQuant("B", VECTOR, FIELD, Unit("T"), "magnetic induction")
+	BField.SetUpdater(newBFieldUpdater())
+	maxwell.B = BField
+	// Add B/mu0 to H_eff
+	if e.HasQuant("H_eff") {
+		sum := e.Quant("H_eff").Updater().(*SumUpdater)
+		sum.MAddParent("B", 1/Mu0)
+	}
+}
+
+// Updates the E field in a single convolution
+// taking into account all possible sources.
+type BFieldUpdater struct {
+}
+
+func newBFieldUpdater() Updater {
+	u := new(BFieldUpdater)
+	return u
+}
+
+func (u *BFieldUpdater) Update() {
+	maxwell.UpdateB()
 }
