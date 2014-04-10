@@ -45,6 +45,35 @@ func Mul(dst, a, b *Array) {
 	dst.Stream.Sync()
 }
 
+func TensSYMMVecMul(dstX, dstY, dstZ, srcX, srcY, srcZ, kernXX, kernYY, kernZZ, kernYZ, kernXZ, kernXY *Array,
+	srcMulX, srcMulY, srcMulZ float64,
+	Nx, Ny, Nz int, stream Stream) {
+	C.tensSYMMVecMul(
+		(*C.double)(unsafe.Pointer(uintptr(dstX.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(dstY.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(dstZ.pointer))),
+
+		(*C.double)(unsafe.Pointer(uintptr(srcX.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(srcY.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(srcZ.pointer))),
+
+		(*C.double)(unsafe.Pointer(uintptr(kernXX.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(kernYY.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(kernZZ.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(kernYZ.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(kernXZ.pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(kernXY.pointer))),
+
+		(C.double)(float64(srcMulX)),
+		(C.double)(float64(srcMulY)),
+		(C.double)(float64(srcMulZ)),
+
+		(C.int)(int(Nx)),
+		(C.int)(int(Ny)),
+		(C.int)(int(Nz)),
+		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
+}
+
 // Divide 2 multi-GPU arrays: dst = a / b; _if_ b = 0 _then_ dst = 0
 func Div(dst, a, b *Array) {
 	CheckSize(dst.size4D, a.size4D)
@@ -220,10 +249,6 @@ func AddMadd(dst, a, b, c *Array, mul float64) {
 // kern contains real numbers
 // 	dst[i] += scale * kern[i] * src[i]
 func CMaddAsync(dst *Array, scale complex128, kern, src *Array, stream Stream) {
-	//	Debug("CMadd dst", dst.Size4D())
-	//	Debug("CMadd src", src.Size4D())
-	//	Debug("CMadd dst.Len", dst.Len())
-	//	Debug("CMadd src.Len", src.Len())
 	CheckSize(dst.Size3D(), src.Size3D())
 	AssertMsg(dst.Len() == src.Len(), "src-dst")
 	AssertMsg(dst.Len() == 2*kern.Len(), "dst-kern")

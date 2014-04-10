@@ -16,8 +16,15 @@ extern "C" {
 #endif
 
 /// dst[i] = a[i] * b[i]
-/// @param Npart number of doubles per GPU, so total number of doubles / nDevice()
 DLLEXPORT void mulAsync(double* dst, double* a, double* b, CUstream stream, int Npart);
+
+DLLEXPORT void tensSYMMVecMul(double* dstX, double* dstY, double* dstZ,
+						     double* srcX, double* srcY, double* srcZ,
+						     double* kernXX, double* kernYY, double* kernZZ,
+						     double* kernYZ, double* kernXZ, double* kernXY,
+						     double srcMulX, double srcMulY, double srcMulZ,
+						     int Nx, int Ny, int Nz,
+						     CUstream stream);
 
 #ifdef __cplusplus
 }
