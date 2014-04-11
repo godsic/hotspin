@@ -111,7 +111,7 @@ func (plan *MaxwellPlan) UpdateB() {
 		gpu.Mul(M.Component(Z), M.Component(Z), msat0T0.Array())
 	}
 
-	mMul := [3]float64{msat0T0.Multiplier()[0] * Mu0, msat0T0.Multiplier()[0] * Mu0, msat0T0.Multiplier()[0] * Mu0}
+	mMul := msat0T0.Multiplier()[0] * Mu0
 
 	plan.ForwardFFT(M)
 
@@ -120,7 +120,7 @@ func (plan *MaxwellPlan) UpdateB() {
 		&plan.fftBuf.Comp[X], &plan.fftBuf.Comp[Y], &plan.fftBuf.Comp[Z],
 		plan.fftKern[X][X], plan.fftKern[Y][Y], plan.fftKern[Z][Z],
 		plan.fftKern[Y][Z], plan.fftKern[X][Z], plan.fftKern[X][Y],
-		mMul[X], mMul[Y], mMul[Z],
+		mMul,
 		plan.fftKernSize[X], plan.fftKernSize[Y], plan.fftKernSize[Z],
 		plan.fftBuf.Stream)
 

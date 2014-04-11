@@ -28,12 +28,12 @@ __export__ void mulAsync(double* dst, double* a, double* b, CUstream stream, int
 }
 
 ///@internal
-__global__ void tensSYMMVecMulKern(double* dstX, double* dstY, double* dstZ,
-							   double* srcX, double* srcY, double* srcZ,
-							   double* kernXX, double* kernYY, double* kernZZ,
-							   double* kernYZ, double* kernXZ, double* kernXY,
-							   double3 srcMul, 
-							   int3 N)
+__global__ void tensSYMMVecMulKern(double* __restrict__ dstX, double* __restrict__ dstY, double* __restrict__ dstZ,
+							   double* __restrict__ srcX, double* __restrict__ srcY, double* __restrict__ srcZ,
+							   double* __restrict__ kernXX, double* __restrict__ kernYY, double* __restrict__ kernZZ,
+							   double* __restrict__ kernYZ, double* __restrict__ kernXZ, double* __restrict__ kernXY,
+							   const double srcMul, 
+							   const int3 N)
 {
 
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -45,36 +45,46 @@ __global__ void tensSYMMVecMulKern(double* dstX, double* dstY, double* dstZ,
     	int I = i * N.y * N.z + j * N.z + k;
     	int e = 2 * I; 
 
+        double RMX = srcMul * srcX[e + 0];
+        double IMX = srcMul * srcX[e + 1];
+
+        double RMY = srcMul * srcY[e + 0];
+        double IMY = srcMul * srcY[e + 1];
+
+        double RMZ = srcMul * srcZ[e + 0];
+        double IMZ = srcMul * srcZ[e + 1];
+
+        double signXY = 1.0;
+        double signXZ = 1.0;
+        double signYZ = 1.0;
+
+        signXY = (j > N.y / 2) ? -signXY : signXY;
+        signYZ = (j > N.y / 2) ? -signYZ : signYZ;
+		int jj = (j > N.y / 2) ? N.y - j : j;
+        
+        signXY = (i > N.x / 2) ? -signXY : signXY;
+        signXZ = (i > N.x / 2) ? -signXZ : signXZ;
+        int ii = (i > N.x / 2) ? N.x - i : i;
+
+        I = ii * N.y * N.z + jj * N.z + k;
+
         double KXX = getMaskZero(kernXX, I);
+        double KXZ = signXZ * getMaskZero(kernXZ, I);
+        double KXY = signXY * getMaskZero(kernXY, I);
+
+        dstX[e + 0] = KXX * RMX + KXY * RMY + KXZ * RMZ;
+        dstX[e + 1] = KXX * IMX + KXY * IMY + KXZ * IMZ;
+
+        double KYZ = signYZ * getMaskZero(kernYZ, I);
         double KYY = getMaskZero(kernYY, I);
+
+        dstY[e + 0] = KXY * RMX + KYY * RMY + KYZ * RMZ;
+        dstY[e + 1] = KXY * IMX + KYY * IMY + KYZ * IMZ;
+
         double KZZ = getMaskZero(kernZZ, I);
 
-        double KYZ = getMaskZero(kernYZ, I);
-        double KZY = KYZ;
-
-        double KXZ = getMaskZero(kernXZ, I);
-        double KZX = KXZ;
-
-        double KXY = getMaskZero(kernXY, I);
-        double KYX = KXY;
-
-        double RMX = srcX[e + 0];
-        double IMX = srcX[e + 1];
-
-        double RMY = srcY[e + 0];
-        double IMY = srcY[e + 1];
-
-        double RMZ = srcZ[e + 0];
-        double IMZ = srcZ[e + 1];
-
-        dstX[e + 0] = KXX * srcMul.x * RMX + KXY * srcMul.y * RMY + KXZ * srcMul.z * RMZ;
-        dstX[e + 1] = KXX * srcMul.x * IMX + KXY * srcMul.y * IMY + KXZ * srcMul.z * IMZ;
-
-        dstY[e + 0] = KYX * srcMul.x * RMX + KYY * srcMul.y * RMY + KYZ * srcMul.z * RMZ;
-        dstY[e + 1] = KYX * srcMul.x * IMX + KYY * srcMul.y * IMY + KYZ * srcMul.z * IMZ;
-
-        dstZ[e + 0] = KZX * srcMul.x * RMX + KZY * srcMul.y * RMY + KZZ * srcMul.z * RMZ;
-        dstZ[e + 1] = KZX * srcMul.x * IMX + KZY * srcMul.y * IMY + KZZ * srcMul.z * IMZ;
+        dstZ[e + 0] = KXZ * RMX + KYZ * RMY + KZZ * RMZ;
+        dstZ[e + 1] = KXZ * IMX + KYZ * IMY + KZZ * IMZ;
 
     }
 }
@@ -83,16 +93,15 @@ __export__ void tensSYMMVecMul(double* dstX, double* dstY, double* dstZ,
 						 double* srcX, double* srcY, double* srcZ,
 						 double* kernXX, double* kernYY, double* kernZZ,
 						 double* kernYZ, double* kernXZ, double* kernXY,
-						 double srcMulX, double srcMulY, double srcMulZ,
-						 int Nx, int Ny, int Nz,
+						 const double srcMul,
+						 const int Nx, const int Ny, const int Nz,
 						 CUstream stream)
 {
     dim3 gridsize, blocksize;
 
     make3dconf(Nx, Ny, Nz, &gridsize, &blocksize);
 
-    int3 N = make_int3(Nx, Ny, Nz);
-    double3 srcMul = make_double3(srcMulX, srcMulY, srcMulZ);
+    const int3 N = make_int3(Nx, Ny, Nz);
 
     tensSYMMVecMulKern <<< gridsize, blocksize, 0, cudaStream_t(stream)>>> (dstX, dstY, dstZ,
     																	   srcX, srcY, srcZ,

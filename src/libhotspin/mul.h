@@ -19,12 +19,12 @@ extern "C" {
 DLLEXPORT void mulAsync(double* dst, double* a, double* b, CUstream stream, int Npart);
 
 DLLEXPORT void tensSYMMVecMul(double* dstX, double* dstY, double* dstZ,
-						     double* srcX, double* srcY, double* srcZ,
-						     double* kernXX, double* kernYY, double* kernZZ,
-						     double* kernYZ, double* kernXZ, double* kernXY,
-						     double srcMulX, double srcMulY, double srcMulZ,
-						     int Nx, int Ny, int Nz,
-						     CUstream stream);
+						 double* srcX, double* srcY, double* srcZ,
+						 double* kernXX, double* kernYY, double* kernZZ,
+						 double* kernYZ, double* kernXZ, double* kernXY,
+						 const double srcMul,
+						 const int Nx, const int Ny, const int Nz,
+						 CUstream stream);
 
 #ifdef __cplusplus
 }

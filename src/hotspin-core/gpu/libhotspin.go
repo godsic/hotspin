@@ -46,7 +46,7 @@ func Mul(dst, a, b *Array) {
 }
 
 func TensSYMMVecMul(dstX, dstY, dstZ, srcX, srcY, srcZ, kernXX, kernYY, kernZZ, kernYZ, kernXZ, kernXY *Array,
-	srcMulX, srcMulY, srcMulZ float64,
+	srcMul float64,
 	Nx, Ny, Nz int, stream Stream) {
 	C.tensSYMMVecMul(
 		(*C.double)(unsafe.Pointer(uintptr(dstX.pointer))),
@@ -64,9 +64,7 @@ func TensSYMMVecMul(dstX, dstY, dstZ, srcX, srcY, srcZ, kernXX, kernYY, kernZZ, 
 		(*C.double)(unsafe.Pointer(uintptr(kernXZ.pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(kernXY.pointer))),
 
-		(C.double)(float64(srcMulX)),
-		(C.double)(float64(srcMulY)),
-		(C.double)(float64(srcMulZ)),
+		(C.double)(float64(srcMul)),
 
 		(C.int)(int(Nx)),
 		(C.int)(int(Ny)),
