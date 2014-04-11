@@ -187,7 +187,6 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 		// ignore zeros
 		if k < kernel.NComp() && IsZero(kernel.Comp[k], max) {
 			Debug("kernel", TensorIndexStr[k], " == 0")
-			Debug("nil array size:", plan.fftKernSize)
 			plan.fftKern[i][j] = gpu.NilArray(1, []int{plan.fftKernSize[X], plan.fftKernSize[Y], plan.fftKernSize[Z]})
 			continue
 		}
@@ -212,9 +211,8 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 		fullFFTPlan.Forward(devIn, devOut)
 		hostOut := devOut.LocalCopy()
 
-		// extract real or imag parts
-		hostFFTKern := extract(hostOut, realness)
-		Debug("array size:", hostFFTKern.Size3D)
+		// extract real part of the kernel from the first quadrant (other parts are redundunt due to the symmetry properties)
+		hostFFTKern := extract(hostOut)
 		rescale(hostFFTKern, 1/float64(gpu.FFTNormLogic(logic)))
 		plan.fftKern[i][j] = gpu.NewArray(1, hostFFTKern.Size3D)
 		plan.fftKern[i][j].CopyFromHost(hostFFTKern)
@@ -348,40 +346,42 @@ func (plan *MaxwellPlan) InverseFFT(out *gpu.Array) {
 // and scale the kernel to compensate for unnormalized FFTs.
 // real_imag = 0: real parts
 // real_imag = 1: imag parts
-func extract(src *host.Array, realness int) *host.Array {
-	if realness == COMPLEX {
-		return src
-	}
+func extract(src *host.Array) *host.Array {
 
-	sx := src.Size3D[X]
-	sy := src.Size3D[Y]
-	sz := src.Size3D[Z] / 2 // only real/imag parts
+	sx := src.Size3D[X]/2 + 1 // antisymmetric
+	sy := src.Size3D[Y]/2 + 1 // antisymmetric
+	sz := src.Size3D[Z] / 2   // only real parts should be stored, the value of the imaginary part should stay below the zero threshould
 	dst := host.NewArray(src.NComp(), []int{sx, sy, sz})
 
-	dstList := dst.List
-	srcList := src.List
+	dstArray := dst.Array
+	srcArray := src.Array
 
 	// Normally, the FFT'ed kernel is purely real because of symmetry,
 	// so we only store the real parts...
-	maxbad := float64(0.)
-	maxgood := float64(0.)
-	other := 1 - realness
-	for i := range dstList {
-		dstList[i] = srcList[2*i+realness]
-		if Abs32(srcList[2*i+other]) > maxbad {
-			maxbad = Abs32(srcList[2*i+other])
-		}
-		if Abs32(srcList[2*i+realness]) > maxgood {
-			maxgood = Abs32(srcList[2*i+realness])
+	maxImg := float64(0.)
+	maxReal := float64(0.)
+	for c := range dstArray {
+		for k := range dstArray[c] {
+			for j := range dstArray[c][k] {
+				for i := range dstArray[c][k][j] {
+					dstArray[c][k][j][i] = srcArray[c][k][j][2*i]
+					if Abs32(srcArray[c][k][j][2*i+1]) > maxImg {
+						maxImg = Abs32(srcArray[c][k][j][2*i+1])
+					}
+					if Abs32(srcArray[c][k][j][2*i+0]) > maxReal {
+						maxReal = Abs32(srcArray[c][k][j][2*i+0])
+					}
+				}
+			}
 		}
 	}
 	// ...however, we check that the imaginary parts are nearly zero,
 	// just to be sure we did not make a mistake during kernel creation.
-	Debug("FFT Kernel max part", realness, ":", maxgood)
-	Debug("FFT Kernel max part", other, ":", maxbad)
-	Debug("FFT Kernel max bad/good part=", maxbad/maxgood)
-	if maxbad/maxgood > 1e-12 { // TODO: is this reasonable?
-		panic(BugF("FFT Kernel max bad/good part=", maxbad/maxgood))
+	Debug("FFT Kernel max real part", 0, ":", maxReal)
+	Debug("FFT Kernel max imag part", 1, ":", maxImg)
+	Debug("FFT Kernel max imag/real part=", maxImg/maxReal)
+	if maxImg/maxReal > 1e-12 { // TODO: is this reasonable?
+		panic(BugF("FFT Kernel max bad/good part=", maxImg/maxReal))
 	}
 	return dst
 }

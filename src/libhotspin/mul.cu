@@ -66,7 +66,7 @@ __global__ void tensSYMMVecMulKern(double* __restrict__ dstX, double* __restrict
         signXZ = (i > N.x / 2) ? -signXZ : signXZ;
         int ii = (i > N.x / 2) ? N.x - i : i;
 
-        I = ii * N.y * N.z + jj * N.z + k;
+        I = ii * (N.y / 2 + 1) * N.z + jj * N.z + k;
 
         double KXX = getMaskZero(kernXX, I);
         double KXZ = signXZ * getMaskZero(kernXZ, I);
