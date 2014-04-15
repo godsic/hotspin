@@ -240,7 +240,7 @@ func getCrashStack() string {
 
 const (
 	WELCOME = `
- hotspin v0.0.0052α by Mykola Dvornik (DyNaMat, Ghent University, Belgium)
+ hotspin v0.0.0068α by Mykola Dvornik (DyNaMat, Ghent University, Belgium)
 `
 	LOGFILE  = "hotspin.log"
 	SENDMAIL = "\n------\nIf you believe this is a bug, please file an issue on https://github.com/godsic/hotspin/issues. Be sure to include the log file \"" + LOGFILE + "\n------\n"
