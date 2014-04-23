@@ -34,6 +34,7 @@ type MaxwellPlan struct {
 	fftKern     [3][3]*gpu.Array // transformed kernel's non-redundant parts (only real or imag parts, or nil)
 	fftMul      [3][3]complex128 // multipliers for kernel
 	fftBuf      *gpu.Array       // transformed input data
+	M           *gpu.Array
 	fftPlan     gpu.FFTInterface // transforms input/output data
 	B           *Quant
 }
@@ -57,6 +58,9 @@ func (plan *MaxwellPlan) init() {
 	fftOutputSize := gpu.FFTOutputSize(logicSize)
 	plan.fftBuf = gpu.NewArray(3, fftOutputSize)
 	plan.fftPlan = gpu.NewDefaultFFT(dataSize, logicSize)
+
+	// init M
+	plan.M = gpu.NewArray(3, dataSize)
 
 	// init fftKern
 	copy(plan.fftKernSize[:], gpu.FFTOutputSize(logicSize))
@@ -101,19 +105,18 @@ func (plan *MaxwellPlan) UpdateB() {
 	msat0T0 := GetEngine().Quant("Msat0T0")
 	mf := GetEngine().Quant("mf")
 
-	M := gpu.NewArray(3, mf.Array().Size3D())
+	plan.M.CopyFromDevice(mf.Array())
 
-	M.CopyFromDevice(mf.Array())
-
+	Debug(plan.M.Comp[X].PartLen4D(), msat0T0.Array().PartLen4D())
 	if !msat0T0.Array().IsNil() {
-		gpu.Mul(M.Component(X), M.Component(X), msat0T0.Array())
-		gpu.Mul(M.Component(Y), M.Component(Y), msat0T0.Array())
-		gpu.Mul(M.Component(Z), M.Component(Z), msat0T0.Array())
+		gpu.Mul(&plan.M.Comp[X], &plan.M.Comp[X], msat0T0.Array())
+		gpu.Mul(&plan.M.Comp[Y], &plan.M.Comp[Y], msat0T0.Array())
+		gpu.Mul(&plan.M.Comp[Z], &plan.M.Comp[Z], msat0T0.Array())
 	}
 
 	mMul := msat0T0.Multiplier()[0] * Mu0
 
-	plan.ForwardFFT(M)
+	plan.ForwardFFT(plan.M)
 
 	// Point-wise kernel multiplication
 	gpu.TensSYMMVecMul(&plan.fftBuf.Comp[X], &plan.fftBuf.Comp[Y], &plan.fftBuf.Comp[Z],
@@ -126,7 +129,6 @@ func (plan *MaxwellPlan) UpdateB() {
 
 	plan.InverseFFT(plan.B.Array())
 
-	M.Free()
 }
 
 //// Loads a sub-kernel at position pos in the 3x3 global kernel matrix.
