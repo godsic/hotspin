@@ -26,7 +26,7 @@
 #define zero        1.0e-32                            // the zero threshold
 #define eps         1.0e-8                             // the target numerical accuracy of iterative methods
 #define linRange    1.0e-1                             // Defines the region of linearity
-#define INTMAXSTEPS 1000                               // Defines maximum amount of steps for numerical integration    
+#define INTMAXSTEPS 61                                 // Defines maximum amount of steps for numerical integration    
 #define INFINITESPINLIMIT 1.0e5                        // Above this value the spin is treated as infinite (classical)
   
 typedef double (*func)(double x, double prefix, double mult);
