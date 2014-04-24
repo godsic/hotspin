@@ -27,31 +27,64 @@ __global__ void cpKern(double* __restrict__ Cp,
         const double Td = TdMul * getMaskUnity(TdMsk, i);
         const double T = Tp[i];
 
-        if (T == 0.0 || Td == 0.0 || n == 0.0)
+        if (Td == 0.0)
         {
             Cp[i] = 0.0;
             return;
         }
 
         double xx = Td / T;
+        double ixx = T / Td;
+
+        if (ixx < 0.01) {
+            Cp[i] = n * (12.0 / 5.0) * (1.0 / 9.0) * PI4 * (ixx * ixx * ixx);
+            return;
+        }
 
         const double h = xx / (double)INTMAXSTEPS;
         const double h_2 = 0.5 * h;
 
         double x = 0.0;  
-        double val = Debyef(x);
+        double val = Debye(x);
         double valm = 0.0;
 
         int j = 0;
-
-        for (j=0; j < INTMAXSTEPS-1; j++) {
+        
+        #pragma unroll
+        for (j=0; j < ((INTMAXSTEPS - 1) / 10); j++) {
             x += h;
-            valm += (Debyef(x));
-            
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
+
+            x += h;
+            valm += (Debye(x));
         }
 
         x += h;
-        val += Debyef(x);
+        val += Debye(x);
         val += (2.0 * valm);
         val *= h_2;
 
