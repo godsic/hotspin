@@ -11,6 +11,7 @@
 
 
 #include <cuda.h>
+#include <math_constants.h>
 #include "stdio.h"
 
 // printf() is only supported
@@ -20,14 +21,15 @@
 #endif
 
 
-#define kB          1.380650424E-23                    // Boltzmann's constant in J/K
-#define muB         9.2740091523E-24                   // Bohr magneton in Am^2
-#define mu0         4.0 * 1e-7 * 3.14159265358979      // vacuum permeability
-#define zero        1.0e-32                            // the zero threshold
-#define eps         1.0e-8                             // the target numerical accuracy of iterative methods
-#define linRange    1.0e-1                             // Defines the region of linearity
-#define INTMAXSTEPS 61                                 // Defines maximum amount of steps for numerical integration    
-#define INFINITESPINLIMIT 1.0e5                        // Above this value the spin is treated as infinite (classical)
+#define kB          1.380650424E-23                               // Boltzmann's constant in J/K
+#define muB         9.2740091523E-24                              // Bohr magneton in Am^2
+#define mu0         4.0 * 1e-7 * CUDART_PI                        // vacuum permeability
+#define zero        1.0e-32                                       // the zero threshold
+#define PI4         CUDART_PI * CUDART_PI * CUDART_PI * CUDART_PI // PI^4
+#define eps         1.0e-8                                        // the target numerical accuracy of iterative methods
+#define linRange    1.0e-1                                        // Defines the region of linearity
+#define INTMAXSTEPS 61                                            // Defines maximum amount of steps for numerical integration    
+#define INFINITESPINLIMIT 1.0e5                                   // Above this value the spin is treated as infinite (classical)
   
 typedef double (*func)(double x, double prefix, double mult);
 typedef double (*funcTs)(double x, double prefix, double mult, double C);
