@@ -192,7 +192,7 @@ func (a API) SetMask(quantity string, mask *host.Array) {
 	q := a.Engine.Quant(quantity)
 	qArray := q.Array()
 	if !EqualSize(mask.Size3D, qArray.Size3D()) {
-		Log("Auto-resampling ", q.Name(), "from", Size(mask.Size3D), "to", Size(qArray.Size3D()))
+		Debug("Auto-resampling ", q.Name(), "from", Size(mask.Size3D), "to", Size(qArray.Size3D()))
 		mask = Resample(mask, qArray.Size3D())
 	}
 	q.SetMask(mask)
@@ -208,7 +208,7 @@ func (a API) SetArray(quantity string, field *host.Array) {
 	q := a.Engine.Quant(quantity)
 	qArray := q.Array()
 	if !EqualSize(field.Size3D, qArray.Size3D()) {
-		Log("Auto-resampling ", quantity, "from", Size(field.Size3D), "to", Size(qArray.Size3D()))
+		Debug("Auto-resampling ", quantity, "from", Size(field.Size3D), "to", Size(qArray.Size3D()))
 		field = Resample(field, qArray.Size3D())
 	}
 	// setting a field when there is a non-1 multiplier is too confusing to allow

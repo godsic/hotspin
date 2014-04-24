@@ -561,7 +561,7 @@ func (e *Engine) AutoSave(quant string, format string, options []string, period 
 	checkKinds(e.Quant(quant), MASK, FIELD)
 	handle = e.NewHandle()
 	e.crontabs[handle] = &AutoSave{quant, format, options, period, e.time.Scalar(), 0}
-	Log("Auto-save", quant, "every", period, "s", "(handle ", handle, ")")
+	Debug("Auto-save", quant, "every", period, "s", "(handle ", handle, ")")
 	return handle
 }
 
@@ -584,7 +584,7 @@ func (e *Engine) AutoTabulate(quants []string, filename string, period float64) 
 	}
 	handle = e.NewHandle()
 	e.crontabs[handle] = &AutoTabulate{quants, filename, period, 0}
-	Log("Auto-tabulate", quants, "every", period, "s", "(handle ", handle, ")")
+	Debug("Auto-tabulate", quants, "every", period, "s", "(handle ", handle, ")")
 	return handle
 }
 
