@@ -23,8 +23,10 @@ __global__ void normalizeKern(double* mx, double* my, double* mz,
         double My = my[i];
         double Mz = mz[i];
 
-        double Mnorm = 1.0 / sqrt(Mx * Mx + My * My + Mz * Mz);
+        double Mnorm = sqrt(Mx * Mx + My * My + Mz * Mz);
 
+        Mnorm = (Mnorm == 0.0) ? 0.0 : 1.0 / Mnorm;
+        
         mx[i] = Mx * Mnorm;
         my[i] = My * Mnorm;
         mz[i] = Mz * Mnorm;
