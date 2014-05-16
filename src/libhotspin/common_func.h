@@ -27,7 +27,7 @@
 #define zero        1.0e-32                                       // the zero threshold
 #define PI4         CUDART_PI * CUDART_PI * CUDART_PI * CUDART_PI // PI^4
 #define eps         1.0e-8                                        // the target numerical accuracy of iterative methods
-#define linRange    1.0e-1                                        // Defines the region of linearity
+#define linRange    2.0e-1                                        // Defines the region of linearity
 #define INTMAXSTEPS 61                                            // Defines maximum amount of steps for numerical integration    
 #define INFINITESPINLIMIT 1.0e5                                   // Above this value the spin is treated as infinite (classical)
   
@@ -82,7 +82,7 @@ inline __device__ double Bj(double J, double x)
     double gpre8 = gpre4 * gpre4;
     double limA = linRange / gpre;
     double limB = linRange / lpre;
-    double lim = fmax(limA, limB);
+    double lim = fmin(limA, limB);
     return (fabs(x) < lim)  ? ((gpre2 - lpre2) * x / 3.0) - 
                               ((gpre4 - lpre4) * x * x * x / 45.0) + 
                               ((gpre6 - lpre6) * x * x * x * x * x * 2.0 / 945.0) - 
@@ -104,7 +104,7 @@ inline __device__ double dBjdx(double J, double x)
     double gpre8 = gpre4 * gpre4;
     double limA = linRange / gpre;
     double limB = linRange / lpre;
-    double lim = fmax(limA, limB);
+    double lim = fmin(limA, limB);
     return (fabs(x) < lim) ? ((gpre2 - lpre2) / 3.0) - 
                              ((gpre4 - lpre4) * x * x / 15.0) + 
                              ((gpre6 - lpre6) * x * x * x * x * 2.0 / 189.0) - 
