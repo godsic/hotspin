@@ -30,7 +30,6 @@ func (r *Reductor) Init(nComp int, size []int) {
 	Assert(len(size) == 3)
 
 	r.threads = maxThreadsPerBlock
-	Debug("threads:", r.threads)
 	if r.threads > 1024 {
 		r.threads = 1024
 	} // TODO reduce.cu only templated up to 1024

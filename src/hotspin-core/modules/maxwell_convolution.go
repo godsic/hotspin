@@ -107,7 +107,6 @@ func (plan *MaxwellPlan) UpdateB() {
 
 	plan.M.CopyFromDevice(mf.Array())
 
-	Debug(plan.M.Comp[X].PartLen4D(), msat0T0.Array().PartLen4D())
 	if !msat0T0.Array().IsNil() {
 		gpu.Mul(&plan.M.Comp[X], &plan.M.Comp[X], msat0T0.Array())
 		gpu.Mul(&plan.M.Comp[Y], &plan.M.Comp[Y], msat0T0.Array())
