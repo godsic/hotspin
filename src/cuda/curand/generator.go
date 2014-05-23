@@ -20,6 +20,7 @@ type RngType int
 const (
 	PSEUDO_DEFAULT          RngType = C.CURAND_RNG_PSEUDO_DEFAULT          // Default pseudorandom generator
 	PSEUDO_XORWOW           RngType = C.CURAND_RNG_PSEUDO_XORWOW           // XORWOW pseudorandom generator
+	PSEUDO_PHILOX4_32_10    RngType = C.CURAND_RNG_PSEUDO_PHILOX4_32_10    // PHILOX4_32_10 pseudorandom generator
 	QUASI_DEFAULT           RngType = C.CURAND_RNG_QUASI_DEFAULT           // Default quasirandom generator
 	QUASI_SOBOL32           RngType = C.CURAND_RNG_QUASI_SOBOL32           // Sobol32 quasirandom generator
 	QUASI_SCRAMBLED_SOBOL32 RngType = C.CURAND_RNG_QUASI_SCRAMBLED_SOBOL32 // Scrambled Sobol32 quasirandom generator
