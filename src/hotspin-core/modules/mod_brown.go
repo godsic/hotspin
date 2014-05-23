@@ -95,7 +95,7 @@ func NewAnizBrownUpdater(htherm, therm_seed, cutoff_dt, T, mu, msat0T0 *Quant) U
 	u.mu = mu
 	u.msat0T0 = msat0T0
 	u.T = T
-	u.rng = curand.CreateGenerator(curand.PSEUDO_DEFAULT)
+	u.rng = curand.CreateGenerator(curand.PSEUDO_PHILOX4_32_10)
 	return u
 }
 
@@ -111,41 +111,38 @@ func (u *AnizBrownUpdater) Update() {
 
 	u.therm_seed_cache = therm_seed
 
-	// Update only if we went past the dt cutoff
 	t := e.Quant("t").Scalar()
 	dt := e.Quant("dt").Scalar()
 	cutoff_dt := u.cutoff_dt.Scalar()
 
 	// Make standard normal noise
 	noise := u.htherm.Array()
-	devPointer := noise.Pointer()
+	nptr := uintptr(noise.Pointer())
 	N := int64(noise.PartLen4D())
-	// Fills H_therm with gaussian noise.
-	// CURAND does not provide an out-of-the-box way to do this in parallel over the GPUs
-	u.rng.GenerateNormalDouble(uintptr(devPointer), N, 0.0, 1.0)
+	u.rng.GenerateNormalDouble(nptr, N, 0.0, 1.0)
 
 	// Scale the noise according to local parameters
-	temp := u.T
-	tempMul := temp.Multiplier()[0]
+	T := u.T
+	TMul := T.Multiplier()[0]
 	cellSize := e.CellSize()
 	V := cellSize[X] * cellSize[Y] * cellSize[Z]
 	mu := u.mu
 	gamma := e.Quant("γ_LL").Scalar()
 	msat0T0 := u.msat0T0
-	mSat0T0Mul := msat0T0.Multiplier()[0]
-	tempMask := temp.Array()
-	KB2tempMul := Kb * 2.0 * tempMul
+	msat0T0Mul := msat0T0.Multiplier()[0]
+	TMask := T.Array()
+	KB2TMul := Kb * 2.0 * TMul
 
 	deltat := math.Max(cutoff_dt, dt)
-	mu0VgammaDtMsatMul := Mu0 * V * gamma * deltat * mSat0T0Mul
-	KB2tempMul_mu0VgammaDtMsatMul := KB2tempMul / mu0VgammaDtMsatMul
+	mu0VgammaDtMsat0T0Mul := Mu0 * V * gamma * deltat * msat0T0Mul
+	KB2TMul_mu0VgammaDtMsat0T0Mul := KB2TMul / mu0VgammaDtMsat0T0Mul
 
 	gpu.ScaleNoiseAniz(noise,
 		mu.Array(),
-		tempMask,
+		TMask,
 		msat0T0.Array(),
 		mu.Multiplier(),
-		KB2tempMul_mu0VgammaDtMsatMul)
+		KB2TMul_mu0VgammaDtMsat0T0Mul)
 	noise.Stream.Sync()
 
 	u.last_time = t
