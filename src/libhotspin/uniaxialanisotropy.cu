@@ -3,6 +3,7 @@
 #include <cuda.h>
 #include "gpu_conf.h"
 #include "gpu_safe.h"
+#include "common_func.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,61 +23,27 @@ __global__ void uniaxialAnisotropyKern (double *hx, double *hy, double *hz,
     if (i < Npart)
     {
 
-        double mSat_mask;
-        if (mSat_map == NULL)
+        double msat = getMaskUnity(mSat_map, i);
+        if (msat == 0.0)
         {
-            mSat_mask = 1.0;
-        }
-        else
-        {
-            mSat_mask = mSat_map[i];
-            if (mSat_mask == 0.0)
-            {
-                mSat_mask = 1.0; // do not divide by zero
-            }
+            hx[i] = 0.0;
+            hy[i] = 0.0;
+            hz[i] = 0.0;
+            return;
         }
 
-        double Ku2_Mu0Msat; // 2 * Ku / Mu0 * Msat
-        if (Ku_map == NULL)
-        {
-            Ku2_Mu0Msat = Ku2_Mu0Msat_mul / mSat_mask;
-        }
-        else
-        {
-            Ku2_Mu0Msat = (Ku2_Mu0Msat_mul / mSat_mask) * Ku_map[i];
-        }
+        double Ku = getMaskUnity(Ku_map, i);
+        double Ku2_Mu0Msat = (Ku2_Mu0Msat_mul / msat) * Ku; // 2 * Ku / Mu0 * Msat
 
-        double ux;
-        if (anisU_mapx == NULL)
-        {
-            ux = anisU_mulx;
-        }
-        else
-        {
-            ux = anisU_mulx * anisU_mapx[i];
-        }
+        double ux = anisU_mulx * getMaskUnity(anisU_mapx, i);
+        double uy = anisU_muly * getMaskUnity(anisU_mapy, i);
+        double uz = anisU_mulz * getMaskUnity(anisU_mapz, i);
 
-        double uy;
-        if (anisU_mapy == NULL)
-        {
-            uy = anisU_muly;
-        }
-        else
-        {
-            uy = anisU_muly * anisU_mapy[i];
-        }
+        double3 m = make_double3(mx[i], my[i], mz[i]);
+        double3 u = normalize(make_double3(ux, uy, uz));
 
-        double uz;
-        if (anisU_mapz == NULL)
-        {
-            uz = anisU_mulz;
-        }
-        else
-        {
-            uz = anisU_mulz * anisU_mapz[i];
-        }
+        double mu = dot(m,u);
 
-        double mu = mx[i] * ux + my[i] * uy + mz[i] * uz;
         hx[i] = Ku2_Mu0Msat * mu * ux;
         hy[i] = Ku2_Mu0Msat * mu * uy;
         hz[i] = Ku2_Mu0Msat * mu * uz;
