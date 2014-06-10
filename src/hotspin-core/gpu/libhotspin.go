@@ -11,7 +11,7 @@
 
 package gpu
 
-//#cgo LDFLAGS:-Wl,-rpath=\$ORIGIN/../bin/ -L. -lhotspin -L/usr/local/cuda/lib64 -LC:/opt/cuda/lib/x64 -LC:/opt/cuda/lib/x64 -lcudart
+//#cgo LDFLAGS:-L. -lhotspin -L/usr/local/cuda/lib64 -LC:/opt/cuda/lib/x64 -LC:/opt/cuda/lib/x64 -lcudart
 //#cgo CFLAGS:-IC:/opt/cuda/include -I../../libhotspin -I/usr/local/cuda/include
 //#include "libhotspin.h"
 import "C"
