@@ -16,7 +16,7 @@ import (
 )
 
 var inLocal00NC = map[string]string{
-	"λ∥": "λ∥",
+	"α": "α",
 }
 
 var depsLocal00NC = map[string]string{
@@ -53,17 +53,17 @@ func LoadLLBarLocal00NCArgs(e *Engine, args ...Arguments) {
 	LoadGammaLL(e)
 
 	// ============ Quantities =============
-	if !e.HasQuant(arg.Ins("λ∥")) {
-		e.AddNewQuant(arg.Ins("λ∥"), VECTOR, MASK, Unit(""), "LLBar zero-order local relaxation diagonal tensor")
+	if !e.HasQuant(arg.Ins("α")) {
+		e.AddNewQuant(arg.Ins("α"), VECTOR, MASK, Unit(""), "LLBar zero-order local relaxation diagonal tensor")
 	}
-	lambda := e.Quant(arg.Ins("λ∥"))
+	lambda := e.Quant(arg.Ins("α"))
 	msat0T0 := e.Quant(arg.Deps("msat0T0"))
 	H := e.Quant(arg.Deps("H_eff"))
 	gammaLL := e.Quant(arg.Deps("γ_LL"))
 	llbar_local00nc := e.AddNewQuant(arg.Outs("llbar_local00nc"), VECTOR, FIELD, Unit("/s"), "Landau-Lifshitz-Baryakhtar nonconservative zero-order local relaxation term")
 
 	// =============== Dependencies =============
-	e.Depends(arg.Outs("llbar_local00nc"), arg.Deps("H_eff"), arg.Deps("γ_LL"), arg.Deps("msat0T0"), arg.Ins("λ∥"))
+	e.Depends(arg.Outs("llbar_local00nc"), arg.Deps("H_eff"), arg.Deps("γ_LL"), arg.Deps("msat0T0"), arg.Ins("α"))
 
 	// ============ Updating the torque =============
 	upd := &LLBarLocal00NCUpdater{llbar_local00nc: llbar_local00nc, H: H, gammaLL: gammaLL, msat0T0: msat0T0, lambda: lambda}
