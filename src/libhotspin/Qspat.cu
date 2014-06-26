@@ -9,118 +9,96 @@
 extern "C" {
 #endif
 
-#define BLOCKSIZE 16
-
 ///@internal
 __global__ void QspatKern(double* __restrict__ Q,
-                          const double* __restrict__ Ti,
-                          const double* __restrict__ lTi, const double* __restrict__ rTi,
-                          const double* __restrict__ kMask,
+                          double* __restrict__ T,
+                          double* __restrict__ kMask,
                           const double kMul,
-                          const int4 size,
-                          const double3 mstep,
-                          const int3 pbc,
-                          int i)
+                          const int3 size,
+                          const double3 cell_2,
+                          const int3 pbc)
 {
 
-    int j = blockIdx.x * blockDim.x + threadIdx.x;
-    int k = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (j < size.y && k < size.z)
-    {
-
-        int x0 = i * size.w + j * size.z + k;
-
-        int xb1, xf1, x;
-
-        xb1 = (i == 0 && pbc.x == 0) ? i     : i - 1;
-        x   = (i == 0 && pbc.x == 0) ? i + 1 : i;
-        xf1 = (i == 0 && pbc.x == 0) ? i + 2 : i + 1;
-
-        xb1 = (i == size.x - 1 && pbc.x == 0) ? i - 2 : xb1;
-        x   = (i == size.x - 1 && pbc.x == 0) ? i - 1 : x;
-        xf1 = (i == size.x - 1 && pbc.x == 0) ? i     : xf1;
-
-        int yb1, yf1, y;
-        yb1 = (j == 0 && lTi == NULL) ? j     : j - 1;
-        y   = (j == 0 && lTi == NULL) ? j + 1 : j;
-        yf1 = (j == 0 && lTi == NULL) ? j + 2 : j + 1;
-        yb1 = (j == size.y - 1 && rTi == NULL) ? j - 2 : yb1;
-        y   = (j == size.y - 1 && rTi == NULL) ? j - 1 : y;
-        yf1 = (j == size.y - 1 && rTi == NULL) ? j     : yf1;
-
-        int zb1, zf1, z;
-        zb1 = (k == 0 && pbc.z == 0) ? k     : k - 1;
-        z   = (k == 0 && pbc.z == 0) ? k + 1 : k;
-        zf1 = (k == 0 && pbc.z == 0) ? k + 2 : k + 1;
-        zb1 = (k == size.z - 1 && pbc.z == 0) ? k - 2 : zb1;
-        z   = (k == size.z - 1 && pbc.z == 0) ? k - 1 : z;
-        zf1 = (k == size.z - 1 && pbc.z == 0) ? k     : zf1;
-
-        xb1 = (xb1 < 0) ?          size.x + xb1 : xb1;
-        xf1 = (xf1 > size.x - 1) ? xf1 - size.x : xf1;
-
-        yb1 = (yb1 < 0) ?          size.y + yb1 : yb1;
-        yf1 = (yf1 > size.y - 1) ? yf1 - size.y : yf1;
-
-        zb1 = (zb1 < 0) ?          size.z + zb1 : zb1;
-        zf1 = (zf1 > size.z - 1) ? zf1 - size.z : zf1;
-
-        int comm = j * size.z + k;
-
-        int3 xn = make_int3(xb1 * size.w + comm,
-                            x   * size.w + comm,
-                            xf1 * size.w + comm);
-
-
-        comm = i * size.w + k;
-
-        int3 yn = make_int3(yb1 * size.z + comm,
-                            y   * size.z + comm,
-                            yf1 * size.z + comm);
-
-
-        comm = i * size.w + j * size.z;
-
-        int3 zn = make_int3(zb1 + comm,
-                            z   + comm,
-                            zf1 + comm);
-
-
-        // Let's use 3-point stencil in the bulk and 3-point forward/backward at the boundary
-        double T_b1, T, T_f1;
-        double ddT_x, ddT_y, ddT_z;
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+    int k = blockIdx.z * blockDim.z + threadIdx.z;
+    if (i < size.x && j < size.y && k < size.z)
+    {   
+        int I = i * size.y * size.z + j * size.z + k;
 
         double ddT;
-        double sum;
+        double T0, T1, T2;
+        double k0, k1, k2;
+        double pre1, pre2;
+        int idx, linAddr;
 
-        T_b1   = Ti[xn.x];
-        T      = Ti[xn.y];
-        T_f1   = Ti[xn.z];
+        T0 = T[I];
+        k0 = getMaskUnity(kMask, I);
 
-        sum    = __fadd_rn(T_b1, T_f1);
-        ddT_x = (size.x > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
+        // neighbors in X direction
+        idx = i - 1;
+        idx = (idx < 0 && pbc.x) ? size.x + idx : idx;
+        idx = max(idx, 0);
+        linAddr = idx * size.y * size.z + j * size.z + k;
 
-        T_b1 = (j > 0 || lTi == NULL) ? Ti[yn.x] : lTi[yn.x];
-        T    = Ti[yn.y];
-        T_f1 = (j < size.y - 1 || rTi == NULL) ? Ti[yn.z] : rTi[yn.z];
+        k1 = getMaskUnity(kMask, linAddr);
+        T1 = T[linAddr];
+        pre1 = avgGeomZero(k0, k1);
 
-        sum    = __fadd_rn(T_b1, T_f1);
-        ddT_y = (size.y > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
+        idx = i + 1;
+        idx = (idx == size.x && pbc.x) ? idx - size.x : idx;
+        idx = min(idx, size.x - 1);
+        linAddr = idx * size.y * size.z + j * size.z + k;
 
-        T_b1 = Ti[zn.x];
-        T    = Ti[zn.y];
-        T_f1 = Ti[zn.z];
+        k2 = getMaskUnity(kMask, linAddr);
+        T2 = T[linAddr];
+        pre2 = avgGeomZero(k0, k2);
+        
+        ddT = cell_2.x * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
 
-        sum    = __fadd_rn(T_b1, T_f1);
-        ddT_z = (size.z > 3) ? __fmaf_rn(-2.0, T, sum) : 0.0;
+        // neighbors in Z direction
+        idx = k - 1;
+        idx = (idx < 0 && pbc.z) ? size.z + idx : idx;
+        idx = max(idx, 0);
+        linAddr = i * size.y * size.z + j * size.z + idx;
 
-        ddT   = mstep.x * ddT_x + mstep.y * ddT_y + mstep.z * ddT_z;
-        // ddT is the laplacian(T)
+        k1 = getMaskUnity(kMask, linAddr);
+        T1 = T[linAddr];
+        pre1 = avgGeomZero(k0, k1);
 
-        double k = (kMask != NULL) ? kMask[x0] * kMul : kMul;
+        idx = k + 1;
+        idx = (idx == size.z && pbc.z) ? idx - size.z : idx;
+        idx = min(idx, size.z - 1);
+        linAddr = i * size.y * size.z + j * size.z + idx;
 
-        Q[x0] = k * ddT;
+        k2 = getMaskUnity(kMask, linAddr);
+        T2 = T[linAddr];
+        pre2 = avgGeomZero(k0, k2);
+
+        ddT += cell_2.z * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
+
+        // neighbors in Y direction
+        idx = j - 1;
+        idx = (idx < 0 && pbc.y) ? size.y + idx : idx;
+        idx = max(idx, 0);
+        linAddr = i * size.y * size.z + idx * size.z + k;
+
+        k1 = getMaskUnity(kMask, linAddr);
+        T1 = T[linAddr];
+        pre1 = avgGeomZero(k0, k1);
+
+        idx = j + 1;
+        idx = (idx == size.y && pbc.y) ? idx - size.y : idx;
+        idx = min(idx, size.y - 1);
+        linAddr = i * size.y * size.z + idx * size.z + k;
+
+        k2 = getMaskUnity(kMask, linAddr);
+        T2 = T[linAddr];
+        pre2 = avgGeomZero(k0, k2);
+
+        ddT += cell_2.y * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
+
+        Q[I] = kMul * ddT;
     }
 }
 
@@ -135,33 +113,24 @@ __export__ void Qspat_async(double* Q,
 {
 
 
-    dim3 gridSize(divUp(sy, BLOCKSIZE), divUp(sz, BLOCKSIZE));
-    dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
+    dim3 gridsize, blocksize;
+    make3dconf(sx, sy, sz, &gridsize, &blocksize);
 
-    double icsx2 = 1.0 / (csx * csx);
-    double icsy2 = 1.0 / (csy * csy);
-    double icsz2 = 1.0 / (csz * csz);
+    double cellx_2 = 1.0 / (csx * csx);
+    double celly_2 = 1.0 / (csy * csy);
+    double cellz_2 = 1.0 / (csz * csz);
 
-    int syz = sy * sz;
-
-    double3 mstep = make_double3(icsx2, icsy2, icsz2);
-    int4 size = make_int4(sx, sy, sz, syz);
+    double3 cell_2 = make_double3(cellx_2, celly_2, cellz_2);
+    int3 size = make_int3(sx, sy, sz);
     int3 pbc = make_int3(pbc_x, pbc_y, pbc_z);
 
-    double* lT = NULL;
-    double* rT = NULL;
-
-    for (int i = 0; i < sx; i++)
-    {
-        QspatKern <<< gridSize, blockSize, 0, cudaStream_t(stream)>>> (Q,
-                T,
-                lT, rT,
-                k,
-                kMul,
-                size,
-                mstep,
-                pbc, i);
-    }
+    QspatKern <<< gridsize, blocksize, 0, cudaStream_t(stream)>>> (Q,
+               T,
+               k,
+               kMul,
+               size,
+               cell_2,
+               pbc);
 }
 
 #ifdef __cplusplus
