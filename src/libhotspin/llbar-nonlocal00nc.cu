@@ -37,7 +37,7 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         int I = i * N.y * N.z + j * N.z + k;
 
         double msat0T0 = getMaskUnity(msat0T0Msk, I);
-        // make sure there is no damping in vacuum!
+
         if (msat0T0 == 0.0)
         {
             tx[I] = 0.0;
@@ -45,9 +45,6 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
             tz[I] = 0.0;
             return;
         }
-
-        // Second-order derivative 3-points stencil
-//==================================================================================================
 
         double lexx0 = lambda_eMul_xx * getMaskUnity(lambda_e_xx, I);
         double leyy0 = lambda_eMul_yy * getMaskUnity(lambda_e_yy, I);
@@ -57,13 +54,13 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         double lexx1, leyy1, lezz1;
         double lexx2, leyy2, lezz2;
 
-        double Hx0 = Hx[I]; // mag component of central cell
+        double Hx0 = Hx[I]; 
         double Hx1, Hx2;
 
-        double Hy0 = Hy[I]; // mag component of central cell
+        double Hy0 = Hy[I];
         double Hy1, Hy2;
 
-        double Hz0 = Hz[I]; // mag component of central cell
+        double Hz0 = Hz[I];
         double Hz1, Hz2;
 
         double Rx, Ry, Rz;
@@ -76,9 +73,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = idx * N.y * N.z + j * N.z + k;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -93,9 +90,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.x - 1);
         linAddr = idx * N.y * N.z + j * N.z + k;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -106,8 +103,8 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         Hz2 = Hz[linAddr];
 
         Rx = cell_2.x * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
-        Ry = cell_2.y * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
-        Rz = cell_2.z * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
+        Ry = cell_2.x * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
+        Rz = cell_2.x * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // neighbors in Z direction
         idx = k - 1;
@@ -115,9 +112,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = i * N.y * N.z + j * N.z + idx;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -132,9 +129,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.z - 1);
         linAddr = i * N.y * N.z + j * N.z + idx;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -144,8 +141,8 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         Hy2 = Hy[linAddr];
         Hz2 = Hz[linAddr];
 
-        Rx += cell_2.x * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
-        Ry += cell_2.y * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
+        Rx += cell_2.z * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
+        Ry += cell_2.z * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
         Rz += cell_2.z * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // neighbors in Y direction
@@ -154,9 +151,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = i * N.y * N.z + idx * N.z + k;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -171,9 +168,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.y - 1);
         linAddr = i * N.y * N.y + idx * N.y + k;
 
-        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
-        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
-        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
+        lexx = getMaskUnity(lambda_e_xx, linAddr);
+        leyy = getMaskUnity(lambda_e_yy, linAddr);
+        lezz = getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -183,18 +180,16 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         Hy2 = Hy[linAddr];
         Hz2 = Hz[linAddr];
 
-        Rx += cell_2.x * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
+        Rx += cell_2.y * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
         Ry += cell_2.y * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
-        Rz += cell_2.z * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
+        Rz += cell_2.y * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // Write back to global memory
-        tx[I] = -Rx;
-        ty[I] = -Ry;
-        tz[I] = -Rz;
+        tx[I] = -(lambda_eMul_xx * Rx);
+        ty[I] = -(lambda_eMul_yy * Ry);
+        tz[I] = -(lambda_eMul_zz * Rz);
     }
 }
-
-#define BLOCKSIZE 16
 
 __export__  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
         double*  hx, double*  hy, double*  hz,
@@ -214,9 +209,8 @@ __export__  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
         const int pbc_x, const int pbc_y, const int pbc_z,
         CUstream stream)
 {
-
-    dim3 gridSize(divUp(sy, BLOCKSIZE), divUp(sz, BLOCKSIZE));
-    dim3 blockSize(BLOCKSIZE, BLOCKSIZE, 1);
+    dim3 gridsize, blocksize;
+    make3dconf(sx, sy, sz, &gridsize, &blocksize);
 
     double cellx_2 = (double)(1.0 / ((double)csx * (double)csx));
     double celly_2 = (double)(1.0 / ((double)csy * (double)csy));
@@ -227,7 +221,7 @@ __export__  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
     int3 N = make_int3(sx, sy, sz);
     int3 wrap = make_int3(pbc_x, pbc_y, pbc_z);
 
-    llbarNonlocal00ncKern <<< gridSize, blockSize, 0, cudaStream_t(stream)>>> (tx, ty, tz,
+    llbarNonlocal00ncKern <<< gridsize, blocksize, 0, cudaStream_t(stream)>>> (tx, ty, tz,
             hx, hy, hz,
 
             msat0T0,
@@ -246,8 +240,6 @@ __export__  void llbar_nonlocal00nc_async(double* tx, double*  ty, double*  tz,
 
 
 }
-
-// ========================================
 
 #ifdef __cplusplus
 }
