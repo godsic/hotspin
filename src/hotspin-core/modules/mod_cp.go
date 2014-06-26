@@ -17,7 +17,7 @@ import (
 )
 
 var inCp = map[string]string{
-	"T": "Tl",
+	"T": LtempName,
 }
 
 var depsCp = map[string]string{
@@ -26,7 +26,7 @@ var depsCp = map[string]string{
 }
 
 var outCp = map[string]string{
-	"Cp": "Cp_l",
+	LcapacName: LcapacName,
 }
 
 // Register this module
@@ -49,18 +49,18 @@ func LoadDebyeCpArgs(e *Engine, args ...Arguments) {
 	LoadTemp(e, arg.Ins("T"))
 	LoadMFAParams(e)
 
-	if !e.HasQuant(arg.Outs("Cp")) {
-		e.AddNewQuant(arg.Outs("Cp"), SCALAR, MASK, Unit("J/(K*m3)"), "The volumetric heat capacity of the thermal bath")
+	if !e.HasQuant(arg.Outs(LcapacName)) {
+		e.AddNewQuant(arg.Outs(LcapacName), SCALAR, FIELD, Unit("J/(K*m3)"), "The volumetric heat capacity of the thermal bath")
 	}
 
 	e.AddNewQuant(arg.Deps("Td"), SCALAR, MASK, Unit("K"), "Debye temperature")
 
-	e.Depends(arg.Outs("Cp"), arg.Deps("Td"), arg.Deps("n"), arg.Ins("T"))
+	e.Depends(arg.Outs(LcapacName), arg.Deps("Td"), arg.Deps("n"), arg.Ins("T"))
 
 	T := e.Quant(arg.Ins("T"))
 	n := e.Quant(arg.Deps("n"))
 	Td := e.Quant(arg.Deps("Td"))
-	Cp := e.Quant(arg.Outs("Cp"))
+	Cp := e.Quant(arg.Outs(LcapacName))
 
 	Cp.SetUpdater(&CpDebyeUpdater{Cp: Cp, T: T, Td: Td, n: n})
 

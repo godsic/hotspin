@@ -12,14 +12,14 @@ import (
 	. "hotspin-core/engine"
 )
 
-const ELfluxName = "Qel"
+const ELfluxName = "Qe-p"
 const ELTiName = EtempName
 const ELTjName = LtempName
-const ELcoupName = "Gel"
+const ELcoupName = "Ge-p"
 
 // Register this module
 func init() {
-	RegisterModule("temperature/E-L", "Elecron-Lattice coupling", LoadEL)
+	RegisterModule("temperature/E-P", "Elecron-Phonon coupling", LoadEL)
 }
 
 func LoadEL(e *Engine) {

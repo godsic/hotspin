@@ -12,14 +12,14 @@ import (
 	. "hotspin-core/engine"
 )
 
-const SLfluxName = "Qsl"
+const SLfluxName = "Qs-p"
 const SLTiName = StempName
 const SLTjName = LtempName
-const SLcoupName = "Gsl"
+const SLcoupName = "Gs-p"
 
 // Register this module
 func init() {
-	RegisterModule("temperature/S-L", "Spin-Lattice coupling", LoadSL)
+	RegisterModule("temperature/S-P", "Spin-Phonon coupling", LoadSL)
 }
 
 func LoadSL(e *Engine) {

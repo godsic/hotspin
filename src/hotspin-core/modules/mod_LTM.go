@@ -8,25 +8,21 @@
 package modules
 
 import (
-	//~ . "hotspin-core/common"
 	. "hotspin-core/engine"
 )
 
-const LfluxName = "Ql"
-const LspatFluxName = "Ql_spat"
-const LtempName = "Tl"
-const LrateName = "dTlds"
-const LcapacName = "Cp_l"
-const LcondName = "k_l"
-const LpowName = "pow_l"
-
-const Lpow = 0.0
+const LfluxName = "Qp"
+const LspatFluxName = "Qp_spat"
+const LtempName = "Tp"
+const LrateName = "dTpdt"
+const LcapacName = "Cp"
+const LcondName = "Kp"
 
 // Register this module
 func init() {
-	RegisterModule("temperature/LTM", "Lattice temperature model", LoadLTM)
+	RegisterModule("temperature/PTM", "Phonons temperature model", LoadLTM)
 }
 
 func LoadLTM(e *Engine) {
-	LoadTM(e, LtempName, LfluxName, LrateName, LcapacName, LpowName, Lpow)
+	LoadTM(e, LtempName, LfluxName, LrateName, LcapacName)
 }
