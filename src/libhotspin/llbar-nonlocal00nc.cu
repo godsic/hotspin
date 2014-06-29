@@ -73,9 +73,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = idx * N.y * N.z + j * N.z + k;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -90,9 +90,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.x - 1);
         linAddr = idx * N.y * N.z + j * N.z + k;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -112,9 +112,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = i * N.y * N.z + j * N.z + idx;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -129,9 +129,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.z - 1);
         linAddr = i * N.y * N.z + j * N.z + idx;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -151,9 +151,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = max(idx, 0);
         linAddr = i * N.y * N.z + idx * N.z + k;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx1 = avgGeomZero(lexx0, lexx);
         leyy1 = avgGeomZero(leyy0, leyy);
@@ -168,9 +168,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         idx = min(idx, N.y - 1);
         linAddr = i * N.y * N.y + idx * N.y + k;
 
-        lexx = getMaskUnity(lambda_e_xx, linAddr);
-        leyy = getMaskUnity(lambda_e_yy, linAddr);
-        lezz = getMaskUnity(lambda_e_zz, linAddr);
+        lexx = lambda_eMul_xx * getMaskUnity(lambda_e_xx, linAddr);
+        leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
+        lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
         lexx2 = avgGeomZero(lexx0, lexx);
         leyy2 = avgGeomZero(leyy0, leyy);
@@ -185,9 +185,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         Rz += cell_2.y * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // Write back to global memory
-        tx[I] = -(lambda_eMul_xx * Rx);
-        ty[I] = -(lambda_eMul_yy * Ry);
-        tz[I] = -(lambda_eMul_zz * Rz);
+        tx[I] = -Rx;
+        ty[I] = -Ry;
+        tz[I] = -Rz;
     }
 }
 
