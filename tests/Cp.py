@@ -47,7 +47,7 @@ dT = (Tb - Ta) / steps
 savegraph("graph.png")
 
 C = [[[[1.0]]]]
-setmask('Cp_l', C)
+setarray('Cp', C)
 
 f = open('Cp.dat', 'w')
 
@@ -55,8 +55,8 @@ for i in range(steps):
 
     Temp = Ta + float(i) * dT
     T = [[[[Temp]]]]
-    setarray('Tl', T)
-    cp = getcell("Cp_l", 0, 0, 0)[0]
+    setarray('Tp', T)
+    cp = getcell("Cp", 0, 0, 0)[0]
     echo(str(cp))
     out = str(Temp) + '\t' + str(cp) + '\n'
     f.write(out)
