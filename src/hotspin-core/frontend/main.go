@@ -57,6 +57,8 @@ func Main() {
 
 	DEBUG = *flag_debug
 
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	//initTimeout()
 
 	if *flag_cpuprof != "" {
