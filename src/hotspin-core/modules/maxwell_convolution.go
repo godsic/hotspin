@@ -185,13 +185,6 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 		AssertMsg(plan.fftKern[i][j] == nil, "I'm afraid I can't let you overwrite that")
 		AssertMsg(plan.fftMul[i][j] == 0, "Likewise")
 
-		// ignore zeros
-		if k < kernel.NComp() && IsZero(kernel.Comp[k], max) {
-			Debug("kernel", TensorIndexStr[k], " == 0")
-			plan.fftKern[i][j] = gpu.NilArray(1, []int{plan.fftKernSize[X], plan.fftKernSize[Y], plan.fftKernSize[Z]})
-			continue
-		}
-
 		// auto-fill lower triangle if possible
 		if k > XY {
 			if matsymm == SYMMETRIC {
@@ -204,6 +197,13 @@ func (plan *MaxwellPlan) LoadKernel(kernel *host.Array, matsymm int, realness in
 				plan.fftMul[i][j] = -plan.fftMul[j][i]
 				continue
 			}
+		}
+
+		// ignore zeros
+		if k < kernel.NComp() && IsZero(kernel.Comp[k], max) {
+			Debug("kernel", TensorIndexStr[k], " == 0")
+			plan.fftKern[i][j] = gpu.NilArray(1, []int{plan.fftKernSize[X], plan.fftKernSize[Y], plan.fftKernSize[Z]})
+			continue
 		}
 
 		// calculate FFT of kernel elementx
