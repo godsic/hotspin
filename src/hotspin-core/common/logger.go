@@ -2,7 +2,7 @@
 //  Copyright 2011  Arne Vansteenkiste and Ben Van de Wiele.
 //  Use of this source code is governed by the GNU General Public License version 3
 //  (as published by the Free Software Foundation) that can be found in the license.txt file.
-//  Note that you are welcome to modify this code under the condition that you do not remove any 
+//  Note that you are welcome to modify this code under the condition that you do not remove any
 //  copyright notices and prominently state that you modified it, giving a relevant date.
 
 package common
@@ -15,10 +15,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
+	"time"
 )
 
 // Global debug flag.
-// Typical use: if DEBUG {Debug(...)} 
+// Typical use: if DEBUG {Debug(...)}
 var DEBUG bool = true
 
 // INTERNAL global logger
@@ -28,7 +30,7 @@ func init() {
 	InitLogger("") // make sure there is always *a* logger present. May be re-initiated later.
 }
 
-// INTERNAL 
+// INTERNAL
 type Logger struct {
 	ShowDebug   bool        // Include debug messages in stderr output?
 	ShowWarn    bool        // Include warnings in stderr output?
@@ -177,4 +179,44 @@ var debugHook func() = nop
 // DEBUG: calls f before and after every Debug()
 func SetDebugHook(f func()) {
 	debugHook = f
+}
+
+// Hack to avoid cyclic dependency on engine.
+var (
+	progress_ func(int, int, string) = PrintProgress
+	progLock  sync.Mutex
+)
+
+// Set progress bar to progress/total and display msg
+// if GUI is up and running.
+func Progress(progress, total int, msg string) {
+	progLock.Lock()
+	defer progLock.Unlock()
+	if progress_ != nil {
+		progress_(progress, total, msg)
+	}
+}
+
+var (
+	lastPct   = -1      // last progress percentage shown
+	lastProgT time.Time // last time we showed progress percentage
+)
+
+func PrintProgress(prog, total int, msg string) {
+	pct := (prog * 100) / total
+	if pct != lastPct { // only print percentage if changed
+		if (time.Since(lastProgT) > time.Second) || pct == 100 { // only print percentage once/second unless finished
+			Debug(msg, pct, "%")
+			lastPct = pct
+			lastProgT = time.Now()
+		}
+	}
+}
+
+// Sets the function to be used internally by Progress.
+// Avoids cyclic dependency on engine.
+func SetProgress(f func(int, int, string)) {
+	progLock.Lock()
+	defer progLock.Unlock()
+	progress_ = f
 }
