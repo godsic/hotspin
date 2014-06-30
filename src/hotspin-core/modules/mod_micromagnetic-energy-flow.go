@@ -20,7 +20,7 @@ var inMMEF = map[string]string{
 var depsMMEF = map[string]string{
 	"R":       "R",
 	"msat0T0": "msat0T0",
-	"mf":      "mf",
+	"m":      "m",
 }
 
 var outMMEF = map[string]string{
@@ -49,17 +49,17 @@ func LoadMMEFArgs(e *Engine, args ...Arguments) {
 
 	Qmm := e.AddNewQuant(arg.Outs("q_mm"), SCALAR, FIELD, Unit("J/(s*m3)"), "Micromagnetic energy density dissipation rate")
 
-	e.Depends(arg.Outs("q_mm"), arg.Deps("mf"), arg.Deps("msat0T0"), arg.Deps("R"))
+	e.Depends(arg.Outs("q_mm"), arg.Deps("m"), arg.Deps("msat0T0"), arg.Deps("R"))
 	Qmm.SetUpdater(&MMEFUpdater{
 		Qmm:     Qmm,
-		mf:      e.Quant(arg.Deps("mf")),
+		m:      e.Quant(arg.Deps("m")),
 		msat0T0: e.Quant(arg.Deps("msat0T0")),
 		R:       e.Quant(arg.Deps("R"))})
 }
 
 type MMEFUpdater struct {
 	Qmm     *Quant
-	mf      *Quant
+	m      *Quant
 	msat0T0 *Quant
 	R       *Quant
 }
@@ -76,7 +76,7 @@ func (u *MMEFUpdater) Update() {
 	u.Qmm.Multiplier()[0] *= u.R.Multiplier()[0]
 
 	gpu.Dot(u.Qmm.Array(),
-		u.mf.Array(),
+		u.m.Array(),
 		u.R.Array())
 
 	// Finally, do Qmm = Qmm * msat0T0(r)^2 to account spatial properties of msat0T0 that are hidden in the definitions of the relaxation constants and magnertization vector

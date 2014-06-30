@@ -68,7 +68,7 @@ func (plan *MaxwellPlan) init() {
 }
 
 // Enable Demagnetizing field
-func (plan *MaxwellPlan) EnableDemag(mf, msat0T0 *Quant) {
+func (plan *MaxwellPlan) EnableDemag(m, msat0T0 *Quant) {
 	plan.init()
 	plan.loadDipoleKernel()
 	runtime.GC()
@@ -103,9 +103,9 @@ func (plan *MaxwellPlan) loadDipoleKernel() {
 func (plan *MaxwellPlan) UpdateB() {
 
 	msat0T0 := GetEngine().Quant("Msat0T0")
-	mf := GetEngine().Quant("mf")
+	m := GetEngine().Quant("m")
 
-	plan.M.CopyFromDevice(mf.Array())
+	plan.M.CopyFromDevice(m.Array())
 
 	if !msat0T0.Array().IsNil() {
 		gpu.Mul(&plan.M.Comp[X], &plan.M.Comp[X], msat0T0.Array())

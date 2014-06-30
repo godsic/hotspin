@@ -16,7 +16,7 @@ import (
 )
 
 var inNorm = map[string]string{
-	"in": "mf",
+	"in": "m",
 }
 
 var depsNorm = map[string]string{}

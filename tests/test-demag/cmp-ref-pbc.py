@@ -49,7 +49,7 @@ for k in range(Nz):
             m[0][i][j][k] = mx / l 
             m[1][i][j][k] = my / l
             m[2][i][j][k] = mz / l
-setarray('mf', m)
+setarray('m', m)
 
 saveas('B', "dump", [], "B_new_pbc.dump")
 ref = readfile(outputdirectory()+"/../B_ref_pbc.dump")

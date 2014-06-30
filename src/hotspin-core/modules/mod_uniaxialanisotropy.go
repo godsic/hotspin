@@ -32,9 +32,9 @@ func LoadAnisUniaxial(e *Engine) {
 	hfield := e.Quant("H_eff")
 	sum := hfield.Updater().(*SumUpdater)
 	sum.AddParent("H_anis")
-	e.Depends("H_anis", "Ku", "anisU", "msat0T0", "mf")
+	e.Depends("H_anis", "Ku", "anisU", "msat0T0", "m")
 
-	Hanis.SetUpdater(&UniaxialAnisUpdater{e.Quant("mf"), Hanis, ku, e.Quant("msat0T0"), anisU})
+	Hanis.SetUpdater(&UniaxialAnisUpdater{e.Quant("m"), Hanis, ku, e.Quant("msat0T0"), anisU})
 }
 
 type UniaxialAnisUpdater struct {

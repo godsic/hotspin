@@ -18,15 +18,15 @@ import (
 	"unsafe"
 )
 
-func EnergyFlowAsync(w *Array, mf *Array, R *Array, Tc *Array, S *Array, n *Array, SMul float64, stream Stream) {
+func EnergyFlowAsync(w *Array, m *Array, R *Array, Tc *Array, S *Array, n *Array, SMul float64, stream Stream) {
 
 	// Calling the CUDA functions
 	C.energyFlowAsync(
 		(*C.double)(unsafe.Pointer(uintptr(w.Comp[X].pointer))),
 
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[X].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[Y].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
 
 		(*C.double)(unsafe.Pointer(uintptr(R.Comp[X].pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(R.Comp[Y].pointer))),

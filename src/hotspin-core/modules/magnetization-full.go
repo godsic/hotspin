@@ -18,10 +18,10 @@ import (
 
 func LoadFullMagnetization(e *Engine) {
 
-	if !e.HasQuant("mf") {
+	if !e.HasQuant("m") {
 		e.AddNewQuant("msat0", SCALAR, MASK, Unit("A/m"), "the initial distribution of the saturation magnetization")
 		e.AddNewQuant("msat0T0", SCALAR, MASK, Unit("A/m"), "the value of the saturation magnetization at Te = 0")
-		e.AddNewQuant("mf", VECTOR, FIELD, Unit(""), "complete magnetization vector reduced by equilibrium value of saturation magnetization")
-		e.Depends("mf", "msat0T0")
+		e.AddNewQuant("m", VECTOR, FIELD, Unit(""), "complete magnetization vector reduced by equilibrium value of saturation magnetization")
+		e.Depends("m", "msat0T0")
 	}
 }

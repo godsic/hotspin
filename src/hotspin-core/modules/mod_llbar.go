@@ -18,7 +18,7 @@ func init() {
 }
 
 // The torque quant contains the Landau-Lifshitz-Baryakhtar torque τ acting on the reduced magnetization m = M/Msat0T0, where Msat0T0 is the zero-temperature value of saturation magnetization
-//	d mf / d t =  τ
+//	d m / d t =  τ
 // with unit
 //	[τ] = 1/s
 // Thus:
@@ -33,6 +33,6 @@ func LoadLLBar(e *Engine) {
 	llbar_RHS := e.AddNewQuant("llbar_RHS", VECTOR, FIELD, Unit("/s"), "The Right Hand Side of Landau-Lifshitz-Baryakhtar equation")
 	llbar_RHS.SetUpdater(NewSumUpdater(llbar_RHS))
 
-	e.AddPDE1("mf", "llbar_RHS")
+	e.AddPDE1("m", "llbar_RHS")
 
 }

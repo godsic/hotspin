@@ -11,7 +11,7 @@
 
 package gpu
 
-//#cgo LDFLAGS:-L. -lhotspin -L/usr/local/cuda/lib64 -LC:/opt/cuda/lib/x64 -LC:/opt/cuda/lib/x64 -lcudart
+//#cgo LDFLAGS:-Wl,-rpath=\$ORIGIN/ -L. -lhotspin -L/usr/local/cuda/lib64 -LC:/opt/cuda/lib/x64 -LC:/opt/cuda/lib/x64 -lcudart
 //#cgo CFLAGS:-IC:/opt/cuda/include -I../../libhotspin -I/usr/local/cuda/include
 //#include "libhotspin.h"
 import "C"
@@ -336,25 +336,6 @@ func Normalize(m *Array) {
 	m.Stream.Sync()
 }
 
-// Decompose vector to unit vector and length
-func Decompose(Mf *Array, m *Array, msat *Array, msatMul float64) {
-	C.decomposeAsync(
-		(*C.double)(unsafe.Pointer(uintptr(Mf.Comp[X].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(Mf.Comp[Y].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(Mf.Comp[Z].pointer))),
-
-		(*C.double)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
-
-		(*C.double)(unsafe.Pointer(uintptr(msat.pointer))),
-
-		C.double(msatMul),
-		(C.CUstream)(unsafe.Pointer(uintptr(m.Stream))),
-		C.int(m.partLen3D))
-	m.Stream.Sync()
-}
-
 // Partial sums (see reduce.h)
 func PartialSum(in, out *Array, blocks, threadsPerBlock, N int) {
 	C.partialSumAsync(
@@ -586,16 +567,16 @@ func UniaxialAnisotropyAsync(h, m *Array, KuMask, MsatMask *Array, Ku2_Mu0MSat f
 
 // 6-neighbor exchange field.
 // Aex2_mu0Msatmul: 2 * Aex / Mu0 * Msat.multiplier
-func Exchange6Async(h, mf, msat0T0, lex *Array, lexMul2Msat0T0Mul_cellSize2 []float64, periodic []int, stream Stream) {
+func Exchange6Async(h, m, msat0T0, lex *Array, lexMul2Msat0T0Mul_cellSize2 []float64, periodic []int, stream Stream) {
 	//void exchange6Async(float** hx, float** hy, float** hz, float** mx, float** my, float** mz, float Aex, int N0, int N1Part, int N2, int periodic0, int periodic1, int periodic2, float cellSizeX, float cellSizeY, float cellSizeZ, CUstream* streams);
-	CheckSize(h.Size3D(), mf.Size3D())
+	CheckSize(h.Size3D(), m.Size3D())
 	C.exchange6Async(
 		(*C.double)(unsafe.Pointer(uintptr(h.Comp[X].pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Y].pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(h.Comp[Z].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[X].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[Y].pointer))),
-		(*C.double)(unsafe.Pointer(uintptr(mf.Comp[Z].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[X].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Y].pointer))),
+		(*C.double)(unsafe.Pointer(uintptr(m.Comp[Z].pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(msat0T0.Comp[X].pointer))),
 		(*C.double)(unsafe.Pointer(uintptr(lex.Comp[X].pointer))),
 		(C.int)(h.PartSize()[X]),

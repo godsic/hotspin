@@ -26,7 +26,7 @@ func LoadEnergy(e *Engine) {
 	LoadHField(e)
 	LoadFullMagnetization(e)
 
-	M := "mf"
+	M := "m"
 
 	total := e.AddNewQuant("E", SCALAR, VALUE, Unit("J"), "Sum of all calculated energy terms (this is the total energy only if all relevant energy terms are loaded")
 	sumUpd := NewSumUpdater(total).(*SumUpdater)

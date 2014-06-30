@@ -22,7 +22,7 @@ var inLocal02NC = map[string]string{
 var depsLocal02NC = map[string]string{
 	"γ_LL":    "γ_LL",
 	"msat0T0": "msat0T0",
-	"mf":      "mf",
+	"m":      "m",
 	"H_eff":   "H_eff",
 }
 
@@ -58,27 +58,27 @@ func LoadLLBarLocal02NCArgs(e *Engine, args ...Arguments) {
 	}
 	mu := e.Quant(arg.Ins("μ∥"))
 	msat0T0 := e.Quant(arg.Deps("msat0T0"))
-	mf := e.Quant(arg.Deps("mf"))
+	m := e.Quant(arg.Deps("m"))
 	H := e.Quant(arg.Deps("H_eff"))
 	gammaLL := e.Quant(arg.Deps("γ_LL"))
 	llbar_local02nc := e.AddNewQuant(arg.Outs("llbar_local02nc"), VECTOR, FIELD, Unit("/s"), "Landau-Lifshitz-Baryakhtar nonconservative second-order local relaxation term")
 
 	// ============ Dependencies =============
-	e.Depends(arg.Outs("llbar_local02nc"), arg.Deps("mf"), arg.Deps("H_eff"), arg.Deps("γ_LL"), arg.Deps("msat0T0"), arg.Ins("μ∥"))
+	e.Depends(arg.Outs("llbar_local02nc"), arg.Deps("m"), arg.Deps("H_eff"), arg.Deps("γ_LL"), arg.Deps("msat0T0"), arg.Ins("μ∥"))
 	// ============ Updating the torque =============
-	upd := &LLBarLocal02NCUpdater{llbar_local02nc: llbar_local02nc, mf: mf, H: H, gammaLL: gammaLL, msat0T0: msat0T0, mu: mu}
+	upd := &LLBarLocal02NCUpdater{llbar_local02nc: llbar_local02nc, m: m, H: H, gammaLL: gammaLL, msat0T0: msat0T0, mu: mu}
 	llbar_local02nc.SetUpdater(upd)
 }
 
 type LLBarLocal02NCUpdater struct {
-	llbar_local02nc, mf, H, gammaLL, msat0T0, mu *Quant
+	llbar_local02nc, m, H, gammaLL, msat0T0, mu *Quant
 }
 
 func (u *LLBarLocal02NCUpdater) Update() {
 
 	llbar_local02nc := u.llbar_local02nc
 	gammaLL := u.gammaLL.Scalar()
-	m := u.mf
+	m := u.m
 	heff := u.H
 
 	// put gamma in multiplier to avoid additional multiplications

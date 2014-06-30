@@ -21,7 +21,7 @@ var inLongField = map[string]string{
 
 var depsLongField = map[string]string{
 	"Tc":      "Tc",
-	"mf":      "mf",
+	"m":      "m",
 	"J":       "J",
 	"n":       "n",
 	"msat0T0": "msat0T0",
@@ -56,23 +56,23 @@ func LoadLongFieldArgs(e *Engine, args ...Arguments) {
 
 	T := e.Quant(arg.Ins("T"))
 	Tc := e.Quant(arg.Deps("Tc"))
-	mf := e.Quant(arg.Deps("mf"))
+	m := e.Quant(arg.Deps("m"))
 	J := e.Quant(arg.Deps("J"))
 	n := e.Quant(arg.Deps("n"))
 	msat0T0 := e.Quant(arg.Deps("msat0T0"))
 	Hlf := e.AddNewQuant(arg.Outs("H_lf"), VECTOR, FIELD, Unit("A/m"), "longitudinal exchange field")
-	e.Depends(arg.Outs("H_lf"), arg.Deps("J"), arg.Deps("n"), arg.Deps("mf"), arg.Deps("Tc"), arg.Deps("msat0T0"), arg.Ins("T"))
+	e.Depends(arg.Outs("H_lf"), arg.Deps("J"), arg.Deps("n"), arg.Deps("m"), arg.Deps("Tc"), arg.Deps("msat0T0"), arg.Ins("T"))
 
-	Hlf.SetUpdater(&LongFieldUpdater{mf: mf, J: J, Hlf: Hlf, msat0T0: msat0T0, n: n, Tc: Tc, T: T})
+	Hlf.SetUpdater(&LongFieldUpdater{m: m, J: J, Hlf: Hlf, msat0T0: msat0T0, n: n, Tc: Tc, T: T})
 
 }
 
 type LongFieldUpdater struct {
-	mf, J, Hlf, msat0T0, n, Tc, T *Quant
+	m, J, Hlf, msat0T0, n, Tc, T *Quant
 }
 
 func (u *LongFieldUpdater) Update() {
-	mf := u.mf
+	m := u.m
 	J := u.J
 	n := u.n
 	Hlf := u.Hlf
@@ -81,6 +81,6 @@ func (u *LongFieldUpdater) Update() {
 	T := u.T
 	stream := u.Hlf.Array().Stream
 
-	gpu.LongFieldAsync(Hlf.Array(), mf.Array(), msat0T0.Array(), J.Array(), n.Array(), Tc.Array(), T.Array(), msat0T0.Multiplier()[0], J.Multiplier()[0], n.Multiplier()[0], Tc.Multiplier()[0], T.Multiplier()[0], stream)
+	gpu.LongFieldAsync(Hlf.Array(), m.Array(), msat0T0.Array(), J.Array(), n.Array(), Tc.Array(), T.Array(), msat0T0.Multiplier()[0], J.Multiplier()[0], n.Multiplier()[0], Tc.Multiplier()[0], T.Multiplier()[0], stream)
 	stream.Sync()
 }

@@ -28,8 +28,8 @@ func init() {
 // Load demag field
 func LoadDemag(e *Engine) {
 	LoadBField(e)
-	maxwell.EnableDemag(e.Quant("mf"), e.Quant("Msat0T0"))
-	e.Depends("B", "mf", "Msat0T0")
+	maxwell.EnableDemag(e.Quant("m"), e.Quant("Msat0T0"))
+	e.Depends("B", "m", "Msat0T0")
 }
 
 // Loads B if not yet present

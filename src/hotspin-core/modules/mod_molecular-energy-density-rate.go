@@ -19,7 +19,7 @@ var inEF = map[string]string{
 
 var depsEF = map[string]string{
 	"R":  "R",
-	"mf": "mf",
+	"m": "m",
 	"Tc": "Tc",
 	"J":  "J",
 	"n":  "n",
@@ -55,14 +55,14 @@ func LoadEFArgs(e *Engine, args ...Arguments) {
 
 	q_s := e.AddNewQuant(arg.Outs("q_s"), SCALAR, FIELD, Unit("J/(s*m3)"), "Spins energy density dissipation rate according to MFA")
 
-	e.Depends(arg.Outs("q_s"), arg.Deps("mf"), arg.Deps("R"), arg.Deps("J"), arg.Deps("Tc"), arg.Deps("n"))
+	e.Depends(arg.Outs("q_s"), arg.Deps("m"), arg.Deps("R"), arg.Deps("J"), arg.Deps("Tc"), arg.Deps("n"))
 	q_s.SetUpdater(&EFUpdater{
 		q_s: q_s,
 		J:   e.Quant(arg.Deps("J")),
 		Tc:  e.Quant(arg.Deps("Tc")),
 		n:   e.Quant(arg.Deps("n")),
 		R:   e.Quant(arg.Deps("R")),
-		mf:  e.Quant(arg.Deps("mf"))})
+		m:  e.Quant(arg.Deps("m"))})
 }
 
 type EFUpdater struct {
@@ -71,7 +71,7 @@ type EFUpdater struct {
 	Tc  *Quant
 	n   *Quant
 	R   *Quant
-	mf  *Quant
+	m  *Quant
 }
 
 func (u *EFUpdater) Update() {
@@ -84,13 +84,13 @@ func (u *EFUpdater) Update() {
 
 	// Account for the dissipation term multiplier, normally = gamma_LL
 	u.q_s.Multiplier()[0] = u.R.Multiplier()[0]
-	u.q_s.Multiplier()[0] *= u.mf.Multiplier()[0]
+	u.q_s.Multiplier()[0] *= u.m.Multiplier()[0]
 	u.q_s.Multiplier()[0] *= mult
 
 	stream := u.q_s.Array().Stream
 
 	gpu.EnergyFlowAsync(u.q_s.Array(),
-		u.mf.Array(),
+		u.m.Array(),
 		u.R.Array(),
 		u.Tc.Array(),
 		u.J.Array(),
