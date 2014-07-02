@@ -24,7 +24,7 @@ var depsDF = map[string]string{
 }
 
 var outDF = map[string]string{
-	"Qmag": "Qmag",
+	"q": "q",
 }
 
 // Register this module
