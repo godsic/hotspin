@@ -53,9 +53,9 @@ func LoadEFArgs(e *Engine, args ...Arguments) {
 	// make sure the effective field is in place
 	LoadMFAParams(e)
 
-	q_s := e.AddNewQuant(arg.Outs("q_s"), SCALAR, FIELD, Unit("J/(s*m3)"), "Spins energy density dissipation rate according to MFA")
+	q_s := e.AddNewQuant(arg.Outs("w"), SCALAR, FIELD, Unit("J/(s*m3)"), "Spins energy density dissipation rate according to MFA")
 
-	e.Depends(arg.Outs("q_s"), arg.Deps("m"), arg.Deps("R"), arg.Deps("J"), arg.Deps("Tc"), arg.Deps("n"))
+	e.Depends(arg.Outs("w"), arg.Deps("m"), arg.Deps("R"), arg.Deps("J"), arg.Deps("Tc"), arg.Deps("n"))
 	q_s.SetUpdater(&EFUpdater{
 		q_s: q_s,
 		J:   e.Quant(arg.Deps("J")),

@@ -51,9 +51,9 @@ func LoadDFArgs(e *Engine, args ...Arguments) {
 	// make sure the effective field is in place
 	LoadHField(e)
 
-	Qmagn := e.AddNewQuant(arg.Outs("Qmag"), SCALAR, FIELD, Unit("J/(s*m3)"), "The dissipative function")
+	Qmagn := e.AddNewQuant(arg.Outs("q"), SCALAR, FIELD, Unit("J/(s*m3)"), "The dissipative function")
 
-	e.Depends(arg.Outs("Qmag"), arg.Deps("H_eff"), arg.Deps("msat0T0"), arg.Deps("R"))
+	e.Depends(arg.Outs("q"), arg.Deps("H_eff"), arg.Deps("msat0T0"), arg.Deps("R"))
 	Qmagn.SetUpdater(&DFUpdater{
 		Qmagn:   Qmagn,
 		msat0T0: e.Quant(arg.Deps("msat0T0")),
