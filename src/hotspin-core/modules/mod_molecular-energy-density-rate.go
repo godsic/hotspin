@@ -19,14 +19,14 @@ var inEF = map[string]string{
 
 var depsEF = map[string]string{
 	"R":  "R",
-	"m": "m",
+	"m":  "m",
 	"Tc": "Tc",
 	"J":  "J",
 	"n":  "n",
 }
 
 var outEF = map[string]string{
-	"q_s": "q_s",
+	"w": "w",
 }
 
 // Register this module
@@ -62,7 +62,7 @@ func LoadEFArgs(e *Engine, args ...Arguments) {
 		Tc:  e.Quant(arg.Deps("Tc")),
 		n:   e.Quant(arg.Deps("n")),
 		R:   e.Quant(arg.Deps("R")),
-		m:  e.Quant(arg.Deps("m"))})
+		m:   e.Quant(arg.Deps("m"))})
 }
 
 type EFUpdater struct {
@@ -71,7 +71,7 @@ type EFUpdater struct {
 	Tc  *Quant
 	n   *Quant
 	R   *Quant
-	m  *Quant
+	m   *Quant
 }
 
 func (u *EFUpdater) Update() {
