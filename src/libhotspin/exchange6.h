@@ -22,8 +22,9 @@ DLLEXPORT void exchange6Async(double* hx, double* hy, double* hz,
                               double* msat0T0, 
                               double* lex, 
                               int N0, int N1Part, int N2, 
-                              int periodic0, int periodic1, int periodic2, 
-                              double lex2Mulmsat0T0Mul_cellSizeX2, double lex2Mulmsat0T0Mul_cellSizeY2, double lex2Mulmsat0T0Mul_cellSizeZ2, 
+                              int periodic0, int periodic1, int periodic2,
+                              double msat0T0Mul,
+                              double lex2Mul_cellSizeX2, double lex2Mul_cellSizeY2, double lex2Mul_cellSizeZ2, 
                               CUstream streams);
 
 

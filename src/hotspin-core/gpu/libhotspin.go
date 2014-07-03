@@ -567,7 +567,7 @@ func UniaxialAnisotropyAsync(h, m *Array, KuMask, MsatMask *Array, Ku2_Mu0MSat f
 
 // 6-neighbor exchange field.
 // Aex2_mu0Msatmul: 2 * Aex / Mu0 * Msat.multiplier
-func Exchange6Async(h, m, msat0T0, lex *Array, lexMul2Msat0T0Mul_cellSize2 []float64, periodic []int, stream Stream) {
+func Exchange6Async(h, m, msat0T0, lex *Array, msat0T0Mul float64, lexMul2_cellSize2 []float64, periodic []int, stream Stream) {
 	//void exchange6Async(float** hx, float** hy, float** hz, float** mx, float** my, float** mz, float Aex, int N0, int N1Part, int N2, int periodic0, int periodic1, int periodic2, float cellSizeX, float cellSizeY, float cellSizeZ, CUstream* streams);
 	CheckSize(h.Size3D(), m.Size3D())
 	C.exchange6Async(
@@ -585,9 +585,10 @@ func Exchange6Async(h, m, msat0T0, lex *Array, lexMul2Msat0T0Mul_cellSize2 []flo
 		(C.int)(periodic[X]),
 		(C.int)(periodic[Y]),
 		(C.int)(periodic[Z]),
-		(C.double)(float64(lexMul2Msat0T0Mul_cellSize2[X])),
-		(C.double)(float64(lexMul2Msat0T0Mul_cellSize2[Y])),
-		(C.double)(float64(lexMul2Msat0T0Mul_cellSize2[Z])),
+		(C.double)(float64(msat0T0Mul)),
+		(C.double)(float64(lexMul2_cellSize2[X])),
+		(C.double)(float64(lexMul2_cellSize2[Y])),
+		(C.double)(float64(lexMul2_cellSize2[Z])),
 		(C.CUstream)(unsafe.Pointer(uintptr(stream))))
 }
 

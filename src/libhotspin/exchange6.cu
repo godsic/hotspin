@@ -14,7 +14,8 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
                               double* __restrict__  lexMsk,
                               const int N0, const int N1, const int N2,
                               const int wrap0, const int wrap1, const int wrap2,
-                              const double lex2Mulmsat0T0Mul_cellSizeX2, const double lex2Mulmsat0T0Mul_cellSizeY2, const double lex2Mulmsat0T0Mul_cellSizeZ2)
+                              const double msat0T0Mul,
+                              const double lex2Mul_cellSizeX2, const double lex2Mul_cellSizeY2, const double lex2Mul_cellSizeZ2)
 {
 
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -64,9 +65,9 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         lex2 = getMaskUnity(lexMsk, linAddr) * getMaskUnity(lexMsk, linAddr);
         pre2 = avgGeomZero(lex02 * ms0, lex2 * ms2);
 
-        Hx = lex2Mulmsat0T0Mul_cellSizeX2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
-        Hy = lex2Mulmsat0T0Mul_cellSizeX2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
-        Hz = lex2Mulmsat0T0Mul_cellSizeX2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
+        Hx = lex2Mul_cellSizeX2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
+        Hy = lex2Mul_cellSizeX2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
+        Hz = lex2Mul_cellSizeX2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
 
         // neighbors in Z direction
         idx = k - 1;
@@ -93,9 +94,9 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         lex2 = getMaskUnity(lexMsk, linAddr) * getMaskUnity(lexMsk, linAddr);
         pre2 = avgGeomZero(lex02 * ms0, lex2 * ms2);
 
-        Hx += lex2Mulmsat0T0Mul_cellSizeZ2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
-        Hy += lex2Mulmsat0T0Mul_cellSizeZ2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
-        Hz += lex2Mulmsat0T0Mul_cellSizeZ2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
+        Hx += lex2Mul_cellSizeZ2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
+        Hy += lex2Mul_cellSizeZ2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
+        Hz += lex2Mul_cellSizeZ2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
 
         // neighbors in Y direction
         idx = j - 1;
@@ -122,14 +123,14 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         lex2 = getMaskUnity(lexMsk, linAddr) * getMaskUnity(lexMsk, linAddr);
         pre2 = avgGeomZero(lex02 * ms0, lex2 * ms2);
         
-        Hx += lex2Mulmsat0T0Mul_cellSizeY2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
-        Hy += lex2Mulmsat0T0Mul_cellSizeY2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
-        Hz += lex2Mulmsat0T0Mul_cellSizeY2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
+        Hx += lex2Mul_cellSizeY2 * (pre1 * (s1.x - s0.x) + pre2 * (s2.x - s0.x));
+        Hy += lex2Mul_cellSizeY2 * (pre1 * (s1.y - s0.y) + pre2 * (s2.y - s0.y));
+        Hz += lex2Mul_cellSizeY2 * (pre1 * (s1.z - s0.z) + pre2 * (s2.z - s0.z));
 
         // Write back to global memory
-        hx[I] = Hx;
-        hy[I] = Hy;
-        hz[I] = Hz;
+        hx[I] = msat0T0Mul * Hx;
+        hy[I] = msat0T0Mul * Hy;
+        hz[I] = msat0T0Mul * Hz;
 
     }
 
@@ -141,8 +142,9 @@ __export__ void exchange6Async(double* hx, double* hy, double* hz,
                               double* msat0T0, 
                               double* lex, 
                               int N0, int N1Part, int N2, 
-                              int periodic0, int periodic1, int periodic2, 
-                              double lex2Mulmsat0T0Mul_cellSizeX2, double lex2Mulmsat0T0Mul_cellSizeY2, double lex2Mulmsat0T0Mul_cellSizeZ2, 
+                              int periodic0, int periodic1, int periodic2,
+                              double msat0T0Mul,
+                              double lex2Mul_cellSizeX2, double lex2Mul_cellSizeY2, double lex2Mul_cellSizeZ2, 
                               CUstream streams)
 {
     dim3 gridsize, blocksize;
@@ -155,7 +157,8 @@ __export__ void exchange6Async(double* hx, double* hy, double* hz,
                                                                             lex, 
                                                                             N0, N1Part, N2, 
                                                                             periodic0, periodic1, periodic2, 
-                                                                            lex2Mulmsat0T0Mul_cellSizeX2, lex2Mulmsat0T0Mul_cellSizeY2, lex2Mulmsat0T0Mul_cellSizeZ2);
+                                                                            msat0T0Mul,
+                                                                            lex2Mul_cellSizeX2, lex2Mul_cellSizeY2, lex2Mul_cellSizeZ2);
 }
 
 

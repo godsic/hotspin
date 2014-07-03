@@ -45,18 +45,17 @@ func (u *exch6Updater) Update() {
 	Msat0T0 := u.Msat0T0
 
 	lexMul2 := lex.Multiplier()[0] * lex.Multiplier()[0]
-	lexMul2Msat0T0Mul := lexMul2 * Msat0T0.Multiplier()[0]
 
-	lexMul2Msat0T0Mul_cellSizeX2 := lexMul2Msat0T0Mul / (e.CellSize()[X] * e.CellSize()[X])
-	lexMul2Msat0T0Mul_cellSizeY2 := lexMul2Msat0T0Mul / (e.CellSize()[Y] * e.CellSize()[Y])
-	lexMul2Msat0T0Mul_cellSizeZ2 := lexMul2Msat0T0Mul / (e.CellSize()[Z] * e.CellSize()[Z])
+	lexMul2_cellSizeX2 := lexMul2 / (e.CellSize()[X] * e.CellSize()[X])
+	lexMul2_cellSizeY2 := lexMul2 / (e.CellSize()[Y] * e.CellSize()[Y])
+	lexMul2_cellSizeZ2 := lexMul2 / (e.CellSize()[Z] * e.CellSize()[Z])
 
-	lexMul2Msat0T0Mul_cellSize2 := []float64{0.0, 0.0, 0.0}
-	lexMul2Msat0T0Mul_cellSize2[X] = lexMul2Msat0T0Mul_cellSizeX2
-	lexMul2Msat0T0Mul_cellSize2[Y] = lexMul2Msat0T0Mul_cellSizeY2
-	lexMul2Msat0T0Mul_cellSize2[Z] = lexMul2Msat0T0Mul_cellSizeZ2
+	lexMul2_cellSize2 := []float64{0.0, 0.0, 0.0}
+	lexMul2_cellSize2[X] = lexMul2_cellSizeX2
+	lexMul2_cellSize2[Y] = lexMul2_cellSizeY2
+	lexMul2_cellSize2[Z] = lexMul2_cellSizeZ2
 
 	stream := u.Hex.Array().Stream
-	gpu.Exchange6Async(Hex.Array(), m.Array(), Msat0T0.Array(), lex.Array(), lexMul2Msat0T0Mul_cellSize2, e.Periodic(), stream)
+	gpu.Exchange6Async(Hex.Array(), m.Array(), Msat0T0.Array(), lex.Array(), Msat0T0.Multiplier()[0], lexMul2_cellSize2, e.Periodic(), stream)
 	stream.Sync()
 }
