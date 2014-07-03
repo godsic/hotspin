@@ -77,9 +77,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx1 = avgGeomZero(lexx0, lexx);
-        leyy1 = avgGeomZero(leyy0, leyy);
-        lezz1 = avgGeomZero(lezz0, lezz);
+        lexx1 = cell_2.x * avgGeomZero(lexx0, lexx);
+        leyy1 = cell_2.x * avgGeomZero(leyy0, leyy);
+        lezz1 = cell_2.x * avgGeomZero(lezz0, lezz);
 
         Hx1 = Hx[linAddr];
         Hy1 = Hy[linAddr];
@@ -94,17 +94,17 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx2 = avgGeomZero(lexx0, lexx);
-        leyy2 = avgGeomZero(leyy0, leyy);
-        lezz2 = avgGeomZero(lezz0, lezz);
+        lexx2 = cell_2.x * avgGeomZero(lexx0, lexx);
+        leyy2 = cell_2.x * avgGeomZero(leyy0, leyy);
+        lezz2 = cell_2.x * avgGeomZero(lezz0, lezz);
 
         Hx2 = Hx[linAddr];
         Hy2 = Hy[linAddr];
         Hz2 = Hz[linAddr];
 
-        Rx = cell_2.x * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
-        Ry = cell_2.x * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
-        Rz = cell_2.x * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
+        Rx = (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
+        Ry = (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
+        Rz = (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // neighbors in Z direction
         idx = k - 1;
@@ -116,9 +116,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx1 = avgGeomZero(lexx0, lexx);
-        leyy1 = avgGeomZero(leyy0, leyy);
-        lezz1 = avgGeomZero(lezz0, lezz);
+        lexx1 = cell_2.z * avgGeomZero(lexx0, lexx);
+        leyy1 = cell_2.z * avgGeomZero(leyy0, leyy);
+        lezz1 = cell_2.z * avgGeomZero(lezz0, lezz);
 
         Hx1 = Hx[linAddr];
         Hy1 = Hy[linAddr];
@@ -133,17 +133,17 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx2 = avgGeomZero(lexx0, lexx);
-        leyy2 = avgGeomZero(leyy0, leyy);
-        lezz2 = avgGeomZero(lezz0, lezz);
+        lexx2 = cell_2.z * avgGeomZero(lexx0, lexx);
+        leyy2 = cell_2.z * avgGeomZero(leyy0, leyy);
+        lezz2 = cell_2.z * avgGeomZero(lezz0, lezz);
 
         Hx2 = Hx[linAddr];
         Hy2 = Hy[linAddr];
         Hz2 = Hz[linAddr];
 
-        Rx += cell_2.z * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
-        Ry += cell_2.z * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
-        Rz += cell_2.z * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
+        Rx += (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
+        Ry += (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
+        Rz += (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // neighbors in Y direction
         idx = j - 1;
@@ -155,9 +155,9 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx1 = avgGeomZero(lexx0, lexx);
-        leyy1 = avgGeomZero(leyy0, leyy);
-        lezz1 = avgGeomZero(lezz0, lezz);
+        lexx1 = cell_2.y * avgGeomZero(lexx0, lexx);
+        leyy1 = cell_2.y * avgGeomZero(leyy0, leyy);
+        lezz1 = cell_2.y * avgGeomZero(lezz0, lezz);
 
         Hx1 = Hx[linAddr];
         Hy1 = Hy[linAddr];
@@ -172,17 +172,17 @@ __global__ void llbarNonlocal00ncKern(double* __restrict__ tx, double* __restric
         leyy = lambda_eMul_yy * getMaskUnity(lambda_e_yy, linAddr);
         lezz = lambda_eMul_zz * getMaskUnity(lambda_e_zz, linAddr);
 
-        lexx2 = avgGeomZero(lexx0, lexx);
-        leyy2 = avgGeomZero(leyy0, leyy);
-        lezz2 = avgGeomZero(lezz0, lezz);
+        lexx2 = cell_2.y * avgGeomZero(lexx0, lexx);
+        leyy2 = cell_2.y * avgGeomZero(leyy0, leyy);
+        lezz2 = cell_2.y * avgGeomZero(lezz0, lezz);
 
         Hx2 = Hx[linAddr];
         Hy2 = Hy[linAddr];
         Hz2 = Hz[linAddr];
 
-        Rx += cell_2.y * (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
-        Ry += cell_2.y * (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
-        Rz += cell_2.y * (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
+        Rx += (lexx1 * (Hx1 - Hx0) + lexx2 * (Hx2 -  Hx0));
+        Ry += (leyy1 * (Hy1 - Hy0) + leyy2 * (Hy2 -  Hy0));
+        Rz += (lezz1 * (Hz1 - Hz0) + lezz2 * (Hz2 -  Hz0));
 
         // Write back to global memory
         tx[I] = -Rx;
