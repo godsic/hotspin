@@ -10,7 +10,6 @@ extern "C" {
 // full 3D blocks
 __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy, double* __restrict__  hz, 
                               double* __restrict__  mx, double* __restrict__  my, double* __restrict__  mz,
-                              double* __restrict__  msat0T0Msk,
                               double* __restrict__  lexMsk,
                               const int N0, const int N1, const int N2,
                               const int wrap0, const int wrap1, const int wrap2,
@@ -30,11 +29,9 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         double lex02 =  lex * lex;
         double lex2, pre1, pre2;
 
-        double ms0 = getMaskUnity(msat0T0Msk, I);
-        double3 m0 = make_double3(mx[I] * ms0, my[I] * ms0, mz[I] * ms0);
+        double3 m0 = make_double3(mx[I], my[I], mz[I]);
 
         double Hx, Hy, Hz;
-        double ms2, ms1;
         double3 m1, m2;
 
         int linAddr;
@@ -45,8 +42,7 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = max(idx, 0);
         linAddr = idx * N1 * N2 + j * N2 + k;
     
-        ms1 = getMaskUnity(msat0T0Msk, linAddr);
-        m1 = make_double3(mx[linAddr] * ms1, my[linAddr] * ms1, mz[linAddr] * ms1);
+        m1 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
@@ -57,16 +53,15 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = min(idx, N0 - 1);
         linAddr = idx * N1 * N2 + j * N2 + k;
 
-        ms2 = getMaskUnity(msat0T0Msk, linAddr);
-        m2 = make_double3(mx[linAddr] * ms2, my[linAddr] * ms2, mz[linAddr] * ms2);
+        m2 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
         pre2 = avgGeomZero(lex02, lex2);
 
-        Hx = lex2Mul_cellSizeX2 * (pre1 * (m1.x - m0.x) + pre2 * (m2.x - m0.x));
-        Hy = lex2Mul_cellSizeX2 * (pre1 * (m1.y - m0.y) + pre2 * (m2.y - m0.y));
-        Hz = lex2Mul_cellSizeX2 * (pre1 * (m1.z - m0.z) + pre2 * (m2.z - m0.z));
+        Hx = lex2Mul_cellSizeX2 * ((pre1 * m1.x + pre2 * m2.x) - (pre1 * m0.x + pre2 * m0.x));
+        Hy = lex2Mul_cellSizeX2 * ((pre1 * m1.y + pre2 * m2.y) - (pre1 * m0.y + pre2 * m0.y));
+        Hz = lex2Mul_cellSizeX2 * ((pre1 * m1.z + pre2 * m2.z) - (pre1 * m0.z + pre2 * m0.z));
 
         // neighbors in Z direction
         idx = k - 1;
@@ -74,8 +69,7 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = max(idx, 0);
         linAddr = i * N1 * N2 + j * N2 + idx;
 
-        ms1 = getMaskUnity(msat0T0Msk, linAddr);
-        m1 = make_double3(mx[linAddr] * ms1, my[linAddr] * ms1, mz[linAddr] * ms1);
+        m1 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
@@ -86,16 +80,15 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = min(idx, N2 - 1);
         linAddr = i * N1 * N2 + j * N2 + idx;
 
-        ms2 = getMaskUnity(msat0T0Msk, linAddr);
-        m2 = make_double3(mx[linAddr] * ms2, my[linAddr] * ms2, mz[linAddr] * ms2);
+        m2 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
         pre2 = avgGeomZero(lex02, lex2);
 
-        Hx += lex2Mul_cellSizeZ2 * (pre1 * (m1.x - m0.x) + pre2 * (m2.x - m0.x));
-        Hy += lex2Mul_cellSizeZ2 * (pre1 * (m1.y - m0.y) + pre2 * (m2.y - m0.y));
-        Hz += lex2Mul_cellSizeZ2 * (pre1 * (m1.z - m0.z) + pre2 * (m2.z - m0.z));
+        Hx += lex2Mul_cellSizeZ2 * ((pre1 * m1.x + pre2 * m2.x) - (pre1 * m0.x + pre2 * m0.x));
+        Hy += lex2Mul_cellSizeZ2 * ((pre1 * m1.y + pre2 * m2.y) - (pre1 * m0.y + pre2 * m0.y));
+        Hz += lex2Mul_cellSizeZ2 * ((pre1 * m1.z + pre2 * m2.z) - (pre1 * m0.z + pre2 * m0.z));
 
         // neighbors in Y direction
         idx = j - 1;
@@ -103,8 +96,7 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = max(idx, 0);
         linAddr = i * N1 * N2 + idx * N2 + k;
 
-        ms1 = getMaskUnity(msat0T0Msk, linAddr);
-        m1 = make_double3(mx[linAddr] * ms1, my[linAddr] * ms1, mz[linAddr] * ms1);
+        m1 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
@@ -115,16 +107,15 @@ __global__ void exchange6Kern(double* __restrict__ hx, double* __restrict__  hy,
         idx = min(idx, N1 - 1);
         linAddr = i * N1 * N2 + idx * N2 + k;
 
-        ms2 = getMaskUnity(msat0T0Msk, linAddr);
-        m2 = make_double3(mx[linAddr] * ms2, my[linAddr] * ms2, mz[linAddr] * ms2);
+        m2 = make_double3(mx[linAddr], my[linAddr], mz[linAddr]);
 
         lex = getMaskUnity(lexMsk, linAddr);
         lex2 =  lex * lex;
         pre2 = avgGeomZero(lex02, lex2);
         
-        Hx += lex2Mul_cellSizeY2 * (pre1 * (m1.x - m0.x) + pre2 * (m2.x - m0.x));
-        Hy += lex2Mul_cellSizeY2 * (pre1 * (m1.y - m0.y) + pre2 * (m2.y - m0.y));
-        Hz += lex2Mul_cellSizeY2 * (pre1 * (m1.z - m0.z) + pre2 * (m2.z - m0.z));
+        Hx += lex2Mul_cellSizeY2 * ((pre1 * m1.x + pre2 * m2.x) - (pre1 * m0.x + pre2 * m0.x));
+        Hy += lex2Mul_cellSizeY2 * ((pre1 * m1.y + pre2 * m2.y) - (pre1 * m0.y + pre2 * m0.y));
+        Hz += lex2Mul_cellSizeY2 * ((pre1 * m1.z + pre2 * m2.z) - (pre1 * m0.z + pre2 * m0.z));
 
         // Write back to global memory
         hx[I] = msat0T0Mul * Hx;
@@ -152,7 +143,6 @@ __export__ void exchange6Async(double* hx, double* hy, double* hz,
 
     exchange6Kern <<< gridsize, blocksize, 0, cudaStream_t(streams)>>>(hx, hy, hz,
                                                                             mx, my, mz, 
-                                                                            msat0T0, 
                                                                             lex, 
                                                                             N0, N1Part, N2, 
                                                                             periodic0, periodic1, periodic2, 
