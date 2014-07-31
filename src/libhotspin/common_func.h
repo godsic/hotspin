@@ -21,16 +21,17 @@
 #endif
 
 
-#define kB          1.380650424E-23                               // Boltzmann's constant in J/K
-#define muB         9.2740091523E-24                              // Bohr magneton in Am^2
-#define mu0         4.0 * 1e-7 * CUDART_PI                        // vacuum permeability
 #define zero        1.0e-32                                       // the zero threshold
-#define PI4         CUDART_PI * CUDART_PI * CUDART_PI * CUDART_PI // PI^4
 #define eps         1.0e-8                                        // the target numerical accuracy of iterative methods
 #define linRange    2.0e-1                                        // Defines the region of linearity
 #define INTMAXSTEPS 61                                            // Defines maximum amount of steps for numerical integration    
 #define INFINITESPINLIMIT 1.0e5                                   // Above this value the spin is treated as infinite (classical)
-  
+
+const double __mu0 = 4.0e-7 * CUDART_PI;
+const double kB  = 1.38064881313131313E-23;
+const double muB = 9.27400968202020202E-24;
+const double PI4 = CUDART_PI * CUDART_PI * CUDART_PI * CUDART_PI;
+
 typedef double (*func)(double x, double prefix, double mult);
 typedef double (*funcTs)(double x, double prefix, double mult, double C);
 
@@ -154,7 +155,8 @@ inline __device__ double fdivZero(double a, double b)
 inline __device__ double avgGeomZero(double a, double b)
 {
     double a_b = a + b;
-    return (a_b == 0.0) ? 0.0 : 2.0 * a * b / a_b;
+    double val = 2.0 * a * b / a_b;
+    return (a_b == 0.0) ? 0.0 : val;
 }
 
 inline __device__ double weightedAvgZero(double x0, double x1, double w0, double w1, double R)
