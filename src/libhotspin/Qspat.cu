@@ -54,7 +54,7 @@ __global__ void QspatKern(double* __restrict__ Q,
         T2 = T[linAddr];
         pre2 = avgGeomZero(k0, k2);
         
-        ddT = cell_2.x * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
+        ddT = cell_2.x * ((pre1 * T1 + pre2 * T2) - (pre1 * T0 + pre2 * T0));
 
         // neighbors in Z direction
         idx = k - 1;
@@ -75,7 +75,7 @@ __global__ void QspatKern(double* __restrict__ Q,
         T2 = T[linAddr];
         pre2 = avgGeomZero(k0, k2);
 
-        ddT += cell_2.z * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
+        ddT += cell_2.z * ((pre1 * T1 + pre2 * T2) - (pre1 * T0 + pre2 * T0));
 
         // neighbors in Y direction
         idx = j - 1;
@@ -96,7 +96,7 @@ __global__ void QspatKern(double* __restrict__ Q,
         T2 = T[linAddr];
         pre2 = avgGeomZero(k0, k2);
 
-        ddT += cell_2.y * (pre1 * (T1 - T0) + pre2 * (T2 - T0));
+        ddT += cell_2.y * ((pre1 * T1 + pre2 * T2) - (pre1 * T0 + pre2 * T0));
 
         Q[I] = kMul * ddT;
     }
